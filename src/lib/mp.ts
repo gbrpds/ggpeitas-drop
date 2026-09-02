@@ -1,4 +1,34 @@
+import { and, eq } from "drizzle-orm";
+import { getDb } from "@/db";
+import { orders } from "@/db/schema";
+
 const MP_BASE = "https://api.mercadopago.com";
+
+/**
+ * Consulta o status de um pagamento no Mercado Pago e sincroniza o pedido.
+ * Só tira o pedido de "pending" (approved/cancelled), evitando sobrescrever.
+ */
+export async function syncPaymentStatus(paymentId: string): Promise<string> {
+  const res = await fetch(`${MP_BASE}/v1/payments/${paymentId}`, {
+    headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` },
+    cache: "no-store",
+  });
+  const data = await res.json().catch(() => ({}));
+  const status = String(data.status ?? "unknown"); // approved | pending | cancelled | rejected
+
+  if (status === "approved" || status === "cancelled" || status === "rejected") {
+    try {
+      const db = getDb();
+      await db
+        .update(orders)
+        .set({ status: status === "rejected" ? "cancelled" : status })
+        .where(and(eq(orders.mpPaymentId, String(paymentId)), eq(orders.status, "pending")));
+    } catch (e) {
+      console.error("sync order status error", e);
+    }
+  }
+  return status;
+}
 
 type MpPayload = Record<string, unknown>;
 
