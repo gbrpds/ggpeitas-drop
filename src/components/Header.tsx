@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Menu, Search, User, ShoppingCart } from "lucide-react";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
@@ -12,6 +13,8 @@ import { brl } from "@/lib/format";
 export function Header() {
   const openDrawer = useUI((s) => s.openDrawer);
   const items = useCart((s) => s.items);
+  const { data: session } = useSession();
+  const firstName = session?.user?.name?.trim().split(" ")[0];
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -45,8 +48,17 @@ export function Header() {
           <Link className="act hide-sm" href="/conta">
             <User strokeWidth={1.8} />
             <span className="lbl">
-              <small>Entrar</small>
-              <b>Minha conta</b>
+              {mounted && firstName ? (
+                <>
+                  <small>Olá,</small>
+                  <b>{firstName}</b>
+                </>
+              ) : (
+                <>
+                  <small>Entrar</small>
+                  <b>Minha conta</b>
+                </>
+              )}
             </span>
           </Link>
           <Link className="act cartbtn" href="/carrinho">

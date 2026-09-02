@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Anton, Archivo, Inter } from "next/font/google";
 import "./globals.css";
 import { JerseySymbol } from "@/components/Jersey";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const archivo = Archivo({
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <JerseySymbol />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
