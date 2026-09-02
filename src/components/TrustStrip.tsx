@@ -2,7 +2,7 @@ import { Truck, CreditCard, ShieldCheck, RefreshCcw } from "lucide-react";
 
 const items = [
   { Icon: Truck, title: "Frete grátis*", sub: "Para todo o Brasil" },
-  { Icon: CreditCard, title: "12x sem juros", sub: "Pix, cartão e boleto" },
+  { Icon: CreditCard, title: "Em até 3x sem juros", sub: "Pix, cartão e boleto" },
   { Icon: ShieldCheck, title: "Compra segura", sub: "Mercado Pago" },
   { Icon: RefreshCcw, title: "Troca fácil", sub: "7 dias garantidos" },
 ];

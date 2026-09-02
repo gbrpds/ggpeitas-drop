@@ -66,7 +66,7 @@ export function SiteFooter() {
         <div>
           <h4>Pagamento &amp; Envio</h4>
           <p className="about" style={{ marginTop: 0 }}>
-            Parcele em até 12x sem juros. Compra 100% segura.
+            Parcele em até 3x sem juros. Compra 100% segura.
           </p>
           <div className="pay">
             {pays.map((p) => (

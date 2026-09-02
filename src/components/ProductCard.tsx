@@ -37,7 +37,7 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
         <div className="name">{product.name}</div>
         <div className="parc">
-          <b>10x</b> de <b>{parcela(product.now)}</b> sem juros
+          <b>3x</b> de <b>{parcela(product.now, 3)}</b> sem juros
         </div>
         <span className="frete">FRETE GRÁTIS</span>
         <button className="btn add" onClick={() => addItem(product)}>

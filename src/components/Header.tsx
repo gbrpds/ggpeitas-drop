@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, Search, User, ShoppingCart } from "lucide-react";
-import { Crest } from "./Crest";
+import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 import { useUI } from "@/store/ui";
 import { useCart } from "@/store/cart";
@@ -26,11 +26,7 @@ export function Header() {
         </button>
 
         <Link className="brand" href="/" aria-label="GG Peitas">
-          <Crest />
-          <span>
-            <b>GG PEITAS</b>
-            <small>CAMISAS PREMIUM</small>
-          </span>
+          <Logo />
         </Link>
 
         <form className="search" role="search" onSubmit={(e) => e.preventDefault()}>
