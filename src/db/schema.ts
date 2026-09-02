@@ -18,8 +18,9 @@ export type NewUser = typeof users.$inferInsert;
 /** Pedidos da loja. */
 export const orders = pgTable("orders", {
   id: uuid("id").defaultRandom().primaryKey(),
+  number: text("number"), // identificador amigável: AAAAMM0001
   userId: uuid("user_id"), // nulo = compra como visitante
-  status: text("status").default("pending").notNull(), // pending | approved | rejected
+  status: text("status").default("pending").notNull(), // pending | approved | cancelled | rejected
   paymentMethod: text("payment_method").notNull(), // pix | card
   totalCents: integer("total_cents").notNull(),
   items: jsonb("items").notNull(),

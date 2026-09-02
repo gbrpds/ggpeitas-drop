@@ -4,7 +4,7 @@ import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 import { mpCreatePayment, serverTotal } from "@/lib/mp";
 import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schema";
-import { resolveUserId } from "@/lib/order";
+import { resolveUserId, genOrderNumber } from "@/lib/order";
 
 export const runtime = "nodejs";
 
@@ -50,9 +50,12 @@ export async function POST(req: Request) {
   }
 
   const userId = await resolveUserId();
+  let number: string | null = null;
   try {
     const db = getDb();
+    number = await genOrderNumber(db);
     await db.insert(orders).values({
+      number,
       userId,
       status: "pending",
       paymentMethod: "pix",
@@ -69,6 +72,7 @@ export async function POST(req: Request) {
   const td = mp.data.point_of_interaction?.transaction_data ?? {};
   return NextResponse.json({
     ok: true,
+    number,
     paymentId: mp.data.id,
     amount,
     qrCode: td.qr_code,

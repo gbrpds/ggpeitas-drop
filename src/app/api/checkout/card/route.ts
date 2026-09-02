@@ -4,7 +4,7 @@ import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 import { mpCreatePayment, serverTotal } from "@/lib/mp";
 import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schema";
-import { resolveUserId } from "@/lib/order";
+import { resolveUserId, genOrderNumber } from "@/lib/order";
 
 export const runtime = "nodejs";
 
@@ -55,11 +55,15 @@ export async function POST(req: Request) {
     );
   }
 
-  const status = String(mp.data.status ?? "pending"); // approved | in_process | rejected
+  const raw = String(mp.data.status ?? "pending"); // approved | in_process | rejected
+  const status = raw === "rejected" ? "cancelled" : raw === "in_process" ? "pending" : raw;
   const userId = await resolveUserId();
+  let number: string | null = null;
   try {
     const db = getDb();
+    number = await genOrderNumber(db);
     await db.insert(orders).values({
+      number,
       userId,
       status,
       paymentMethod: "card",
@@ -75,7 +79,8 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     ok: true,
-    status,
+    number,
+    status: raw,
     statusDetail: mp.data.status_detail,
     paymentId: mp.data.id,
   });
