@@ -126,7 +126,7 @@ export function BuyBox({ product }: { product: Product }) {
       <CorreiosBox />
       <PromoRibbon />
 
-      <ProvadorModal product={product} open={provOpen} onClose={() => setProvOpen(false)} />
+      <ProvadorModal open={provOpen} onClose={() => setProvOpen(false)} onPick={(s) => setSize(s)} />
     </div>
   );
 }
