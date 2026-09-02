@@ -23,6 +23,7 @@ export type AddOptions = {
 type CartState = {
   items: CartItem[];
   addItem: (p: Product, opts?: AddOptions) => void;
+  setQty: (id: string, qty: number) => void;
   removeItem: (id: string) => void;
   clear: () => void;
   count: () => number;
@@ -62,6 +63,12 @@ export const useCart = create<CartState>()(
             ],
           };
         }),
+      setQty: (id, qty) =>
+        set((state) => ({
+          items: state.items
+            .map((i) => (i.id === id ? { ...i, qty: Math.max(0, qty) } : i))
+            .filter((i) => i.qty > 0),
+        })),
       removeItem: (id) =>
         set((state) => ({ items: state.items.filter((i) => i.id !== id) })),
       clear: () => set({ items: [] }),

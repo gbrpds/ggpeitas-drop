@@ -66,7 +66,7 @@ export function Header() {
               {mounted && firstName && (
                 <>
                   <div className="greet">
-                    Logado como <b>{firstName}</b>
+                    Bem vindo <b>{firstName}</b>!
                   </div>
                   <div className="sep" />
                 </>

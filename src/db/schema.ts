@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, integer, jsonb } from "drizzle-orm/pg-core";
 
 /** Usuários da loja (login por e-mail/senha ou Google). */
 export const users = pgTable("users", {
@@ -14,3 +14,20 @@ export const users = pgTable("users", {
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+
+/** Pedidos da loja. */
+export const orders = pgTable("orders", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id"), // nulo = compra como visitante
+  status: text("status").default("pending").notNull(), // pending | approved | rejected
+  paymentMethod: text("payment_method").notNull(), // pix | card
+  totalCents: integer("total_cents").notNull(),
+  items: jsonb("items").notNull(),
+  customer: jsonb("customer").notNull(), // { name, cpf, email, phone }
+  shipping: jsonb("shipping").notNull(), // { cep, rua, numero, bairro, cidade, uf }
+  mpPaymentId: text("mp_payment_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type Order = typeof orders.$inferSelect;
+export type NewOrder = typeof orders.$inferInsert;
