@@ -11,7 +11,6 @@ export const navItems: NavItem[] = [
   { label: "Início", href: "/" },
   {
     label: "Futebol",
-    emoji: "⚽",
     groups: [
       {
         label: "Brasileirão",
@@ -36,7 +35,6 @@ export const navItems: NavItem[] = [
   },
   {
     label: "Seleções",
-    emoji: "🌎",
     groups: [
       {
         label: "Mais buscadas",
@@ -53,8 +51,8 @@ export const navItems: NavItem[] = [
       },
     ],
   },
-  { label: "Feminina", emoji: "👩", href: "/feminina" },
-  { label: "Conjunto Infantil", emoji: "💫", href: "/infantil" },
-  { label: "Player Jogador (Authentic)", emoji: "⭐", href: "/player" },
-  { label: "Retrô", emoji: "🕰️", href: "/retro" },
+  { label: "Feminina", href: "/feminina" },
+  { label: "Conjunto Infantil", href: "/infantil" },
+  { label: "Player Jogador (Authentic)", href: "/player" },
+  { label: "Retrô", href: "/retro" },
 ];
