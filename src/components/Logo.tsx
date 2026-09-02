@@ -5,11 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { Crest } from "./Crest";
 
 /**
- * Logo da loja. Coloque o arquivo em `public/logo.png` (referenciado como /logo.png).
- * Enquanto o arquivo não existir (ou falhar ao carregar), mostra o escudo + nome
- * como fallback — assim o header nunca fica com imagem quebrada.
+ * Marca da loja: emblema (public/logo.png) + nome "GG PEITAS".
+ * Serve tanto no header (.brand) quanto no rodapé (.fbrand) — o dimensionamento
+ * do emblema vem do CSS de cada contexto. Se o PNG falhar, usa o escudo SVG.
  */
-export function Logo({ className }: { className?: string }) {
+export function Logo() {
   const [failed, setFailed] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
 
@@ -19,25 +19,23 @@ export function Logo({ className }: { className?: string }) {
     if (el && el.complete && el.naturalWidth === 0) setFailed(true);
   }, []);
 
-  if (failed) {
-    return (
-      <>
-        <Crest />
-        <span>
-          <b>GG PEITAS</b>
-          <small>CAMISAS PREMIUM</small>
-        </span>
-      </>
-    );
-  }
-
   return (
-    <img
-      ref={ref}
-      src="/logo.png"
-      alt="GG Peitas"
-      className={className ?? "logo"}
-      onError={() => setFailed(true)}
-    />
+    <>
+      {failed ? (
+        <Crest />
+      ) : (
+        <img
+          ref={ref}
+          src="/logo.png"
+          alt="GG Peitas"
+          className="logo"
+          onError={() => setFailed(true)}
+        />
+      )}
+      <span>
+        <b>GG PEITAS</b>
+        <small>CAMISAS PREMIUM</small>
+      </span>
+    </>
   );
 }

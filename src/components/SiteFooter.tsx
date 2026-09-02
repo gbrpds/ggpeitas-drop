@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MessageCircle, Music2 } from "lucide-react";
-import { Crest } from "./Crest";
+import { Logo } from "./Logo";
 
 const pays = ["PIX", "VISA", "MASTER", "ELO", "BOLETO", "MERCADO PAGO"];
 
@@ -20,11 +20,7 @@ export function SiteFooter() {
       <div className="wrap foot">
         <div>
           <Link className="fbrand" href="/">
-            <Crest />
-            <span>
-              <b>GG PEITAS</b>
-              <small>CAMISAS PREMIUM</small>
-            </span>
+            <Logo />
           </Link>
           <p className="about">
             Futebol, estilo e presença. As melhores camisas de clubes e seleções do mundo, com entrega para todo o
