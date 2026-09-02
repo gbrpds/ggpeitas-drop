@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
-import { Menu, Search, User, ShoppingCart } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { Menu, Search, User, ShoppingCart, Package, LogOut } from "lucide-react";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 import { useUI } from "@/store/ui";
@@ -45,22 +45,48 @@ export function Header() {
 
         <div className="acts">
           <ThemeToggle />
-          <Link className="act hide-sm" href="/conta">
-            <User strokeWidth={1.8} />
-            <span className="lbl">
-              {mounted && firstName ? (
+          <div className="acc">
+            <Link className="act hide-sm" href="/conta">
+              <User strokeWidth={1.8} />
+              <span className="lbl">
+                {mounted && firstName ? (
+                  <>
+                    <small>Olá,</small>
+                    <b>{firstName}</b>
+                  </>
+                ) : (
+                  <>
+                    <small>Entrar</small>
+                    <b>Minha conta</b>
+                  </>
+                )}
+              </span>
+            </Link>
+            <div className="acc-drop">
+              {mounted && firstName && (
                 <>
-                  <small>Olá,</small>
-                  <b>{firstName}</b>
-                </>
-              ) : (
-                <>
-                  <small>Entrar</small>
-                  <b>Minha conta</b>
+                  <div className="greet">
+                    Logado como <b>{firstName}</b>
+                  </div>
+                  <div className="sep" />
                 </>
               )}
-            </span>
-          </Link>
+              <Link href="/conta">
+                <User strokeWidth={1.8} /> Minha conta
+              </Link>
+              <Link href="/pedidos">
+                <Package strokeWidth={1.8} /> Meus pedidos
+              </Link>
+              {mounted && firstName && (
+                <>
+                  <div className="sep" />
+                  <button onClick={() => signOut({ callbackUrl: "/" })}>
+                    <LogOut strokeWidth={1.8} /> Sair
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
           <Link className="act cartbtn" href="/carrinho">
             <ShoppingCart strokeWidth={1.8} />
             <span className="lbl">

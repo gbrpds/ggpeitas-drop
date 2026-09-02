@@ -91,6 +91,21 @@ header.site { background:var(--ground); position:sticky; top:0; z-index:60; }
   display:grid; place-items:center; color:var(--ink); flex:none; }
 .themebtn:hover { background:rgba(0,0,0,.06); }
 .themebtn svg { width:20px; height:20px; }
+/* dropdown da conta (hover) */
+.acc { position:relative; }
+.acc-drop { position:absolute; top:100%; right:0; min-width:200px; background:var(--surface);
+  border:1px solid var(--line); border-top:3px solid var(--green); border-radius:0 0 10px 10px;
+  box-shadow:0 16px 34px -14px rgba(0,0,0,.35); padding:6px; opacity:0; visibility:hidden;
+  transform:translateY(6px); transition:.16s; z-index:70; }
+.acc:hover .acc-drop { opacity:1; visibility:visible; transform:translateY(0); }
+.acc-drop a, .acc-drop button { display:flex; align-items:center; gap:10px; width:100%; padding:10px 11px;
+  border-radius:7px; font-size:.86rem; font-weight:500; color:var(--ink); background:none; border:0;
+  text-align:left; cursor:pointer; }
+.acc-drop a:hover, .acc-drop button:hover { background:var(--ground); color:var(--green-deep); }
+.acc-drop svg { width:17px; height:17px; color:var(--green-deep); }
+.acc-drop .sep { height:1px; background:var(--line); margin:5px 4px; }
+.acc-drop .greet { padding:8px 11px 4px; font-size:.74rem; color:var(--muted); }
+.acc-drop .greet b { color:var(--ink); font-weight:700; }
 
 /* nav (minimalista, integrado ao fundo) */
 nav.main { background:var(--ground); border-top:1px solid var(--line); border-bottom:1px solid var(--line);
