@@ -10,11 +10,19 @@ export type CartItem = {
   price: number;
   qty: number;
   colors: Product["colors"];
+  size?: string;
+  version?: string;
+};
+
+export type AddOptions = {
+  size?: string;
+  version?: string;
+  qty?: number;
 };
 
 type CartState = {
   items: CartItem[];
-  addItem: (p: Product) => void;
+  addItem: (p: Product, opts?: AddOptions) => void;
   removeItem: (id: string) => void;
   clear: () => void;
   count: () => number;
@@ -25,20 +33,32 @@ export const useCart = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (p) =>
+      addItem: (p, opts = {}) =>
         set((state) => {
-          const found = state.items.find((i) => i.id === p.id);
+          const { size, version, qty = 1 } = opts;
+          // id único por variação (produto + tamanho + versão)
+          const id = [p.id, size, version].filter(Boolean).join("-");
+          const found = state.items.find((i) => i.id === id);
           if (found) {
             return {
               items: state.items.map((i) =>
-                i.id === p.id ? { ...i, qty: i.qty + 1 } : i,
+                i.id === id ? { ...i, qty: i.qty + qty } : i,
               ),
             };
           }
+          const suffix = [size, version].filter(Boolean).join(" · ");
           return {
             items: [
               ...state.items,
-              { id: p.id, name: p.name, price: p.now, qty: 1, colors: p.colors },
+              {
+                id,
+                name: suffix ? `${p.name} (${suffix})` : p.name,
+                price: p.now,
+                qty,
+                colors: p.colors,
+                size,
+                version,
+              },
             ],
           };
         }),
