@@ -49,3 +49,10 @@ export const products = pgTable("products", {
 
 export type ProductRow = typeof products.$inferSelect;
 export type NewProductRow = typeof products.$inferInsert;
+
+/** Escudos oficiais dos times (upload pelo admin, exibidos no modal de time). */
+export const teamCrests = pgTable("team_crests", {
+  name: text("name").primaryKey(),
+  crestUrl: text("crest_url").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

@@ -700,6 +700,20 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .adm-switch { display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:.9rem; cursor:pointer; }
 .adm-switch input { width:18px; height:18px; accent-color:var(--green); }
 
+/* escudos dos times (admin) */
+.adm-hint { color:var(--muted); font-size:.86rem; margin:0 0 16px; }
+.crest-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+.crest-card { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.crest-media { width:76px; height:76px; border-radius:50%; background:var(--ground); border:1px solid var(--line); display:grid; place-items:center; }
+.crest-media img { width:80%; height:80%; object-fit:contain; }
+.crest-media svg.jersey { width:62%; }
+.crest-name { font-size:.82rem; }
+.crest-actions { display:flex; align-items:center; gap:8px; }
+.crest-upload { display:inline-flex; align-items:center; gap:6px; background:var(--green); color:#fff; border-radius:8px; padding:8px 12px; font-weight:700; font-size:.78rem; cursor:pointer; }
+.crest-upload:hover { background:var(--green-deep); }
+.crest-remove { background:none; border:1.5px solid var(--line); color:var(--muted); border-radius:8px; width:32px; height:32px; display:grid; place-items:center; }
+.crest-remove:hover { border-color:#c62828; color:#c62828; }
+
 /* navegação do portal admin */
 .adm-nav { display:flex; gap:6px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:5px; margin-bottom:20px; flex-wrap:wrap; }
 .adm-tab { display:inline-flex; align-items:center; gap:7px; padding:9px 16px; border-radius:8px; font-weight:700; font-size:.86rem; color:var(--muted); }
@@ -749,6 +763,8 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
   display:grid; place-items:center; transition:transform .14s,border-color .14s,box-shadow .14s; }
 .tm-team:hover .tm-circ { transform:translateY(-4px); border-color:var(--green); box-shadow:0 12px 24px -12px rgba(10,60,25,.4); }
 .tm-circ svg.jersey { width:64%; }
+.tm-crest { width:78%; height:78%; object-fit:contain; }
+.tm-done-circ .tm-crest { width:80%; height:80%; }
 .tm-team b { font-size:.74rem; font-weight:700; text-align:center; line-height:1.15; }
 .tm-skip { display:block; margin:20px auto 0; background:none; border:0; color:var(--muted); font-size:.84rem; font-weight:600; }
 .tm-skip:hover { color:var(--ink); }

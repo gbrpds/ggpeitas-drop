@@ -11,6 +11,7 @@ const KEY = "gg-team";
 export function TeamModal() {
   const [open, setOpen] = useState(false);
   const [chosen, setChosen] = useState<Team | null>(null);
+  const [crests, setCrests] = useState<Record<string, string>>({});
 
   // abre só na primeira visita (sem time salvo)
   useEffect(() => {
@@ -20,6 +21,15 @@ export function TeamModal() {
       /* ignore */
     }
   }, []);
+
+  // carrega os escudos oficiais (se houver) quando o modal abre
+  useEffect(() => {
+    if (!open) return;
+    fetch("/api/team-crests")
+      .then((r) => r.json())
+      .then((m) => setCrests(m ?? {}))
+      .catch(() => {});
+  }, [open]);
 
   const choose = (t: Team) => {
     setChosen(t);
@@ -55,7 +65,12 @@ export function TeamModal() {
               {teams.map((t) => (
                 <button key={t.name} className="tm-team" onClick={() => choose(t)}>
                   <span className="tm-circ">
-                    <Jersey colors={t.colors} />
+                    {crests[t.name] ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img className="tm-crest" src={crests[t.name]} alt={t.name} />
+                    ) : (
+                      <Jersey colors={t.colors} />
+                    )}
                   </span>
                   <b>{t.name}</b>
                 </button>
@@ -68,7 +83,12 @@ export function TeamModal() {
         ) : (
           <div className="tm-done">
             <span className="tm-done-circ">
-              <Jersey colors={chosen.colors} />
+              {crests[chosen.name] ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="tm-crest" src={crests[chosen.name]} alt={chosen.name} />
+              ) : (
+                <Jersey colors={chosen.colors} />
+              )}
             </span>
             <h2>
               Você é <b>{chosen.name}</b>! ❤️
