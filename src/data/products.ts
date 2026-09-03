@@ -8,6 +8,9 @@ export type Product = {
   was?: number;
   isNew?: boolean;
   colors: JerseyColors;
+  images?: string[]; // fotos reais (Vercel Blob) — quando vazio, usa o mock (SVG)
+  team?: string;
+  version?: string;
 };
 
 export type ProductSection = {
@@ -98,13 +101,13 @@ export const sections: ProductSection[] = [
 export type Category = { name: string; href: string; colors: JerseyColors };
 
 export const categories: Category[] = [
-  { name: "Futebol", href: "/futebol", colors: ["#0f8a3d", "#ffc400", "#fff"] },
-  { name: "Seleções", href: "/selecoes", colors: ["#ffc400", "#0f8a3d", "#0f8a3d"] },
-  { name: "Feminina", href: "/feminina", colors: ["#c8102e", "#fff", "#fff"] },
-  { name: "Infantil", href: "/infantil", colors: ["#0d1b4b", "#c8102e", "#fff"] },
-  { name: "Player · Auth", href: "/player", colors: ["#111", "#ffc400", "#fff"] },
-  { name: "Retrô", href: "/retro", colors: ["#a50044", "#004d98", "#ffc400"] },
-  { name: "Brasileirão", href: "/brasileirao", colors: ["#c8102e", "#111", "#fff"] },
-  { name: "Premier League", href: "/premier-league", colors: ["#6caee0", "#0a1a4f", "#fff"] },
-  { name: "La Liga", href: "/la-liga", colors: ["#f4f4f4", "#f3c012", "#00529f"] },
+  { name: "Futebol", href: "/categoria/futebol", colors: ["#0f8a3d", "#ffc400", "#fff"] },
+  { name: "Seleções", href: "/categoria/selecoes", colors: ["#ffc400", "#0f8a3d", "#0f8a3d"] },
+  { name: "Feminina", href: "/categoria/feminina", colors: ["#c8102e", "#fff", "#fff"] },
+  { name: "Infantil", href: "/categoria/infantil", colors: ["#0d1b4b", "#c8102e", "#fff"] },
+  { name: "Player · Auth", href: "/categoria/player", colors: ["#111", "#ffc400", "#fff"] },
+  { name: "Retrô", href: "/categoria/retro", colors: ["#a50044", "#004d98", "#ffc400"] },
+  { name: "Brasileirão", href: "/categoria/brasileirao", colors: ["#c8102e", "#111", "#fff"] },
+  { name: "Europa", href: "/categoria/europa", colors: ["#6caee0", "#0a1a4f", "#fff"] },
+  { name: "Retrô Lendárias", href: "/categoria/retro", colors: ["#f4f4f4", "#f3c012", "#00529f"] },
 ];

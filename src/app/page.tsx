@@ -10,10 +10,13 @@ import { FooterTrust } from "@/components/FooterTrust";
 import { SiteFooter } from "@/components/SiteFooter";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { MobileDrawer } from "@/components/MobileDrawer";
-import { sections } from "@/data/products";
+import { getHomeSections } from "@/lib/catalog";
 
-export default function Home() {
-  const [vendidos, ...rest] = sections;
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const sections = await getHomeSections();
+  const [first, ...rest] = sections;
 
   return (
     <>
@@ -24,8 +27,8 @@ export default function Home() {
       <TrustStrip />
       <CategoryCircles />
 
-      {/* Mais vendidos primeiro, depois a promo, depois o restante */}
-      <ProductCarousel section={vendidos} />
+      {/* Primeira seção, depois a promo, depois o restante */}
+      {first && <ProductCarousel section={first} />}
       <PromoBanner />
       {rest.map((section) => (
         <ProductCarousel key={section.id} section={section} />

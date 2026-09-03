@@ -13,22 +13,11 @@ export const navItems: NavItem[] = [
     label: "Futebol",
     groups: [
       {
-        label: "Brasileirão",
+        label: "Ligas",
         links: [
-          { name: "Flamengo", href: "/brasileirao/flamengo" },
-          { name: "Palmeiras", href: "/brasileirao/palmeiras" },
-          { name: "Corinthians", href: "/brasileirao/corinthians" },
-          { name: "São Paulo", href: "/brasileirao/sao-paulo" },
-        ],
-      },
-      {
-        label: "Europa",
-        links: [
-          { name: "Premier League", href: "/europa/premier-league" },
-          { name: "La Liga", href: "/europa/la-liga" },
-          { name: "Serie A", href: "/europa/serie-a" },
-          { name: "Bundesliga", href: "/europa/bundesliga" },
-          { name: "Ligue 1", href: "/europa/ligue-1" },
+          { name: "Brasileirão", href: "/categoria/brasileirao" },
+          { name: "Europa", href: "/categoria/europa" },
+          { name: "Todos os clubes", href: "/categoria/futebol" },
         ],
       },
     ],
@@ -37,22 +26,15 @@ export const navItems: NavItem[] = [
     label: "Seleções",
     groups: [
       {
-        label: "Mais buscadas",
+        label: "Seleções",
         links: [
-          { name: "Brasil", href: "/selecoes/brasil" },
-          { name: "Argentina", href: "/selecoes/argentina" },
-          { name: "Portugal", href: "/selecoes/portugal" },
-          { name: "França", href: "/selecoes/franca" },
-          { name: "Espanha", href: "/selecoes/espanha" },
-          { name: "Inglaterra", href: "/selecoes/inglaterra" },
-          { name: "Itália", href: "/selecoes/italia" },
-          { name: "Alemanha", href: "/selecoes/alemanha" },
+          { name: "Todas as seleções", href: "/categoria/selecoes" },
         ],
       },
     ],
   },
-  { label: "Feminina", href: "/feminina" },
-  { label: "Conjunto Infantil", href: "/infantil" },
-  { label: "Player Jogador (Authentic)", href: "/player" },
-  { label: "Retrô", href: "/retro" },
+  { label: "Feminina", href: "/categoria/feminina" },
+  { label: "Conjunto Infantil", href: "/categoria/infantil" },
+  { label: "Player Jogador (Authentic)", href: "/categoria/player" },
+  { label: "Retrô", href: "/categoria/retro" },
 ];

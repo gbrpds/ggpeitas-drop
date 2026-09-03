@@ -11,16 +11,17 @@ import { Gallery } from "@/components/product/Gallery";
 import { BuyBox } from "@/components/product/BuyBox";
 import { ProductBanner } from "@/components/product/ProductBanner";
 import { Description } from "@/components/product/Description";
-import { allProducts, getProduct } from "@/lib/product";
+import { getCatalogProduct } from "@/lib/catalog";
+import { metaFor } from "@/lib/catalog";
 
-export function generateStaticParams() {
-  return allProducts().map((p) => ({ id: p.id }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const product = getProduct(id);
+  const product = await getCatalogProduct(id);
   if (!product) notFound();
+
+  const cat = metaFor(product.category);
 
   return (
     <>
@@ -33,7 +34,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           <nav className="crumbs" aria-label="Caminho">
             <Link href="/">Início</Link>
             <span className="sep">/</span>
-            <Link href="/futebol">Camisas</Link>
+            <Link href={cat.href}>{cat.title}</Link>
             <span className="sep">/</span>
             <span>{product.name}</span>
           </nav>
