@@ -397,6 +397,8 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .auth-wrap { max-width:480px; padding-block:40px 60px; }
 .auth-title { font-family:var(--disp); font-weight:900; text-transform:uppercase; font-size:1.6rem; text-align:center; margin:0 0 6px; }
 .auth-lead { text-align:center; color:var(--muted); font-size:.9rem; margin:0 0 22px; }
+.auth-timeout { max-width:480px; margin:0 auto 16px; background:rgba(255,140,0,.1); border:1px solid rgba(255,140,0,.3);
+  color:#b35c00; border-radius:10px; padding:11px 14px; font-size:.84rem; text-align:center; }
 .auth-card { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:22px; }
 .auth-tabs { display:flex; gap:6px; background:var(--ground); border-radius:10px; padding:4px; margin-bottom:18px; }
 .auth-tabs button { flex:1; border:0; background:none; color:var(--muted); font-weight:700; font-size:.88rem; padding:10px; border-radius:8px; }

@@ -10,7 +10,12 @@ import { AuthForm } from "@/components/auth/AuthForm";
 
 export const dynamic = "force-dynamic";
 
-export default async function ContaPage() {
+export default async function ContaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ timeout?: string }>;
+}) {
+  const { timeout } = await searchParams;
   // Se as variáveis de ambiente ainda não estão configuradas, não quebra a página:
   // apenas trata como deslogado e mostra o formulário.
   let user: { name?: string | null; email?: string | null } | undefined;
@@ -69,6 +74,11 @@ export default async function ContaPage() {
             <>
               <h1 className="auth-title">Minha conta</h1>
               <p className="auth-lead">Entre para acompanhar seus pedidos ou crie sua conta em segundos.</p>
+              {timeout && (
+                <div className="auth-timeout">
+                  Sua sessão foi encerrada por inatividade (20 min). Entre novamente.
+                </div>
+              )}
               <AuthForm googleEnabled={googleEnabled} />
             </>
           )}
