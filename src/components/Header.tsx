@@ -15,7 +15,8 @@ export function Header() {
   const openCart = useUI((s) => s.openCart);
   const items = useCart((s) => s.items);
   const { data: session } = useSession();
-  const firstName = session?.user?.name?.trim().split(" ")[0];
+  const loggedIn = !!session?.user;
+  const firstName = session?.user?.name?.trim().split(" ")[0] ?? "torcedor";
   const isAdmin = !!(session?.user as { isAdmin?: boolean } | undefined)?.isAdmin;
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -52,7 +53,7 @@ export function Header() {
             <Link className="act hide-sm" href="/conta">
               <User strokeWidth={1.8} />
               <span className="lbl">
-                {mounted && firstName ? (
+                {mounted && loggedIn ? (
                   <>
                     <small>Olá,</small>
                     <b>{firstName}</b>
@@ -65,35 +66,29 @@ export function Header() {
                 )}
               </span>
             </Link>
-            <div className="acc-drop">
-              {mounted && firstName && (
-                <>
-                  <div className="greet">
-                    Bem vindo <b>{firstName}</b>!
-                  </div>
-                  <div className="sep" />
-                </>
-              )}
-              <Link href="/conta">
-                <User strokeWidth={1.8} /> Minha conta
-              </Link>
-              <Link href="/pedidos">
-                <Package strokeWidth={1.8} /> Meus pedidos
-              </Link>
-              {mounted && isAdmin && (
-                <Link href="/admin">
-                  <LayoutDashboard strokeWidth={1.8} /> Painel Admin
+            {mounted && loggedIn && (
+              <div className="acc-drop">
+                <div className="greet">
+                  Bem vindo <b>{firstName}</b>!
+                </div>
+                <div className="sep" />
+                <Link href="/conta">
+                  <User strokeWidth={1.8} /> Minha conta
                 </Link>
-              )}
-              {mounted && firstName && (
-                <>
-                  <div className="sep" />
-                  <button onClick={() => signOut({ callbackUrl: "/" })}>
-                    <LogOut strokeWidth={1.8} /> Sair
-                  </button>
-                </>
-              )}
-            </div>
+                <Link href="/pedidos">
+                  <Package strokeWidth={1.8} /> Meus pedidos
+                </Link>
+                {isAdmin && (
+                  <Link href="/admin">
+                    <LayoutDashboard strokeWidth={1.8} /> Painel Admin
+                  </Link>
+                )}
+                <div className="sep" />
+                <button onClick={() => signOut({ callbackUrl: "/" })}>
+                  <LogOut strokeWidth={1.8} /> Sair
+                </button>
+              </div>
+            )}
           </div>
           <button className="act cartbtn" onClick={openCart}>
             <ShoppingCart strokeWidth={1.8} />
