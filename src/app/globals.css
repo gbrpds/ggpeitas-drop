@@ -636,6 +636,39 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
   .cart-summary, .co-summary { position:static; }
 }
 
+/* ===================== ADMIN ===================== */
+.adm-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; flex-wrap:wrap; }
+.adm-head .btn { padding:11px 18px; }
+.adm-back { display:inline-flex; align-items:center; gap:6px; color:var(--green-deep); font-weight:600; font-size:.84rem; margin-bottom:10px; }
+.adm-list { display:flex; flex-direction:column; gap:10px; }
+.adm-row { display:flex; align-items:center; gap:14px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:10px 14px; }
+.adm-row-media { width:56px; height:56px; flex:none; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#fff; display:grid; place-items:center; }
+:root.gg-dark .adm-row-media { background:#0f120c; }
+.adm-row-media img { width:100%; height:100%; object-fit:cover; }
+.adm-noimg { font-size:.6rem; color:var(--muted); text-align:center; }
+.adm-row-info { flex:1; min-width:0; }
+.adm-row-info b { display:block; font-size:.9rem; }
+.adm-row-cat { font-size:.75rem; color:var(--muted); text-transform:capitalize; }
+.adm-badge { font-family:var(--disp); font-weight:800; text-transform:uppercase; font-size:.66rem; padding:4px 9px; border-radius:20px; white-space:nowrap; }
+.adm-badge.on { background:rgba(15,138,61,.14); color:var(--green-deep); }
+.adm-badge.off { background:rgba(0,0,0,.06); color:var(--muted); }
+.adm-row-price { font-family:var(--disp); font-weight:900; color:var(--price); white-space:nowrap; }
+.adm-del { background:none; border:0; color:var(--muted); padding:6px; }
+.adm-del:hover { color:#c62828; }
+
+.adm-form { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:22px; }
+.adm-form .co-field { margin-bottom:16px; }
+.adm-select { width:100%; border:1.5px solid var(--line); border-radius:10px; padding:12px 13px; font-size:.95rem; background:var(--surface); color:var(--ink); }
+.adm-select:focus { outline:none; border-color:var(--green); }
+.adm-uploads { display:flex; flex-wrap:wrap; gap:10px; }
+.adm-thumb { position:relative; width:84px; height:84px; border-radius:10px; overflow:hidden; border:1px solid var(--line); }
+.adm-thumb img { width:100%; height:100%; object-fit:cover; }
+.adm-thumb button { position:absolute; top:3px; right:3px; background:rgba(0,0,0,.6); color:#fff; border:0; border-radius:50%; width:22px; height:22px; display:grid; place-items:center; }
+.adm-upload-btn { width:84px; height:84px; border:1.5px dashed var(--line); border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:var(--muted); font-size:.7rem; cursor:pointer; }
+.adm-upload-btn:hover { border-color:var(--green); color:var(--green-deep); }
+.adm-switch { display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:.9rem; cursor:pointer; }
+.adm-switch input { width:18px; height:18px; accent-color:var(--green); }
+
 /* modal provador */
 .prov-scrim { position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:100; display:grid; place-items:center;
   padding:16px; opacity:0; visibility:hidden; transition:.2s; }

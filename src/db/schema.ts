@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, integer, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, integer, jsonb, boolean } from "drizzle-orm/pg-core";
 
 /** Usuários da loja (login por e-mail/senha ou Google). */
 export const users = pgTable("users", {
@@ -32,3 +32,20 @@ export const orders = pgTable("orders", {
 
 export type Order = typeof orders.$inferSelect;
 export type NewOrder = typeof orders.$inferInsert;
+
+/** Catálogo de produtos cadastrados pelo admin. */
+export const products = pgTable("products", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  team: text("team"),
+  category: text("category").notNull(), // futebol | selecoes | feminina | infantil | player | retro | brasileirao | europa
+  priceCents: integer("price_cents").notNull(),
+  compareCents: integer("compare_cents"), // preço "de" (riscado), opcional
+  version: text("version"), // torcedor | jogador (opcional)
+  images: jsonb("images").notNull().default([]), // string[] de URLs (Vercel Blob)
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type ProductRow = typeof products.$inferSelect;
+export type NewProductRow = typeof products.$inferInsert;
