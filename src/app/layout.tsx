@@ -3,6 +3,7 @@ import { Anton, Archivo, Inter } from "next/font/google";
 import "./globals.css";
 import { JerseySymbol } from "@/components/Jersey";
 import { Providers } from "@/components/Providers";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const archivo = Archivo({
@@ -33,7 +34,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <JerseySymbol />
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <CartDrawer />
+        </Providers>
       </body>
     </html>
   );

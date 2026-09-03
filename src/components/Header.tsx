@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, Search, User, ShoppingCart, Package, LogOut, ArrowRight } from "lucide-react";
+import { Menu, Search, User, ShoppingCart, Package, LogOut } from "lucide-react";
 import { Logo } from "./Logo";
-import { Jersey } from "./Jersey";
 import { ThemeToggle } from "./ThemeToggle";
 import { useUI } from "@/store/ui";
 import { useCart } from "@/store/cart";
@@ -13,6 +12,7 @@ import { brl } from "@/lib/format";
 
 export function Header() {
   const openDrawer = useUI((s) => s.openDrawer);
+  const openCart = useUI((s) => s.openCart);
   const items = useCart((s) => s.items);
   const { data: session } = useSession();
   const firstName = session?.user?.name?.trim().split(" ")[0];
@@ -88,49 +88,14 @@ export function Header() {
               )}
             </div>
           </div>
-          <div className="cart-wrap">
-            <Link className="act cartbtn" href="/carrinho">
-              <ShoppingCart strokeWidth={1.8} />
-              <span className="lbl">
-                <small>Carrinho</small>
-                <b>{brl(total)}</b>
-              </span>
-              {count > 0 && <span className="cnt">{count}</span>}
-            </Link>
-            <div className="cart-drop">
-              {!mounted || items.length === 0 ? (
-                <div className="cart-drop-empty">Seu carrinho está vazio</div>
-              ) : (
-                <>
-                  <div className="cart-drop-list">
-                    {items.map((i) => (
-                      <div className="cd-item" key={i.id}>
-                        <div className="cd-media">
-                          <Jersey colors={i.colors} />
-                        </div>
-                        <div className="cd-info">
-                          <span className="cd-name">{i.name}</span>
-                          <span className="cd-qty">
-                            {i.qty} × {brl(i.price)}
-                          </span>
-                        </div>
-                        <span className="cd-price">{brl(i.price * i.qty)}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="cart-drop-foot">
-                    <div className="cart-drop-total">
-                      <span>Total</span>
-                      <b>{brl(total)}</b>
-                    </div>
-                    <Link className="cart-drop-btn" href="/carrinho">
-                      Ir para o carrinho <ArrowRight size={16} strokeWidth={2.4} />
-                    </Link>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
+          <button className="act cartbtn" onClick={openCart}>
+            <ShoppingCart strokeWidth={1.8} />
+            <span className="lbl">
+              <small>Carrinho</small>
+              <b>{brl(total)}</b>
+            </span>
+            {count > 0 && <span className="cnt">{count}</span>}
+          </button>
         </div>
       </div>
     </header>

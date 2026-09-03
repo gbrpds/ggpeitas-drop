@@ -6,12 +6,18 @@ type UIState = {
   drawerOpen: boolean;
   openDrawer: () => void;
   closeDrawer: () => void;
+  cartOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
 };
 
 export const useUI = create<UIState>((set) => ({
   drawerOpen: false,
   openDrawer: () => set({ drawerOpen: true }),
   closeDrawer: () => set({ drawerOpen: false }),
+  cartOpen: false,
+  openCart: () => set({ cartOpen: true }),
+  closeCart: () => set({ cartOpen: false }),
 }));
 
 export type Theme = "light" | "dark";

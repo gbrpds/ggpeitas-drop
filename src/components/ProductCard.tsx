@@ -5,11 +5,9 @@ import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import type { Product } from "@/data/products";
 import { brl, parcela, desconto } from "@/lib/format";
-import { useCart } from "@/store/cart";
 import { Jersey } from "./Jersey";
 
 export function ProductCard({ product }: { product: Product }) {
-  const addItem = useCart((s) => s.addItem);
   const off = desconto(product.now, product.was);
 
   return (
@@ -43,9 +41,9 @@ export function ProductCard({ product }: { product: Product }) {
           <b>3x</b> de <b>{parcela(product.now, 3)}</b> sem juros
         </div>
         <span className="frete">FRETE GRÁTIS</span>
-        <button className="btn add" onClick={() => addItem(product)}>
+        <Link className="btn add" href={`/produto/${product.id}`}>
           Comprar agora
-        </button>
+        </Link>
       </div>
     </motion.article>
   );

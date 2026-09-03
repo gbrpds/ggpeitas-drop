@@ -6,7 +6,7 @@ import { ImageIcon } from "lucide-react";
  */
 export function Banner() {
   return (
-    <section className="banner-sec wrap">
+    <section className="banner-sec">
       <div className="banner desk" role="img" aria-label="Espaço reservado para banner principal (desktop)">
         <div className="tag">
           <ImageIcon />
