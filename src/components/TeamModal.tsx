@@ -1,17 +1,23 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { X, Heart } from "lucide-react";
-import { teams, type Team } from "@/data/teams";
+import { teams as seedTeams } from "@/data/teams";
 import { Jersey } from "@/components/Jersey";
+import type { JerseyColors } from "@/data/products";
 
 const KEY = "gg-team";
 
+type TeamItem = { name: string; colors: JerseyColors; crestUrl?: string | null };
+
+const seed: TeamItem[] = seedTeams.map((t) => ({ name: t.name, colors: t.colors, crestUrl: null }));
+
 export function TeamModal() {
   const [open, setOpen] = useState(false);
-  const [chosen, setChosen] = useState<Team | null>(null);
-  const [crests, setCrests] = useState<Record<string, string>>({});
+  const [chosen, setChosen] = useState<TeamItem | null>(null);
+  const [list, setList] = useState<TeamItem[]>(seed);
 
   // abre só na primeira visita (sem time salvo)
   useEffect(() => {
@@ -22,30 +28,37 @@ export function TeamModal() {
     }
   }, []);
 
-  // carrega os escudos oficiais (se houver) quando o modal abre
+  // carrega a lista real (times + escudos) quando o modal abre
   useEffect(() => {
     if (!open) return;
-    fetch("/api/team-crests")
+    fetch("/api/teams")
       .then((r) => r.json())
-      .then((m) => setCrests(m ?? {}))
+      .then((rows: TeamItem[]) => {
+        if (Array.isArray(rows) && rows.length) setList(rows);
+      })
       .catch(() => {});
   }, [open]);
 
-  const choose = (t: Team) => {
+  const choose = (t: TeamItem) => {
     setChosen(t);
     try {
-      localStorage.setItem(KEY, JSON.stringify(t));
+      localStorage.setItem(KEY, JSON.stringify({ name: t.name, colors: t.colors }));
     } catch {}
   };
-
   const close = () => setOpen(false);
-
   const skip = () => {
     try {
       localStorage.setItem(KEY, "skip");
     } catch {}
     setOpen(false);
   };
+
+  const Emblem = ({ t, big }: { t: TeamItem; big?: boolean }) =>
+    t.crestUrl ? (
+      <img className={big ? "tm-crest big" : "tm-crest"} src={t.crestUrl} alt={t.name} />
+    ) : (
+      <Jersey colors={t.colors} />
+    );
 
   return (
     <div className={`tm-scrim${open ? " open" : ""}`} aria-hidden={!open}>
@@ -62,15 +75,10 @@ export function TeamModal() {
               <p>Escolha e a gente deixa a loja com a sua cara.</p>
             </div>
             <div className="tm-grid">
-              {teams.map((t) => (
+              {list.map((t) => (
                 <button key={t.name} className="tm-team" onClick={() => choose(t)}>
                   <span className="tm-circ">
-                    {crests[t.name] ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img className="tm-crest" src={crests[t.name]} alt={t.name} />
-                    ) : (
-                      <Jersey colors={t.colors} />
-                    )}
+                    <Emblem t={t} />
                   </span>
                   <b>{t.name}</b>
                 </button>
@@ -83,23 +91,14 @@ export function TeamModal() {
         ) : (
           <div className="tm-done">
             <span className="tm-done-circ">
-              {crests[chosen.name] ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img className="tm-crest" src={crests[chosen.name]} alt={chosen.name} />
-              ) : (
-                <Jersey colors={chosen.colors} />
-              )}
+              <Emblem t={chosen} big />
             </span>
             <h2>
               Você é <b>{chosen.name}</b>! ❤️
             </h2>
             <p>Bora vestir a camisa? Separamos as opções do seu time.</p>
             <div className="tm-done-actions">
-              <Link
-                className="btn btn-g"
-                href={`/busca?team=${encodeURIComponent(chosen.name)}`}
-                onClick={close}
-              >
+              <Link className="btn btn-g" href={`/busca?team=${encodeURIComponent(chosen.name)}`} onClick={close}>
                 Ver camisas do {chosen.name}
               </Link>
               <button className="tm-continue" onClick={close}>

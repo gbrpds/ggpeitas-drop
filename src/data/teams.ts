@@ -30,6 +30,5 @@ export const teams: Team[] = [
   { name: "Chapecoense", colors: ["#0a7d34", "#ffffff", "#0f8a3d"] },
   { name: "Coritiba", colors: ["#0a5f2a", "#ffffff", "#111111"] },
   { name: "Red Bull Bragantino", colors: ["#ffffff", "#c8102e", "#111111"] },
-  { name: "Atlético Juventus", colors: ["#7a1420", "#ffffff", "#111111"] },
   { name: "Cuiabá", colors: ["#0a7d34", "#ffc400", "#ffffff"] },
 ];

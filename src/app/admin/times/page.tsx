@@ -1,29 +1,36 @@
 import Link from "next/link";
+import { asc } from "drizzle-orm";
 import { Lock } from "lucide-react";
 import { getDb } from "@/db";
-import { teamCrests } from "@/db/schema";
+import { teams } from "@/db/schema";
 import { isAdmin } from "@/lib/admin";
+import type { JerseyColors } from "@/data/products";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AdminNav } from "@/components/admin/AdminNav";
-import { AdminTeamCrests } from "@/components/admin/AdminTeamCrests";
+import { AdminTeams } from "@/components/admin/AdminTeams";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin · Times — GG Peitas" };
 
 export default async function AdminTimesPage() {
   const ok = await isAdmin();
-  let initial: Record<string, string> = {};
+  let initial: { id: string; name: string; colors: JerseyColors; crestUrl: string | null }[] = [];
   if (ok) {
     try {
       const db = getDb();
-      const rows = await db.select().from(teamCrests);
-      for (const r of rows) initial[r.name] = r.crestUrl;
+      const rows = await db.select().from(teams).orderBy(asc(teams.sort), asc(teams.name));
+      initial = rows.map((r) => ({
+        id: r.id,
+        name: r.name,
+        colors: r.colors as JerseyColors,
+        crestUrl: r.crestUrl,
+      }));
     } catch {
-      initial = {};
+      initial = [];
     }
   }
 
@@ -39,8 +46,8 @@ export default async function AdminTimesPage() {
           ) : (
             <>
               <AdminNav />
-              <h1 className="page-title">Escudos dos times</h1>
-              <AdminTeamCrests initial={initial} />
+              <h1 className="page-title">Times &amp; escudos</h1>
+              <AdminTeams initial={initial} />
             </>
           )}
         </div>

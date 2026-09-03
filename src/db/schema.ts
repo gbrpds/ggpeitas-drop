@@ -56,3 +56,15 @@ export const teamCrests = pgTable("team_crests", {
   crestUrl: text("crest_url").notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+/** Times do modal "time de coração" (gerenciados no admin). */
+export const teams = pgTable("teams", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull().unique(),
+  colors: jsonb("colors").notNull().default(["#0f8a3d", "#ffc400", "#ffffff"]),
+  crestUrl: text("crest_url"),
+  sort: integer("sort").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type TeamRow = typeof teams.$inferSelect;

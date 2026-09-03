@@ -703,9 +703,19 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 /* escudos dos times (admin) */
 .adm-hint { color:var(--muted); font-size:.86rem; margin:0 0 16px; }
 .crest-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
-.crest-card { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; }
-.crest-media { width:76px; height:76px; border-radius:50%; background:var(--ground); border:1px solid var(--line); display:grid; place-items:center; }
-.crest-media img { width:80%; height:80%; object-fit:contain; }
+.crest-card { position:relative; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.crest-media { width:76px; height:76px; border-radius:50%; background:var(--ground); border:1px solid var(--line); display:grid; place-items:center; overflow:hidden; }
+.crest-media img { width:100%; height:100%; object-fit:contain; padding:14%; box-sizing:border-box; }
+.team-del { position:absolute; top:6px; right:6px; background:none; border:0; color:var(--muted); padding:5px; border-radius:6px; }
+.team-del:hover { color:#c62828; background:rgba(238,0,0,.08); }
+.team-add { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; }
+.team-add-name { flex:1; min-width:180px; border:1.5px solid var(--line); border-radius:9px; padding:11px 12px; background:var(--surface); color:var(--ink); font-size:.9rem; }
+.team-add-name:focus { outline:none; border-color:var(--green); }
+.team-add-colors { display:flex; gap:6px; }
+.team-add-colors input[type=color] { width:34px; height:34px; border:1px solid var(--line); border-radius:8px; padding:0; background:none; cursor:pointer; }
+.team-add-btn { display:inline-flex; align-items:center; gap:7px; background:var(--green); color:#fff; border:0; border-radius:9px; padding:11px 16px; font-weight:700; font-size:.84rem; }
+.team-add-btn:hover { background:var(--green-deep); }
+.team-add-btn:disabled { opacity:.6; }
 .crest-media svg.jersey { width:62%; }
 .crest-name { font-size:.82rem; }
 .crest-actions { display:flex; align-items:center; gap:8px; }
@@ -763,8 +773,8 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
   display:grid; place-items:center; transition:transform .14s,border-color .14s,box-shadow .14s; }
 .tm-team:hover .tm-circ { transform:translateY(-4px); border-color:var(--green); box-shadow:0 12px 24px -12px rgba(10,60,25,.4); }
 .tm-circ svg.jersey { width:64%; }
-.tm-crest { width:78%; height:78%; object-fit:contain; }
-.tm-done-circ .tm-crest { width:80%; height:80%; }
+.tm-crest { width:100%; height:100%; object-fit:contain; padding:14%; box-sizing:border-box; }
+.tm-done-circ .tm-crest, .tm-crest.big { padding:16%; }
 .tm-team b { font-size:.74rem; font-weight:700; text-align:center; line-height:1.15; }
 .tm-skip { display:block; margin:20px auto 0; background:none; border:0; color:var(--muted); font-size:.84rem; font-weight:600; }
 .tm-skip:hover { color:var(--ink); }
