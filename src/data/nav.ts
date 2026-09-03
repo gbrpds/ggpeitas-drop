@@ -7,17 +7,46 @@ export type NavItem = {
   groups?: NavGroup[];
 };
 
+// link de filtro por time (busca por time exato)
+const team = (name: string) => ({ name, href: `/busca?team=${encodeURIComponent(name)}` });
+
 export const navItems: NavItem[] = [
   { label: "Início", href: "/" },
   {
     label: "Futebol",
     groups: [
       {
-        label: "Ligas",
+        label: "Brasileirão",
         links: [
-          { name: "Brasileirão", href: "/categoria/brasileirao" },
-          { name: "Europa", href: "/categoria/europa" },
-          { name: "Todos os clubes", href: "/categoria/futebol" },
+          team("Flamengo"),
+          team("Palmeiras"),
+          team("Corinthians"),
+          team("São Paulo"),
+          team("Grêmio"),
+          team("Internacional"),
+          team("Cruzeiro"),
+          team("Atlético-MG"),
+          team("Vasco"),
+          team("Botafogo"),
+          team("Fluminense"),
+          team("Santos"),
+        ],
+      },
+      {
+        label: "Europa",
+        links: [
+          team("Real Madrid"),
+          team("Barcelona"),
+          team("Manchester City"),
+          team("Manchester United"),
+          team("Liverpool"),
+          team("PSG"),
+          team("Bayern de Munique"),
+          team("Juventus"),
+          team("Milan"),
+          team("Inter de Milão"),
+          team("Chelsea"),
+          team("Arsenal"),
         ],
       },
     ],
@@ -28,7 +57,14 @@ export const navItems: NavItem[] = [
       {
         label: "Seleções",
         links: [
-          { name: "Todas as seleções", href: "/categoria/selecoes" },
+          team("Brasil"),
+          team("Argentina"),
+          team("Portugal"),
+          team("França"),
+          team("Espanha"),
+          team("Inglaterra"),
+          team("Alemanha"),
+          team("Itália"),
         ],
       },
     ],

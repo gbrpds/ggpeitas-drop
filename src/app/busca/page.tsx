@@ -19,34 +19,46 @@ const norm = (s: string) =>
 export default async function BuscaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; cat?: string; sort?: string }>;
+  searchParams: Promise<{ q?: string; cat?: string; team?: string; sort?: string }>;
 }) {
   const sp = await searchParams;
   const q = (sp.q ?? "").trim();
   const selected = (sp.cat ?? "").split(",").filter(Boolean);
+  const selectedTeams = (sp.team ?? "").split(",").filter(Boolean);
   const sort = sp.sort ?? "relevancia";
 
   const all = await getAllActive();
   const nq = norm(q);
-  const matched = q
-    ? all.filter(
-        (p) =>
-          norm(p.name).includes(nq) ||
-          (p.team ? norm(p.team).includes(nq) : false) ||
-          norm(p.category).includes(nq),
-      )
+  const teamQuery = selectedTeams.length ? selectedTeams[0] : "";
+  // termo efetivo: busca digitada OU time vindo do menu
+  const matched = (q || teamQuery)
+    ? all.filter((p) => {
+        const hay = `${p.name} ${p.team ?? ""} ${p.category}`;
+        const okQ = q ? norm(hay).includes(nq) : true;
+        return okQ;
+      })
     : all;
 
-  // facetas de categoria (com contagem) sobre o conjunto encontrado
+  // facetas de categoria e de time (com contagem) sobre o conjunto encontrado
   const counts = new Map<string, number>();
-  for (const p of matched) counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
-  const facets = [...counts.entries()]
-    .map(([cat, count]) => ({ cat, count }))
-    .sort((a, b) => b.count - a.count);
+  const teamCounts = new Map<string, number>();
+  for (const p of matched) {
+    counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
+    if (p.team) teamCounts.set(p.team, (teamCounts.get(p.team) ?? 0) + 1);
+  }
+  const facets = [...counts.entries()].map(([cat, count]) => ({ cat, count })).sort((a, b) => b.count - a.count);
+  const teamFacets = [...teamCounts.entries()].map(([team, count]) => ({ team, count })).sort((a, b) => b.count - a.count);
 
-  let results = selected.length ? matched.filter((p) => selected.includes(p.category)) : matched;
+  let results = matched;
+  if (selected.length) results = results.filter((p) => selected.includes(p.category));
+  if (selectedTeams.length) {
+    const wanted = new Set(selectedTeams.map(norm));
+    results = results.filter((p) => p.team && wanted.has(norm(p.team)));
+  }
   if (sort === "preco-asc") results = [...results].sort((a, b) => a.now - b.now);
   else if (sort === "preco-desc") results = [...results].sort((a, b) => b.now - a.now);
+
+  const heading = q ? `Resultados para “${q}”` : selectedTeams.length ? selectedTeams[0] : "Todos os produtos";
 
   return (
     <>
@@ -56,12 +68,19 @@ export default async function BuscaPage({
       <main>
         <div className="wrap search-page">
           <h1 className="search-title">
-            {q ? <>Resultados para “{q}”</> : "Todos os produtos"}
+            {heading}
             <span>{results.length} {results.length === 1 ? "item" : "itens"}</span>
           </h1>
 
           <div className="search-layout">
-            <SearchFilters q={q} facets={facets} selected={selected} sort={sort} />
+            <SearchFilters
+              q={q}
+              facets={facets}
+              selected={selected}
+              teamFacets={teamFacets}
+              selectedTeams={selectedTeams}
+              sort={sort}
+            />
 
             <div className="search-results">
               {results.length === 0 ? (

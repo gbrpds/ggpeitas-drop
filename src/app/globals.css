@@ -208,6 +208,8 @@ nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(
 .sf-check span { flex:1; }
 .sf-check em { font-style:normal; font-size:.74rem; color:var(--muted); }
 .sf-empty { color:var(--muted); font-size:.82rem; margin:0; }
+.sf-scroll { max-height:220px; overflow-y:auto; padding-right:4px; }
+.sf-scroll::-webkit-scrollbar { width:6px; } .sf-scroll::-webkit-scrollbar-thumb { background:var(--line); border-radius:6px; }
 .sf-clear { width:100%; background:none; border:1.5px solid var(--line); border-radius:9px; padding:10px; font-weight:700;
   font-size:.82rem; color:var(--ink); }
 .sf-clear:hover { border-color:var(--green); color:var(--green-deep); }
