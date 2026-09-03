@@ -1,14 +1,16 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { User, Truck, CreditCard, QrCode, Check, Copy, ArrowRight, ArrowLeft, ShoppingBag, Clock, XCircle } from "lucide-react";
+import { User, Truck, CreditCard, QrCode, Check, ArrowRight, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/store/cart";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
 import { CardPaymentBrick } from "./CardPaymentBrick";
+import { PixDisplay } from "./PixDisplay";
 
 type Customer = { name: string; cpf: string; email: string; phone: string };
 type Shipping = { cep: string; rua: string; numero: string; bairro: string; cidade: string; uf: string };
@@ -20,6 +22,7 @@ const STEPS = [
 ];
 
 export function CheckoutClient() {
+  const router = useRouter();
   const { data: session } = useSession();
   const items = useCart((s) => s.items);
   const clear = useCart((s) => s.clear);
@@ -34,53 +37,9 @@ export function CheckoutClient() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
-  const [pix, setPix] = useState<{ qrCodeBase64?: string; qrCode?: string; number?: string; paymentId?: string } | null>(null);
-  const [secondsLeft, setSecondsLeft] = useState(300);
-  const [expired, setExpired] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [pix, setPix] = useState<{ qrCodeBase64?: string; qrCode?: string; number?: string; paymentId?: string; orderId?: string } | null>(null);
   const [result, setResult] = useState<{ status: string; number?: string } | null>(null);
 
-  // Contador de 5 min + verificação do pagamento PIX
-  useEffect(() => {
-    if (!pix?.paymentId || expired || result) return;
-    const started = Date.now();
-    const tick = setInterval(() => {
-      const left = 300 - Math.floor((Date.now() - started) / 1000);
-      setSecondsLeft(Math.max(0, left));
-      if (left <= 0) {
-        clearInterval(tick);
-        clearInterval(poll);
-        setExpired(true);
-        fetch("/api/checkout/cancel", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentId: pix.paymentId }),
-        }).catch(() => {});
-      }
-    }, 1000);
-    const poll = setInterval(async () => {
-      try {
-        const s = await fetch(`/api/checkout/status?paymentId=${pix.paymentId}`).then((r) => r.json());
-        if (s.status === "approved") {
-          clearInterval(tick);
-          clearInterval(poll);
-          setResult({ status: "approved", number: pix.number });
-        } else if (s.status === "cancelled" || s.status === "rejected") {
-          clearInterval(tick);
-          clearInterval(poll);
-          setExpired(true);
-        }
-      } catch {
-        /* ignora */
-      }
-    }, 5000);
-    return () => {
-      clearInterval(tick);
-      clearInterval(poll);
-    };
-  }, [pix?.paymentId, pix?.number, expired, result]);
-
-  // pré-preenche com a sessão
   useEffect(() => {
     if (session?.user) {
       setCustomer((c) => ({
@@ -90,6 +49,23 @@ export function CheckoutClient() {
       }));
     }
   }, [session]);
+
+  // Aguarda a confirmação do PIX; ao aprovar, vai para a página do pedido
+  useEffect(() => {
+    if (!pix?.paymentId) return;
+    const poll = setInterval(async () => {
+      try {
+        const s = await fetch(`/api/checkout/status?paymentId=${pix.paymentId}`).then((r) => r.json());
+        if (s.status === "approved" && pix.orderId) {
+          clearInterval(poll);
+          router.push(`/pedido/${pix.orderId}`);
+        }
+      } catch {
+        /* ignora */
+      }
+    }, 5000);
+    return () => clearInterval(poll);
+  }, [pix?.paymentId, pix?.orderId, router]);
 
   const total = useMemo(() => items.reduce((s, i) => s + i.price * i.qty, 0), [items]);
   const orderPayload = () => ({
@@ -157,13 +133,12 @@ export function CheckoutClient() {
         setError(data.error ?? "Não foi possível gerar o PIX.");
       } else {
         clear(); // pedido gerado → esvazia o carrinho
-        setSecondsLeft(300);
-        setExpired(false);
         setPix({
           qrCodeBase64: data.qrCodeBase64,
           qrCode: data.qrCode,
           number: data.number,
           paymentId: String(data.paymentId),
+          orderId: data.orderId,
         });
       }
     } catch {
@@ -193,28 +168,27 @@ export function CheckoutClient() {
       setError(data.error ?? "Pagamento não aprovado.");
       throw new Error("card failed");
     }
-    setResult({ status: data.status, number: data.number });
-    if (data.status === "approved") clear();
+    if (data.status === "approved" && data.orderId) {
+      clear();
+      router.push(`/pedido/${data.orderId}`);
+    } else {
+      setResult({ status: data.status, number: data.number });
+    }
   }
 
   if (!mounted) return <div className="cart-empty">Carregando…</div>;
 
-  // Resultado de cartão aprovado / em análise / recusado
+  // Resultado de cartão não aprovado (em análise / recusado)
   if (result) {
-    const ok = result.status === "approved";
     const analise = result.status === "in_process" || result.status === "pending";
     return (
       <div className="co-result">
-        <div className={`co-result-icon ${ok ? "ok" : analise ? "wait" : "fail"}`}>
-          <Check strokeWidth={3} />
-        </div>
-        <h2>{ok ? "Pagamento aprovado!" : analise ? "Pagamento em análise" : "Pagamento recusado"}</h2>
+        <div className={`co-result-icon ${analise ? "wait" : "fail"}`}><Check strokeWidth={3} /></div>
+        <h2>{analise ? "Pagamento em análise" : "Pagamento recusado"}</h2>
         <p>
-          {ok
-            ? "Recebemos seu pedido — em breve você recebe a confirmação por e-mail. 💚"
-            : analise
-              ? "Assim que for aprovado, você recebe a confirmação por e-mail."
-              : "Tente outro cartão ou volte e escolha PIX."}
+          {analise
+            ? "Assim que for aprovado, você recebe a confirmação por e-mail."
+            : "Tente outro cartão ou volte e escolha PIX."}
         </p>
         {result.number && <div className="co-order-num">Pedido <b>#{result.number}</b></div>}
         <div className="co-result-actions">
@@ -225,50 +199,14 @@ export function CheckoutClient() {
     );
   }
 
-  // Tela do PIX (com contador de 5 min)
+  // Tela do PIX (sem timer — a expiração é tratada no servidor em 15 min)
   if (pix) {
-    const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
-    const ss = String(secondsLeft % 60).padStart(2, "0");
-    if (expired) {
-      return (
-        <div className="co-result">
-          <div className="co-result-icon fail"><XCircle strokeWidth={2.5} /></div>
-          <h2>PIX expirado</h2>
-          {pix.number && <div className="co-order-num">Pedido <b>#{pix.number}</b> · cancelado</div>}
-          <p>O tempo para pagamento acabou e o pedido foi cancelado. É só refazer a compra quando quiser.</p>
-          <div className="co-result-actions">
-            <Link className="btn btn-g" href="/">Voltar à loja</Link>
-            <Link className="cs-continue" href="/pedidos">Meus pedidos</Link>
-          </div>
-        </div>
-      );
-    }
     return (
       <div className="pix-view">
         {pix.number && <div className="pix-order">Pedido <b>#{pix.number}</b></div>}
-        <div className={`pix-timer${secondsLeft <= 60 ? " urgent" : ""}`}>
-          <Clock size={18} /> Faltam <b>{mm}:{ss}</b> para o pagamento expirar
-        </div>
-        <div className="pix-box">
-          <h3>Escaneie o QR Code para pagar</h3>
-          {pix.qrCodeBase64 && <img className="pix-qr" src={`data:image/png;base64,${pix.qrCodeBase64}`} alt="QR Code PIX" />}
-          <p className="pix-label">Ou copie o código PIX:</p>
-          <div className="pix-code">
-            <input readOnly value={pix.qrCode ?? ""} />
-            <button
-              onClick={() => {
-                if (pix.qrCode) {
-                  navigator.clipboard.writeText(pix.qrCode);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 1800);
-                }
-              }}
-              aria-label="Copiar"
-            >
-              <Copy size={16} /> {copied ? "Copiado!" : "Copiar"}
-            </button>
-          </div>
-          <p className="pix-note">Assim que o pagamento for identificado, seu pedido é confirmado automaticamente.</p>
+        <PixDisplay qrCode={pix.qrCode} qrCodeBase64={pix.qrCodeBase64} />
+        <div className="co-result-actions" style={{ marginTop: 18 }}>
+          <Link className="cs-continue" href="/pedidos">Ver em Meus pedidos</Link>
         </div>
       </div>
     );
@@ -287,7 +225,6 @@ export function CheckoutClient() {
   return (
     <div className="co-grid">
       <div className="co-main">
-        {/* stepper */}
         <div className="co-steps">
           {STEPS.map(({ n, label, Icon }) => (
             <div key={n} className={`co-step${step === n ? " active" : ""}${step > n ? " done" : ""}`}>
@@ -299,7 +236,6 @@ export function CheckoutClient() {
 
         {error && <div className="auth-error" style={{ marginBottom: 16 }}>{error}</div>}
 
-        {/* Etapa 1 */}
         {step === 1 && (
           <div className="co-panel">
             <h2>Seus dados</h2>
@@ -325,7 +261,6 @@ export function CheckoutClient() {
           </div>
         )}
 
-        {/* Etapa 2 */}
         {step === 2 && (
           <div className="co-panel">
             <h2>Endereço de entrega</h2>
@@ -364,28 +299,23 @@ export function CheckoutClient() {
           </div>
         )}
 
-        {/* Etapa 3 */}
         {step === 3 && (
           <div className="co-panel">
             <h2>Pagamento</h2>
-
-            {!pix && (
-              <div className="pay-methods">
-                <button className={`pay-method${payMethod === "pix" ? " on" : ""}`} onClick={() => setPayMethod("pix")}>
-                  <QrCode strokeWidth={1.8} /> <b>PIX</b> <span>Aprovação na hora · 1% OFF</span>
-                </button>
-                <button className={`pay-method${payMethod === "card" ? " on" : ""}`} onClick={() => setPayMethod("card")}>
-                  <CreditCard strokeWidth={1.8} /> <b>Cartão de crédito</b> <span>Em até 12x</span>
-                </button>
-              </div>
-            )}
+            <div className="pay-methods">
+              <button className={`pay-method${payMethod === "pix" ? " on" : ""}`} onClick={() => setPayMethod("pix")}>
+                <QrCode strokeWidth={1.8} /> <b>PIX</b> <span>Aprovação na hora · 1% OFF</span>
+              </button>
+              <button className={`pay-method${payMethod === "card" ? " on" : ""}`} onClick={() => setPayMethod("card")}>
+                <CreditCard strokeWidth={1.8} /> <b>Cartão de crédito</b> <span>Em até 12x</span>
+              </button>
+            </div>
 
             {payMethod === "pix" && (
               <button className="co-next" onClick={gerarPix} disabled={loading}>
                 {loading ? "Gerando PIX…" : "Gerar PIX"}
               </button>
             )}
-
             {payMethod === "card" && (
               <div className="card-brick">
                 <CardPaymentBrick amount={total} onPay={pagarCartao} />
@@ -399,7 +329,6 @@ export function CheckoutClient() {
         )}
       </div>
 
-      {/* Resumo */}
       <aside className="co-summary">
         <h3>Resumo do pedido</h3>
         <div className="co-items">

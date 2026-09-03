@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 
@@ -16,16 +16,22 @@ export async function syncPaymentStatus(paymentId: string): Promise<string> {
   const data = await res.json().catch(() => ({}));
   const status = String(data.status ?? "unknown"); // approved | pending | cancelled | rejected
 
-  if (status === "approved" || status === "cancelled" || status === "rejected") {
-    try {
-      const db = getDb();
+  try {
+    const db = getDb();
+    if (status === "approved") {
+      // pagamento confirmado tem prioridade — vale mesmo se já tinha expirado
       await db
         .update(orders)
-        .set({ status: status === "rejected" ? "cancelled" : status })
+        .set({ status: "approved" })
+        .where(and(eq(orders.mpPaymentId, String(paymentId)), ne(orders.status, "approved")));
+    } else if (status === "cancelled" || status === "rejected") {
+      await db
+        .update(orders)
+        .set({ status: "cancelled" })
         .where(and(eq(orders.mpPaymentId, String(paymentId)), eq(orders.status, "pending")));
-    } catch (e) {
-      console.error("sync order status error", e);
     }
+  } catch (e) {
+    console.error("sync order status error", e);
   }
   return status;
 }

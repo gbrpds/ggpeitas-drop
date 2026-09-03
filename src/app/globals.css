@@ -579,9 +579,23 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .order-body { display:flex; align-items:baseline; justify-content:space-between; gap:14px; margin-top:10px; }
 .order-items { font-size:.84rem; color:var(--muted); line-height:1.4; }
 .order-total { font-family:var(--disp); font-weight:900; color:var(--price); font-size:1.1rem; white-space:nowrap; }
-.order-foot { margin-top:8px; }
+.order-foot { margin-top:10px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .order-pay { font-size:.74rem; color:var(--muted); background:var(--ground); border:1px solid var(--line);
   padding:3px 9px; border-radius:6px; }
+.order-action { font-family:var(--disp); font-weight:800; text-transform:uppercase; font-size:.74rem;
+  letter-spacing:.03em; color:var(--green-deep); white-space:nowrap; }
+.order-action:hover { color:var(--green); }
+
+/* página do pedido (retomar / confirmado) */
+.ov-grid { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:24px; align-items:start; }
+.ov-status { display:flex; align-items:center; gap:10px; border-radius:10px; padding:12px 14px; font-size:.86rem; margin-bottom:14px; }
+.ov-status.pending { background:rgba(255,140,0,.1); color:#b35c00; border:1px solid rgba(255,140,0,.3); }
+.ov-status.cancelled { background:rgba(238,0,0,.08); color:#c62828; border:1px solid rgba(238,0,0,.3); }
+.ov-number { font-family:var(--disp); font-weight:900; text-transform:uppercase; font-size:1.15rem; margin:0 0 14px; }
+.ov-summary .co-items { margin-bottom:12px; }
+.ov-confirm-summary { max-width:420px; margin:14px auto 4px; text-align:left; background:var(--surface);
+  border:1px solid var(--line); border-radius:12px; padding:16px; }
+@media (max-width:860px){ .ov-grid { grid-template-columns:1fr; } }
 
 @media (max-width:860px) {
   .cart-grid, .co-grid { grid-template-columns:1fr; }

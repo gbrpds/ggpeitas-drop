@@ -4,7 +4,7 @@ import { Package } from "lucide-react";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
-import { resolveUserId } from "@/lib/order";
+import { resolveUserId, expireStaleOrders } from "@/lib/order";
 import { brl } from "@/lib/format";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
@@ -34,6 +34,7 @@ export default async function PedidosPage() {
       const uid = await resolveUserId();
       if (uid) {
         const db = getDb();
+        await expireStaleOrders(db); // cancela pendentes com mais de 15 min
         list = await db.select().from(orders).where(eq(orders.userId, uid)).orderBy(desc(orders.createdAt));
       }
     }
@@ -94,6 +95,13 @@ export default async function PedidosPage() {
                       <span className="order-pay">
                         {o.paymentMethod === "pix" ? "PIX" : "Cartão de crédito"}
                       </span>
+                      <Link className="order-action" href={`/pedido/${o.id}`}>
+                        {o.status === "pending"
+                          ? "Retomar pagamento →"
+                          : o.status === "approved"
+                            ? "Ver pedido →"
+                            : "Refazer pagamento →"}
+                      </Link>
                     </div>
                   </div>
                 );
