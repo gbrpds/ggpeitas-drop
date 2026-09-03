@@ -192,6 +192,31 @@ nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(
 .card .media svg.jersey { width:74%; }
 .card .media img.card-photo { width:100%; height:100%; object-fit:cover; }
 .cat-grid { display:flex; flex-wrap:wrap; gap:14px; justify-content:flex-start; }
+
+/* ===================== BUSCA ===================== */
+.search-page { padding-block:24px 60px; }
+.search-title { font-family:var(--disp); font-weight:900; text-transform:uppercase; font-size:clamp(1.2rem,2.6vw,1.7rem);
+  margin:0 0 18px; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+.search-title span { font-family:var(--body); font-weight:600; text-transform:none; font-size:.85rem; color:var(--muted); }
+.search-layout { display:grid; grid-template-columns:240px minmax(0,1fr); gap:24px; align-items:start; }
+.sf { position:sticky; top:112px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; }
+.sf-block { margin-bottom:18px; }
+.sf-block h3 { font-family:var(--disp); font-weight:800; text-transform:uppercase; font-size:.82rem; letter-spacing:.02em;
+  margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--line); }
+.sf-check { display:flex; align-items:center; gap:8px; padding:6px 0; font-size:.86rem; cursor:pointer; }
+.sf-check input { width:16px; height:16px; accent-color:var(--green); }
+.sf-check span { flex:1; }
+.sf-check em { font-style:normal; font-size:.74rem; color:var(--muted); }
+.sf-empty { color:var(--muted); font-size:.82rem; margin:0; }
+.sf-clear { width:100%; background:none; border:1.5px solid var(--line); border-radius:9px; padding:10px; font-weight:700;
+  font-size:.82rem; color:var(--ink); }
+.sf-clear:hover { border-color:var(--green); color:var(--green-deep); }
+.search-results .cat-grid { justify-content:flex-start; }
+
+@media (max-width:860px) {
+  .search-layout { grid-template-columns:1fr; }
+  .sf { position:static; }
+}
 .card .off { position:absolute; top:10px; left:10px; background:var(--price); color:#fff;
   font-family:var(--disp); font-weight:800; font-size:.72rem; padding:3px 8px; border-radius:6px;
   display:flex; align-items:center; gap:2px; }

@@ -34,9 +34,10 @@ export function Header() {
           <Logo />
         </Link>
 
-        <form className="search" role="search" onSubmit={(e) => e.preventDefault()}>
+        <form className="search" role="search" action="/busca" method="get">
           <input
             type="text"
+            name="q"
             placeholder="O que você está procurando? Ex: Flamengo, Brasil, Retrô…"
             aria-label="Buscar"
           />

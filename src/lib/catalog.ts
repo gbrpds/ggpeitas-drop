@@ -36,23 +36,25 @@ function mapRow(r: Row): Product {
   };
 }
 
-async function activeRows(): Promise<Row[]> {
+/** Todos os produtos (ativos e inativos) — usado p/ decidir o fallback ao mock. */
+async function allRows(): Promise<Row[]> {
   const db = getDb();
-  return db.select().from(products).where(eq(products.active, true)).orderBy(desc(products.createdAt));
+  return db.select().from(products).orderBy(desc(products.createdAt));
 }
 
 export function metaFor(cat: string) {
   return CATEGORY_META[cat] ?? { title: cat, emoji: "🔥", href: `/categoria/${cat}` };
 }
 
-/** Seções da home a partir do banco (agrupadas por tag). Sem produtos → mock. */
+/** Seções da home a partir do banco (agrupadas por tag). Banco vazio → mock. */
 export async function getHomeSections(): Promise<ProductSection[]> {
   try {
-    const rows = await activeRows();
-    if (!rows.length) return mockSections;
+    const rows = await allRows();
+    if (!rows.length) return mockSections; // nenhum produto cadastrado → demo
 
     const byCat = new Map<string, Product[]>();
     for (const r of rows) {
+      if (!r.active) continue; // só produtos ativos aparecem na loja
       const arr = byCat.get(r.category) ?? [];
       arr.push(mapRow(r));
       byCat.set(r.category, arr);
@@ -76,14 +78,24 @@ export async function getHomeSections(): Promise<ProductSection[]> {
 /** Produtos de uma tag/categoria (para a página de categoria). */
 export async function getCategoryProducts(cat: string): Promise<Product[]> {
   try {
-    const rows = await activeRows();
-    const items = rows.filter((r) => r.category === cat).map(mapRow);
-    if (items.length) return items;
+    const rows = await allRows();
+    if (rows.length) return rows.filter((r) => r.active && r.category === cat).map(mapRow);
   } catch {
     /* cai no mock */
   }
-  // fallback: mock com a mesma categoria
+  // banco vazio → mock com a mesma categoria
   return mockSections.flatMap((s) => s.products).filter((p) => p.category === cat);
+}
+
+/** Todos os produtos ativos (para a busca). Banco vazio → mock. */
+export async function getAllActive(): Promise<Product[]> {
+  try {
+    const rows = await allRows();
+    if (rows.length) return rows.filter((r) => r.active).map(mapRow);
+  } catch {
+    /* cai no mock */
+  }
+  return mockSections.flatMap((s) => s.products);
 }
 
 /** Um produto: tenta o banco (uuid); senão, o mock. */
