@@ -77,7 +77,12 @@ export function CartDrawer() {
               {list.map((i) => (
                 <div className="cd-item" key={i.id}>
                   <div className="cd-item-media">
-                    <Jersey colors={i.colors} />
+                    {i.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={i.image} alt={i.name} />
+                    ) : (
+                      <Jersey colors={i.colors} />
+                    )}
                   </div>
                   <div className="cd-item-main">
                     <div className="cd-item-top">

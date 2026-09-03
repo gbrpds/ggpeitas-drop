@@ -334,7 +334,14 @@ export function CheckoutClient() {
         <div className="co-items">
           {items.map((i) => (
             <div className="co-item" key={i.id}>
-              <div className="co-item-media"><Jersey colors={i.colors} /></div>
+              <div className="co-item-media">
+                {i.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={i.image} alt={i.name} />
+                ) : (
+                  <Jersey colors={i.colors} />
+                )}
+              </div>
               <div className="co-item-info">
                 <span className="co-item-name">{i.name}</span>
                 <span className="co-item-qty">{i.qty} × {brl(i.price)}</span>

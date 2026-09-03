@@ -10,6 +10,7 @@ export type CartItem = {
   price: number;
   qty: number;
   colors: Product["colors"];
+  image?: string; // foto principal (quando o produto tem foto real)
   size?: string;
   version?: string;
 };
@@ -57,6 +58,7 @@ export const useCart = create<CartState>()(
                 price: p.now,
                 qty,
                 colors: p.colors,
+                image: p.images?.[0],
                 size,
                 version,
               },
