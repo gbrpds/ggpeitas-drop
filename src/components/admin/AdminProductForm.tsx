@@ -3,7 +3,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { upload } from "@vercel/blob/client";
 import { UploadCloud, X, Loader2, Save } from "lucide-react";
 
 export const CATEGORIES = [
@@ -54,16 +53,18 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
     setUploading(true);
     try {
       for (const f of files) {
-        const safe = f.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-        const blob = await upload(`produtos/${Date.now()}-${safe}`, f, {
-          access: "public",
-          handleUploadUrl: "/api/admin/upload",
-          contentType: f.type,
-        });
-        setImages((prev) => [...prev, blob.url]);
+        const fd = new FormData();
+        fd.append("file", f);
+        const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error ?? "Falha no upload.");
+          break;
+        }
+        setImages((prev) => [...prev, data.url]);
       }
-    } catch (err) {
-      setError((err as Error).message ?? "Falha no upload.");
+    } catch {
+      setError("Falha de conexão no upload.");
     } finally {
       setUploading(false);
       e.target.value = "";
