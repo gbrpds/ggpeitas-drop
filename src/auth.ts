@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { users } from "@/db/schema";
+import { isAdminEmail } from "@/lib/admin-emails";
 
 export const googleEnabled =
   !!process.env.AUTH_GOOGLE_ID && !!process.env.AUTH_GOOGLE_SECRET;
@@ -67,8 +68,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token.uid) {
-        (session.user as { id?: string }).id = token.uid as string;
+      if (session.user) {
+        if (token.uid) (session.user as { id?: string }).id = token.uid as string;
+        (session.user as { isAdmin?: boolean }).isAdmin = isAdminEmail(session.user.email);
       }
       return session;
     },

@@ -10,6 +10,7 @@ import { MainNav } from "@/components/MainNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AdminProducts } from "@/components/admin/AdminProducts";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin — GG Peitas" };
@@ -47,6 +48,7 @@ export default async function AdminPage() {
             </div>
           ) : (
             <>
+              <AdminNav />
               <div className="adm-head">
                 <h1 className="page-title" style={{ margin: 0 }}>Produtos</h1>
                 <Link className="btn btn-g" href="/admin/novo"><Plus size={18} /> Novo produto</Link>

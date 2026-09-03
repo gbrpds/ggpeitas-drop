@@ -2,8 +2,9 @@
 
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
 import { brl } from "@/lib/format";
 
 type Row = {
@@ -30,6 +31,20 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
     }
   }
 
+  async function toggle(id: string, active: boolean) {
+    setBusy(id);
+    try {
+      await fetch(`/api/admin/products/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active: !active }),
+      });
+      router.refresh();
+    } finally {
+      setBusy(null);
+    }
+  }
+
   if (rows.length === 0) {
     return <div className="cart-empty"><h2>Nenhum produto ainda</h2><p>Clique em “Novo produto” para cadastrar o primeiro.</p></div>;
   }
@@ -45,8 +60,13 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
             <b>{p.name}</b>
             <span className="adm-row-cat">{p.category}</span>
           </div>
-          <span className={`adm-badge ${p.active ? "on" : "off"}`}>{p.active ? "Ativo" : "Inativo"}</span>
           <b className="adm-row-price">{brl(p.priceCents / 100)}</b>
+          <label className="adm-toggle" title={p.active ? "Ativo na loja" : "Oculto da loja"}>
+            <input type="checkbox" checked={p.active} disabled={busy === p.id} onChange={() => toggle(p.id, p.active)} />
+            <span className={`adm-toggle-track${p.active ? " on" : ""}`}><span className="adm-toggle-dot" /></span>
+            <span className="adm-toggle-label">{p.active ? "Ativo" : "Inativo"}</span>
+          </label>
+          <Link className="adm-edit" href={`/admin/produto/${p.id}`} aria-label="Editar"><Pencil size={16} /></Link>
           <button className="adm-del" onClick={() => del(p.id, p.name)} disabled={busy === p.id} aria-label="Excluir">
             <Trash2 size={17} />
           </button>

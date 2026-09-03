@@ -16,21 +16,35 @@ export const CATEGORIES = [
   { value: "europa", label: "Europa" },
 ];
 
-export function AdminProductForm() {
+export type ProductInitial = {
+  name: string;
+  team: string | null;
+  category: string;
+  priceCents: number;
+  compareCents: number | null;
+  version: string | null;
+  images: string[];
+  active: boolean;
+};
+
+const centsToStr = (c?: number | null) => (c ? (c / 100).toFixed(2).replace(".", ",") : "");
+
+export function AdminProductForm({ id, initial }: { id?: string; initial?: ProductInitial }) {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [team, setTeam] = useState("");
-  const [category, setCategory] = useState("futebol");
-  const [price, setPrice] = useState("");
-  const [compare, setCompare] = useState("");
-  const [version, setVersion] = useState("");
-  const [images, setImages] = useState<string[]>([]);
-  const [active, setActive] = useState(true);
+  const [name, setName] = useState(initial?.name ?? "");
+  const [team, setTeam] = useState(initial?.team ?? "");
+  const [category, setCategory] = useState(initial?.category ?? "futebol");
+  const [price, setPrice] = useState(centsToStr(initial?.priceCents));
+  const [compare, setCompare] = useState(centsToStr(initial?.compareCents));
+  const [version, setVersion] = useState(initial?.version ?? "");
+  const [images, setImages] = useState<string[]>(initial?.images ?? []);
+  const [active, setActive] = useState(initial?.active ?? true);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const reais = (v: string) => Math.round(parseFloat(v.replace(",", ".")) * 100);
+  const isEdit = !!id;
 
   async function onFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -64,8 +78,8 @@ export function AdminProductForm() {
 
     setSaving(true);
     try {
-      const res = await fetch("/api/admin/products", {
-        method: "POST",
+      const res = await fetch(isEdit ? `/api/admin/products/${id}` : "/api/admin/products", {
+        method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
@@ -124,7 +138,7 @@ export function AdminProductForm() {
           <input value={team} onChange={(e) => setTeam(e.target.value)} placeholder="Ex: Flamengo" />
         </div>
         <div className="co-field">
-          <label>Categoria</label>
+          <label>Categoria (tag)</label>
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="adm-select">
             {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
@@ -161,7 +175,7 @@ export function AdminProductForm() {
       </div>
 
       <button className="co-next" onClick={save} disabled={saving || uploading}>
-        {saving ? <Loader2 size={18} className="spin" /> : <><Save size={18} /> Salvar produto</>}
+        {saving ? <Loader2 size={18} className="spin" /> : <><Save size={18} /> {isEdit ? "Salvar alterações" : "Salvar produto"}</>}
       </button>
     </div>
   );

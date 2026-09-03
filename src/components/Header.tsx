@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, Search, User, ShoppingCart, Package, LogOut } from "lucide-react";
+import { Menu, Search, User, ShoppingCart, Package, LogOut, LayoutDashboard } from "lucide-react";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 import { useUI } from "@/store/ui";
@@ -16,6 +16,7 @@ export function Header() {
   const items = useCart((s) => s.items);
   const { data: session } = useSession();
   const firstName = session?.user?.name?.trim().split(" ")[0];
+  const isAdmin = !!(session?.user as { isAdmin?: boolean } | undefined)?.isAdmin;
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -78,6 +79,11 @@ export function Header() {
               <Link href="/pedidos">
                 <Package strokeWidth={1.8} /> Meus pedidos
               </Link>
+              {mounted && isAdmin && (
+                <Link href="/admin">
+                  <LayoutDashboard strokeWidth={1.8} /> Painel Admin
+                </Link>
+              )}
               {mounted && firstName && (
                 <>
                   <div className="sep" />

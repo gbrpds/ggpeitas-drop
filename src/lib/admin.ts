@@ -1,19 +1,13 @@
 import { auth } from "@/auth";
+import { isAdminEmail } from "@/lib/admin-emails";
 
-/** E-mails autorizados a acessar o admin (variável ADMIN_EMAILS, separados por vírgula). */
-export function adminEmails(): string[] {
-  return (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-}
+export { adminEmails, isAdminEmail } from "@/lib/admin-emails";
 
 /** True se o usuário logado é um admin autorizado. */
 export async function isAdmin(): Promise<boolean> {
   try {
     const session = await auth();
-    const email = session?.user?.email?.toLowerCase();
-    return !!email && adminEmails().includes(email);
+    return isAdminEmail(session?.user?.email);
   } catch {
     return false;
   }
