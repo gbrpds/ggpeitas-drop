@@ -10,6 +10,7 @@ import { FooterTrust } from "@/components/FooterTrust";
 import { SiteFooter } from "@/components/SiteFooter";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { MobileDrawer } from "@/components/MobileDrawer";
+import { HomeTeamSection } from "@/components/HomeTeamSection";
 import { getHomeSections } from "@/lib/catalog";
 
 export const dynamic = "force-dynamic";
@@ -24,6 +25,7 @@ export default async function Home() {
       <Header />
       <MainNav />
       <Banner />
+      <HomeTeamSection />
       <TrustStrip />
       <CategoryCircles />
 

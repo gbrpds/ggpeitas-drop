@@ -6,6 +6,7 @@ import { Providers } from "@/components/Providers";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { IdleLogout } from "@/components/IdleLogout";
 import { TeamModal } from "@/components/TeamModal";
+import { TeamFloat } from "@/components/TeamFloat";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const archivo = Archivo({
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CartDrawer />
           <IdleLogout />
           <TeamModal />
+          <TeamFloat />
         </Providers>
       </body>
     </html>

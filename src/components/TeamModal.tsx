@@ -6,31 +6,30 @@ import Link from "next/link";
 import { X, Heart } from "lucide-react";
 import { teams as seedTeams } from "@/data/teams";
 import { Jersey } from "@/components/Jersey";
+import { useTeam, type TeamPick } from "@/store/team";
 import type { JerseyColors } from "@/data/products";
-
-const KEY = "gg-team";
 
 type TeamItem = { name: string; colors: JerseyColors; crestUrl?: string | null };
 
 const seed: TeamItem[] = seedTeams.map((t) => ({ name: t.name, colors: t.colors, crestUrl: null }));
 
 export function TeamModal() {
-  const [open, setOpen] = useState(false);
-  const [chosen, setChosen] = useState<TeamItem | null>(null);
+  const open = useTeam((s) => s.open);
+  const hydrate = useTeam((s) => s.hydrate);
+  const choose = useTeam((s) => s.choose);
+  const close = useTeam((s) => s.close);
+
   const [list, setList] = useState<TeamItem[]>(seed);
+  const [done, setDone] = useState<TeamItem | null>(null);
 
-  // abre só na primeira visita (sem time salvo)
   useEffect(() => {
-    try {
-      if (!localStorage.getItem(KEY)) setOpen(true);
-    } catch {
-      /* ignore */
-    }
-  }, []);
+    hydrate();
+  }, [hydrate]);
 
-  // carrega a lista real (times + escudos) quando o modal abre
+  // ao abrir: mostra a grade (reseta o passo "done") e carrega a lista real
   useEffect(() => {
     if (!open) return;
+    setDone(null);
     fetch("/api/teams")
       .then((r) => r.json())
       .then((rows: TeamItem[]) => {
@@ -39,18 +38,9 @@ export function TeamModal() {
       .catch(() => {});
   }, [open]);
 
-  const choose = (t: TeamItem) => {
-    setChosen(t);
-    try {
-      localStorage.setItem(KEY, JSON.stringify({ name: t.name, colors: t.colors }));
-    } catch {}
-  };
-  const close = () => setOpen(false);
-  const skip = () => {
-    try {
-      localStorage.setItem(KEY, "skip");
-    } catch {}
-    setOpen(false);
+  const pick = (t: TeamItem) => {
+    choose({ name: t.name, colors: t.colors, crestUrl: t.crestUrl ?? null } as TeamPick);
+    setDone(t);
   };
 
   const Emblem = ({ t, big }: { t: TeamItem; big?: boolean }) =>
@@ -63,11 +53,11 @@ export function TeamModal() {
   return (
     <div className={`tm-scrim${open ? " open" : ""}`} aria-hidden={!open}>
       <div className="tm-modal" role="dialog" aria-label="Time de coração">
-        <button className="tm-close" onClick={skip} aria-label="Fechar">
+        <button className="tm-close" onClick={close} aria-label="Fechar">
           <X size={22} />
         </button>
 
-        {!chosen ? (
+        {!done ? (
           <>
             <div className="tm-head">
               <Heart size={22} className="tm-heart" />
@@ -76,7 +66,7 @@ export function TeamModal() {
             </div>
             <div className="tm-grid">
               {list.map((t) => (
-                <button key={t.name} className="tm-team" onClick={() => choose(t)}>
+                <button key={t.name} className="tm-team" onClick={() => pick(t)}>
                   <span className="tm-circ">
                     <Emblem t={t} />
                   </span>
@@ -84,22 +74,22 @@ export function TeamModal() {
                 </button>
               ))}
             </div>
-            <button className="tm-skip" onClick={skip}>
+            <button className="tm-skip" onClick={close}>
               Pular por agora
             </button>
           </>
         ) : (
           <div className="tm-done">
             <span className="tm-done-circ">
-              <Emblem t={chosen} big />
+              <Emblem t={done} big />
             </span>
             <h2>
-              Você é <b>{chosen.name}</b>! ❤️
+              Você é <b>{done.name}</b>! ❤️
             </h2>
             <p>Bora vestir a camisa? Separamos as opções do seu time.</p>
             <div className="tm-done-actions">
-              <Link className="btn btn-g" href={`/busca?team=${encodeURIComponent(chosen.name)}`} onClick={close}>
-                Ver camisas do {chosen.name}
+              <Link className="btn btn-g" href={`/busca?team=${encodeURIComponent(done.name)}`} onClick={close}>
+                Ver camisas do {done.name}
               </Link>
               <button className="tm-continue" onClick={close}>
                 Explorar a loja

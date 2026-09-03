@@ -291,6 +291,24 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
   transform:skewX(-25deg); animation:sh 2.8s infinite; }
 @keyframes sh { 0% { left:-100%; } 100% { left:150%; } }
 
+/* botão flutuante do time (canto inferior esquerdo) */
+.team-float { position:fixed; left:18px; bottom:18px; z-index:80; display:inline-flex; align-items:center; gap:10px;
+  background:#111; color:#f0f0f0; border:0; border-radius:50px; padding:8px 16px 8px 8px; font-weight:700; font-size:.82rem;
+  box-shadow:0 10px 28px rgba(0,0,0,.35); transition:transform .2s; }
+.team-float:hover { transform:scale(1.04); }
+.team-float-badge { width:42px; height:42px; border-radius:50%; background:#fff; display:grid; place-items:center; flex:none; overflow:hidden; }
+.team-float-badge img { width:100%; height:100%; object-fit:contain; padding:12%; box-sizing:border-box; }
+.team-float-badge svg.jersey { width:64%; }
+.team-float:not(.has-team) .team-float-badge { background:rgba(255,255,255,.12); color:#ff6b81; }
+.team-float:not(.has-team) .team-float-badge svg { width:22px; height:22px; }
+.team-float-label { max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+@media (max-width:560px){ .team-float-label { display:none; } .team-float { padding:8px; } }
+
+/* seção "seu time do coração" */
+.team-sec .car-head h2 { border-bottom-color:#c8102e; }
+.team-sec-empty, .team-sec-loading { background:var(--surface); border:1px solid var(--line); border-radius:12px;
+  padding:20px; color:var(--muted); font-size:.9rem; }
+
 /* mobile drawer */
 .scrim { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:90; opacity:0; visibility:hidden; transition:.2s; }
 .scrim.open { opacity:1; visibility:visible; }
