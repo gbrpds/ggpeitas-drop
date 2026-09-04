@@ -9,6 +9,7 @@ import { isAdminEmail } from "@/lib/admin-emails";
 import { sendEmail } from "@/lib/email";
 import { welcomeEmail } from "@/lib/email-templates";
 import { baseUrl } from "@/lib/site-url";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const googleEnabled =
   !!process.env.AUTH_GOOGLE_ID && !!process.env.AUTH_GOOGLE_SECRET;
@@ -27,6 +28,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = String(creds?.email ?? "").toLowerCase().trim();
         const password = String(creds?.password ?? "");
         if (!email || !password) return null;
+
+        // freia brute force: no máx. 8 tentativas por e-mail a cada 5 min
+        const rl = await rateLimit(`login:${email}`, 8, 300);
+        if (!rl.ok) return null;
 
         const db = getDb();
         const [u] = await db.select().from(users).where(eq(users.email, email)).limit(1);

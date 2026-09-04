@@ -7,6 +7,7 @@ import { resolveUserId } from "@/lib/order";
 import { userHasBought } from "@/lib/reviews";
 import { auth } from "@/auth";
 import { isAdminEmail } from "@/lib/admin-emails";
+import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,9 @@ const bodySchema = z.object({
 
 /** Cria ou atualiza a avaliação do usuário logado para um produto. */
 export async function POST(req: Request) {
+  const rl = await rateLimit(`rev:${clientIp(req)}`, 20, 3600);
+  if (!rl.ok) return tooMany();
+
   const session = await auth();
   const userId = await resolveUserId();
   if (!session?.user || !userId) {

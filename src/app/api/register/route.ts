@@ -6,6 +6,7 @@ import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import { sendEmail } from "@/lib/email";
 import { welcomeEmail } from "@/lib/email-templates";
+import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -16,6 +17,10 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  // no máx. 5 cadastros por IP a cada hora
+  const rl = await rateLimit(`reg:${clientIp(req)}`, 5, 3600);
+  if (!rl.ok) return tooMany("Muitos cadastros. Tente novamente mais tarde.");
+
   let body: unknown;
   try {
     body = await req.json();

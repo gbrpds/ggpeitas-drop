@@ -5,6 +5,7 @@ import { mpCreatePreference } from "@/lib/mp";
 import { priceOrder, PricingError } from "@/lib/pricing";
 import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schema";
 import { resolveUserId, createOrder } from "@/lib/order";
+import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,9 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const rl = await rateLimit(`chk:${clientIp(req)}`, 15, 60);
+  if (!rl.ok) return tooMany();
+
   const json = await req.json().catch(() => null);
   const parsed = bodySchema.safeParse(json);
   if (!parsed.success) {
