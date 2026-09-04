@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { LogOut, User as UserIcon, Package, MapPin } from "lucide-react";
 import { auth, signOut, googleEnabled } from "@/auth";
 import { Announce } from "@/components/Announce";
@@ -13,9 +14,11 @@ export const dynamic = "force-dynamic";
 export default async function ContaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ timeout?: string }>;
+  searchParams: Promise<{ timeout?: string; next?: string }>;
 }) {
-  const { timeout } = await searchParams;
+  const { timeout, next } = await searchParams;
+  // só aceita caminho interno (evita redirect aberto)
+  const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : undefined;
   // Se as variáveis de ambiente ainda não estão configuradas, não quebra a página:
   // apenas trata como deslogado e mostra o formulário.
   let user: { name?: string | null; email?: string | null } | undefined;
@@ -25,6 +28,9 @@ export default async function ContaPage({
   } catch {
     user = undefined;
   }
+
+  // já logado e veio de um fluxo (ex.: checkout) → segue direto pro destino
+  if (user && safeNext) redirect(safeNext);
 
   return (
     <>
@@ -73,13 +79,17 @@ export default async function ContaPage({
           ) : (
             <>
               <h1 className="auth-title">Minha conta</h1>
-              <p className="auth-lead">Entre para acompanhar seus pedidos ou crie sua conta em segundos.</p>
+              <p className="auth-lead">
+                {safeNext === "/checkout"
+                  ? "Entre ou crie sua conta para finalizar a compra — leva segundos."
+                  : "Entre para acompanhar seus pedidos ou crie sua conta em segundos."}
+              </p>
               {timeout && (
                 <div className="auth-timeout">
                   Sua sessão foi encerrada por inatividade (20 min). Entre novamente.
                 </div>
               )}
-              <AuthForm googleEnabled={googleEnabled} />
+              <AuthForm googleEnabled={googleEnabled} next={safeNext} />
             </>
           )}
         </div>

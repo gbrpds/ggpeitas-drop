@@ -18,8 +18,10 @@ function GoogleIcon() {
   );
 }
 
-export function AuthForm({ googleEnabled }: { googleEnabled: boolean }) {
+export function AuthForm({ googleEnabled, next }: { googleEnabled: boolean; next?: string }) {
   const router = useRouter();
+  // só permite caminho interno (evita redirect aberto)
+  const dest = next && next.startsWith("/") && !next.startsWith("//") ? next : "/conta";
   const [mode, setMode] = useState<Mode>("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +61,7 @@ export function AuthForm({ googleEnabled }: { googleEnabled: boolean }) {
         return;
       }
 
-      router.push("/conta");
+      router.push(dest);
       router.refresh();
     } catch {
       setError("Algo deu errado. Tente novamente.");
@@ -115,7 +117,7 @@ export function AuthForm({ googleEnabled }: { googleEnabled: boolean }) {
       {googleEnabled && (
         <>
           <div className="auth-divider"><span>ou</span></div>
-          <button className="auth-google" onClick={() => signIn("google", { callbackUrl: "/conta" })}>
+          <button className="auth-google" onClick={() => signIn("google", { callbackUrl: dest })}>
             <GoogleIcon /> Continuar com Google
           </button>
         </>
