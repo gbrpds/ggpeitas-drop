@@ -67,7 +67,8 @@ export function CheckoutClient() {
 
   const total = useMemo(() => items.reduce((s, i) => s + i.price * i.qty, 0), [items]);
   const orderPayload = () => ({
-    items: items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
+    // só o que identifica o item — o servidor recalcula o preço real
+    items: items.map((i) => ({ productId: i.productId, qty: i.qty, size: i.size, version: i.version })),
     customer,
     shipping,
   });

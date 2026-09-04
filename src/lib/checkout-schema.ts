@@ -1,10 +1,11 @@
 import { z } from "zod";
 
+// O cliente só informa QUAL produto e quanto — o preço é resolvido no servidor.
 export const itemSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  price: z.number().nonnegative(),
-  qty: z.number().int().positive(),
+  productId: z.string().uuid(),
+  qty: z.number().int().positive().max(20),
+  size: z.string().max(8).optional(),
+  version: z.string().max(40).optional(),
 });
 
 export const customerSchema = z.object({

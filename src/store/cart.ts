@@ -6,8 +6,9 @@ import type { Product } from "@/data/products";
 
 export type CartItem = {
   id: string;
+  productId: string; // id cru do produto (para o servidor recalcular o preço real)
   name: string;
-  price: number;
+  price: number; // apenas exibição no cliente — o servidor NUNCA confia nisso
   qty: number;
   colors: Product["colors"];
   image?: string; // foto principal (quando o produto tem foto real)
@@ -54,6 +55,7 @@ export const useCart = create<CartState>()(
               ...state.items,
               {
                 id,
+                productId: p.id,
                 name: suffix ? `${p.name} (${suffix})` : p.name,
                 price: p.now,
                 qty,

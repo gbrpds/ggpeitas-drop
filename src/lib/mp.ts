@@ -131,11 +131,3 @@ export async function mpCreatePayment(body: MpPayload, idempotencyKey: string) {
   const data = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, data };
 }
-
-export type CheckoutItem = { id: string; name: string; price: number; qty: number };
-
-/** Recalcula o total no servidor (não confia no valor vindo do cliente). */
-export function serverTotal(items: CheckoutItem[]): number {
-  const cents = items.reduce((s, i) => s + Math.round(i.price * 100) * i.qty, 0);
-  return cents / 100;
-}

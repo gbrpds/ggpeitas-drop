@@ -2,14 +2,15 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
-import { mpCreatePreference, serverTotal } from "@/lib/mp";
+import { mpCreatePreference } from "@/lib/mp";
+import { priceOrder, PricingError } from "@/lib/pricing";
 import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schema";
 import { resolveUserId, genOrderNumber } from "@/lib/order";
 
 export const runtime = "nodejs";
 
 const bodySchema = z.object({
-  items: z.array(itemSchema).min(1),
+  items: z.array(itemSchema).min(1).max(50),
   customer: customerSchema,
   shipping: shippingSchema,
 });
@@ -21,8 +22,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Dados incompletos para o pagamento." }, { status: 400 });
   }
 
-  const { items, customer, shipping } = parsed.data;
-  const amount = serverTotal(items);
+  const { customer, shipping } = parsed.data;
+  // PREÇO REAL vindo do banco — nunca do cliente
+  let amount: number;
+  let items: Awaited<ReturnType<typeof priceOrder>>["items"];
+  try {
+    const priced = await priceOrder(parsed.data.items);
+    amount = priced.totalCents / 100;
+    items = priced.items;
+  } catch (e) {
+    const msg = e instanceof PricingError ? e.message : "Não foi possível validar o pedido.";
+    return NextResponse.json({ error: msg }, { status: 400 });
+  }
   const cpf = customer.cpf.replace(/\D/g, "");
   const [firstName, ...rest] = customer.name.trim().split(" ");
 
