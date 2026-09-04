@@ -74,7 +74,7 @@ export function ProductReviews({
   const showStar = (i: number) => (hover || rating) >= i;
 
   return (
-    <section className="rv wrap" id="avaliacoes">
+    <section className="rv wrap reveal" id="avaliacoes">
       <h2 className="rv-title">Avaliações</h2>
 
       <div className="rv-top">

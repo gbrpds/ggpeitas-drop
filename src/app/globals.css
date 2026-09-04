@@ -20,6 +20,12 @@
   --mega: var(--font-anton), var(--font-archivo), sans-serif;
   --wrap:1240px;
   --radius:10px;
+  /* suavização/transições */
+  --ease: cubic-bezier(.4, 0, .2, 1);
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --t-fast: .16s;
+  --t-med: .26s;
+  --t-slow: .45s;
 }
 
 /* Tema escuro SÓ pelo botão (classe própria, não segue navegador nem host). */
@@ -43,7 +49,7 @@
   --font-mega: var(--mega);
 }
 
-html { background:var(--ground); }
+html { background:var(--ground); scroll-behavior:smooth; }
 body {
   margin:0; background:var(--ground); color:var(--ink); font-family:var(--body);
   -webkit-font-smoothing:antialiased; line-height:1.45; font-size:14px;
@@ -1078,4 +1084,57 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .rv-item-text { margin:8px 0 0; font-size:.88rem; line-height:1.5; color:var(--ink); }
 @media (max-width:560px){ .rv-top { gap:16px; } }
 
-@media (prefers-reduced-motion:reduce) { *, *::before { transition:none !important; animation:none !important; } }
+/* ===== Polimento visual: transições, hover, foco, animações ===== */
+
+/* transições suaves nos elementos interativos */
+a, button, .card, .pay-method, .size, .version, input, select, textarea,
+.btn, .navlink, .act, .team-hero-cta, .co-next, .cd-checkout, .rv-submit,
+.account-card, .adm-row, .order-card, .trust-badge, .pay-method {
+  transition:
+    color var(--t-fast) var(--ease),
+    background-color var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease),
+    box-shadow var(--t-med) var(--ease),
+    transform var(--t-med) var(--ease-out),
+    opacity var(--t-fast) var(--ease);
+}
+
+/* botões: leve "press" ao clicar */
+button:active, .btn:active { transform: translateY(1px) scale(.99); }
+
+/* foco visível e acessível */
+a:focus-visible, button:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+/* destaque suave ao focar campos */
+input:focus, select:focus, textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(15, 138, 61, .12);
+}
+
+/* zoom suave na foto do card ao passar o mouse */
+.card .media { overflow: hidden; }
+.card .media img, .card .media svg { transition: transform var(--t-slow) var(--ease-out); }
+.card:hover .media img, .card:hover .media svg { transform: scale(1.05); }
+
+/* realce leve nos itens de menu e cards clicáveis */
+.navlink:hover { transform: translateY(-1px); }
+.account-card:hover, .trust-badge:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -16px rgba(0,0,0,.28); }
+
+/* entrada suave da página */
+main { animation: pageIn var(--t-slow) var(--ease-out) both; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* reveal on scroll — só quando o JS marca o <html> (progressive enhancement) */
+.reveal-ready .reveal { opacity: 0; transform: translateY(24px); will-change: opacity, transform;
+  transition: opacity .5s var(--ease-out), transform .6s var(--ease-out); }
+.reveal-ready .reveal.in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before { transition:none !important; animation:none !important; }
+  .reveal-ready .reveal { opacity:1 !important; transform:none !important; }
+}

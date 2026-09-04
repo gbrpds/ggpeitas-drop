@@ -23,16 +23,18 @@ export default async function Home() {
       <Announce />
       <Header />
       <MainNav />
-      <Banner />
-      <HomeTeamSection />
-      <TrustStrip />
+      <main>
+        <Banner />
+        <HomeTeamSection />
+        <TrustStrip />
 
-      {/* Primeira seção, depois a promo, depois o restante */}
-      {first && <ProductCarousel section={first} />}
-      <PromoBanner />
-      {rest.map((section) => (
-        <ProductCarousel key={section.id} section={section} />
-      ))}
+        {/* Primeira seção, depois a promo, depois o restante */}
+        {first && <ProductCarousel section={first} />}
+        <PromoBanner />
+        {rest.map((section) => (
+          <ProductCarousel key={section.id} section={section} />
+        ))}
+      </main>
 
       <FooterTrust />
       <SiteFooter />

@@ -9,7 +9,7 @@ const BADGES = [
 
 export function TrustBadges() {
   return (
-    <section className="trust-badges wrap">
+    <section className="trust-badges wrap reveal">
       {BADGES.map(({ Icon, title, sub }) => (
         <div className="trust-badge" key={title}>
           <Icon strokeWidth={1.7} />
