@@ -35,7 +35,13 @@ function button(href: string, label: string): string {
 
 type OrderItem = { name: string; qty: number; price: number };
 
-function itemsTable(items: OrderItem[], totalCents: number, discountCents = 0): string {
+function itemsTable(
+  items: OrderItem[],
+  totalCents: number,
+  discountCents = 0,
+  couponCents = 0,
+  couponCode?: string | null,
+): string {
   const rows = items
     .map(
       (i) => `<tr>
@@ -51,9 +57,17 @@ function itemsTable(items: OrderItem[], totalCents: number, discountCents = 0): 
         <td style="padding:8px 0 0;font-size:14px;text-align:right;color:${GREEN};">− ${brl(discountCents)}</td>
       </tr>`
       : "";
+  const couponRow =
+    couponCents > 0
+      ? `<tr>
+        <td style="padding:8px 0 0;font-size:14px;color:${GREEN};">Cupom ${couponCode ?? ""}</td>
+        <td style="padding:8px 0 0;font-size:14px;text-align:right;color:${GREEN};">− ${brl(couponCents)}</td>
+      </tr>`
+      : "";
   return `<table style="width:100%;border-collapse:collapse;margin:8px 0 4px;">
       ${rows}
       ${discountRow}
+      ${couponRow}
       <tr>
         <td style="padding:12px 0 0;font-size:15px;font-weight:800;">Total</td>
         <td style="padding:12px 0 0;font-size:15px;font-weight:800;text-align:right;color:${GREEN};">${brl(totalCents)}</td>
@@ -83,6 +97,8 @@ export function orderConfirmedEmail(order: {
   items: OrderItem[];
   totalCents: number;
   discountCents?: number;
+  couponCents?: number;
+  couponCode?: string | null;
   customerName?: string;
   orderUrl: string;
 }) {
@@ -95,7 +111,7 @@ export function orderConfirmedEmail(order: {
         Oba, ${first}! Recebemos o pagamento do seu pedido
         <b>#${order.number ?? ""}</b>. Já estamos preparando tudo para o envio.
       </p>
-      ${itemsTable(order.items, order.totalCents, order.discountCents ?? 0)}
+      ${itemsTable(order.items, order.totalCents, order.discountCents ?? 0, order.couponCents ?? 0, order.couponCode)}
       <p style="margin:20px 0 6px;">${button(order.orderUrl, "Acompanhar pedido")}</p>
       <p style="font-size:13px;color:#8a8a80;margin-top:14px;">
         Assim que despacharmos, você recebe o código de rastreio por aqui.

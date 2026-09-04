@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getDb } from "@/db";
 import { mpCreatePayment } from "@/lib/mp";
 import { priceOrder, PricingError } from "@/lib/pricing";
+import { validateCoupon } from "@/lib/coupons";
 import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schema";
 import { resolveUserId, createOrder } from "@/lib/order";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
@@ -13,6 +14,7 @@ const bodySchema = z.object({
   items: z.array(itemSchema).min(1).max(50),
   customer: customerSchema,
   shipping: shippingSchema,
+  couponCode: z.string().max(40).optional(),
 });
 
 export async function POST(req: Request) {
@@ -38,6 +40,19 @@ export async function POST(req: Request) {
   } catch (e) {
     const msg = e instanceof PricingError ? e.message : "Não foi possível validar o pedido.";
     return NextResponse.json({ error: msg }, { status: 400 });
+  }
+
+  // cupom (revalidado no servidor; se ficou inválido, apenas ignora)
+  let couponCode: string | null = null;
+  let couponCents = 0;
+  if (parsed.data.couponCode) {
+    const netCents = Math.round(amount * 100);
+    const c = await validateCoupon(parsed.data.couponCode, netCents);
+    if (c.ok && c.discountCents > 0) {
+      couponCode = c.code;
+      couponCents = c.discountCents;
+      amount = (netCents - couponCents) / 100;
+    }
   }
   const [firstName, ...rest] = customer.name.trim().split(" ");
   const cpf = customer.cpf.replace(/\D/g, "");
@@ -72,6 +87,8 @@ export async function POST(req: Request) {
       paymentMethod: "pix",
       totalCents: Math.round(amount * 100),
       discountCents,
+      couponCode,
+      couponCents,
       items,
       customer,
       shipping,

@@ -22,8 +22,10 @@ export const orders = pgTable("orders", {
   userId: uuid("user_id"), // nulo = compra como visitante
   status: text("status").default("pending").notNull(), // pending | approved | cancelled | rejected
   paymentMethod: text("payment_method").notNull(), // pix | card
-  totalCents: integer("total_cents").notNull(), // total líquido (já com desconto)
+  totalCents: integer("total_cents").notNull(), // total líquido (já com descontos)
   discountCents: integer("discount_cents").notNull().default(0), // desconto Leve 3 Pague 2
+  couponCode: text("coupon_code"), // cupom aplicado (se houver)
+  couponCents: integer("coupon_cents").notNull().default(0), // desconto do cupom
   items: jsonb("items").notNull(),
   customer: jsonb("customer").notNull(), // { name, cpf, email, phone }
   shipping: jsonb("shipping").notNull(), // { cep, rua, numero, bairro, cidade, uf }
@@ -99,6 +101,21 @@ export const reviews = pgTable("reviews", {
 
 export type ReviewRow = typeof reviews.$inferSelect;
 export type NewReviewRow = typeof reviews.$inferInsert;
+
+/** Cupons de desconto (gerenciados no admin). */
+export const coupons = pgTable("coupons", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  code: text("code").notNull().unique(), // sempre em MAIÚSCULAS
+  type: text("type").notNull(), // 'percent' | 'fixed'
+  value: integer("value").notNull(), // percent: 1..100 | fixed: centavos
+  minCents: integer("min_cents").notNull().default(0), // valor mínimo do pedido
+  maxUses: integer("max_uses"), // limite total de usos (null = ilimitado)
+  expiresAt: timestamp("expires_at", { withTimezone: true }), // null = sem validade
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type CouponRow = typeof coupons.$inferSelect;
 
 /** Contadores de rate limiting (janela fixa por chave). */
 export const rateLimits = pgTable("rate_limits", {

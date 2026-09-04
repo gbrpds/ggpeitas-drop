@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getDb } from "@/db";
 import { mpCreatePreference } from "@/lib/mp";
 import { priceOrder, PricingError } from "@/lib/pricing";
+import { validateCoupon } from "@/lib/coupons";
 import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schema";
 import { resolveUserId, createOrder } from "@/lib/order";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
@@ -13,6 +14,7 @@ const bodySchema = z.object({
   items: z.array(itemSchema).min(1).max(50),
   customer: customerSchema,
   shipping: shippingSchema,
+  couponCode: z.string().max(40).optional(),
 });
 
 export async function POST(req: Request) {
@@ -39,6 +41,19 @@ export async function POST(req: Request) {
     const msg = e instanceof PricingError ? e.message : "Não foi possível validar o pedido.";
     return NextResponse.json({ error: msg }, { status: 400 });
   }
+
+  // cupom (revalidado no servidor; se ficou inválido, apenas ignora)
+  let couponCode: string | null = null;
+  let couponCents = 0;
+  if (parsed.data.couponCode) {
+    const netCents = Math.round(amount * 100);
+    const c = await validateCoupon(parsed.data.couponCode, netCents);
+    if (c.ok && c.discountCents > 0) {
+      couponCode = c.code;
+      couponCents = c.discountCents;
+      amount = (netCents - couponCents) / 100;
+    }
+  }
   const cpf = customer.cpf.replace(/\D/g, "");
   const [firstName, ...rest] = customer.name.trim().split(" ");
 
@@ -53,6 +68,8 @@ export async function POST(req: Request) {
       paymentMethod: "card",
       totalCents: Math.round(amount * 100),
       discountCents,
+      couponCode,
+      couponCents,
       items,
       customer,
       shipping,
@@ -74,8 +91,8 @@ export async function POST(req: Request) {
   // Com desconto (Leve 3, Pague 2) consolida em 1 item pelo total líquido,
   // pois o Checkout Pro soma os itens e não aceita linha de desconto negativa.
   const mpItems =
-    discountCents > 0
-      ? [{ title: `Pedido GG Peitas · ${items.length} itens (Leve 3, Pague 2)`, quantity: 1, unit_price: amount }]
+    discountCents > 0 || couponCents > 0
+      ? [{ title: `Pedido GG Peitas · ${items.length} itens`, quantity: 1, unit_price: amount }]
       : items.map((i) => ({ title: i.name, quantity: i.qty, unit_price: i.price }));
 
   const mp = await mpCreatePreference({

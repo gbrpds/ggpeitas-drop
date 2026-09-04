@@ -70,6 +70,8 @@ export default async function PedidoPage({
                 paymentMethod: order.paymentMethod,
                 totalCents: order.totalCents,
                 discountCents: order.discountCents,
+                couponCode: order.couponCode,
+                couponCents: order.couponCents,
                 items: (order.items as Item[]) ?? [],
                 trackingCode: order.trackingCode,
                 shippingStatus: order.shippingStatus,

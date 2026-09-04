@@ -38,6 +38,10 @@ export function CheckoutClient() {
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
   const [pix, setPix] = useState<{ qrCodeBase64?: string; qrCode?: string; number?: string; paymentId?: string; orderId?: string } | null>(null);
+  const [couponInput, setCouponInput] = useState("");
+  const [coupon, setCoupon] = useState<{ code: string; discountCents: number } | null>(null);
+  const [couponMsg, setCouponMsg] = useState<string | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -74,13 +78,51 @@ export function CheckoutClient() {
       ) / 100,
     [items],
   );
-  const total = subtotal - discount;
+  const total = subtotal - discount; // pós Leve 3, Pague 2
+  const couponValue = coupon ? coupon.discountCents / 100 : 0;
+  const finalTotal = Math.max(0, total - couponValue);
   const orderPayload = () => ({
     // só o que identifica o item — o servidor recalcula o preço real
     items: items.map((i) => ({ productId: i.productId, qty: i.qty, size: i.size, version: i.version })),
     customer,
     shipping,
+    couponCode: coupon?.code,
   });
+
+  async function aplicarCupom() {
+    const code = couponInput.trim();
+    if (!code) return;
+    setCouponLoading(true);
+    setCouponMsg(null);
+    try {
+      const res = await fetch("/api/coupon/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code,
+          items: items.map((i) => ({ productId: i.productId, qty: i.qty, size: i.size, version: i.version })),
+        }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        setCoupon(null);
+        setCouponMsg(data.error ?? "Cupom inválido.");
+      } else {
+        setCoupon({ code: data.code, discountCents: data.discountCents });
+        setCouponMsg(null);
+      }
+    } catch {
+      setCouponMsg("Falha ao validar o cupom.");
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  function removerCupom() {
+    setCoupon(null);
+    setCouponInput("");
+    setCouponMsg(null);
+  }
 
   async function lookupCep(raw: string) {
     const cep = raw.replace(/\D/g, "");
@@ -343,8 +385,36 @@ export function CheckoutClient() {
         {discount > 0 && (
           <div className="cs-line cd-promo"><span>{PROMO_TITLE}</span><b>− {brl(discount)}</b></div>
         )}
+        {coupon && (
+          <div className="cs-line cd-promo"><span>Cupom {coupon.code}</span><b>− {brl(couponValue)}</b></div>
+        )}
         <div className="cs-line"><span>Frete</span><b className="free">Grátis</b></div>
-        <div className="cs-total"><span>Total</span><b>{brl(total)}</b></div>
+
+        <div className="cs-coupon">
+          {coupon ? (
+            <div className="cs-coupon-applied">
+              <span>Cupom <b>{coupon.code}</b> aplicado</span>
+              <button type="button" onClick={removerCupom}>Remover</button>
+            </div>
+          ) : (
+            <>
+              <div className="cs-coupon-row">
+                <input
+                  value={couponInput}
+                  onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                  placeholder="Cupom de desconto"
+                  aria-label="Cupom de desconto"
+                />
+                <button type="button" onClick={aplicarCupom} disabled={couponLoading || !couponInput.trim()}>
+                  {couponLoading ? "…" : "Aplicar"}
+                </button>
+              </div>
+              {couponMsg && <span className="cs-coupon-err">{couponMsg}</span>}
+            </>
+          )}
+        </div>
+
+        <div className="cs-total"><span>Total</span><b>{brl(finalTotal)}</b></div>
       </aside>
     </div>
   );
