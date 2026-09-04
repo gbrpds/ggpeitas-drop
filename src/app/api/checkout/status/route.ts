@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   if (!paymentId) return NextResponse.json({ error: "paymentId ausente" }, { status: 400 });
 
   try {
-    const status = await syncPaymentStatus(paymentId);
+    const { status } = await syncPaymentStatus(paymentId);
     return NextResponse.json({ status });
   } catch {
     return NextResponse.json({ error: "Falha ao consultar o pagamento." }, { status: 502 });

@@ -1,4 +1,4 @@
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, ne, or } from "drizzle-orm";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 
@@ -6,34 +6,87 @@ const MP_BASE = "https://api.mercadopago.com";
 
 /**
  * Consulta o status de um pagamento no Mercado Pago e sincroniza o pedido.
+ * Casa o pagamento pelo mpPaymentId (fluxo inline) OU pelo external_reference
+ * = id do pedido (fluxo Checkout Pro, onde o payment id só existe após pagar).
  * Só tira o pedido de "pending" (approved/cancelled), evitando sobrescrever.
  */
-export async function syncPaymentStatus(paymentId: string): Promise<string> {
+export async function syncPaymentStatus(
+  paymentId: string,
+): Promise<{ status: string; externalReference: string | null }> {
   const res = await fetch(`${MP_BASE}/v1/payments/${paymentId}`, {
     headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` },
     cache: "no-store",
   });
   const data = await res.json().catch(() => ({}));
   const status = String(data.status ?? "unknown"); // approved | pending | cancelled | rejected
+  const extRef = typeof data.external_reference === "string" ? data.external_reference : null;
+
+  // casa por payment id (inline) ou por id do pedido (Checkout Pro)
+  const match = extRef
+    ? or(eq(orders.mpPaymentId, String(paymentId)), eq(orders.id, extRef))
+    : eq(orders.mpPaymentId, String(paymentId));
 
   try {
     const db = getDb();
     if (status === "approved") {
-      // pagamento confirmado tem prioridade — vale mesmo se já tinha expirado
+      // pagamento confirmado tem prioridade — vale mesmo se já tinha expirado.
+      // grava também o payment id (no Checkout Pro ele só é conhecido agora).
       await db
         .update(orders)
-        .set({ status: "approved" })
-        .where(and(eq(orders.mpPaymentId, String(paymentId)), ne(orders.status, "approved")));
+        .set({ status: "approved", mpPaymentId: String(paymentId) })
+        .where(and(match, ne(orders.status, "approved")));
     } else if (status === "cancelled" || status === "rejected") {
       await db
         .update(orders)
         .set({ status: "cancelled" })
-        .where(and(eq(orders.mpPaymentId, String(paymentId)), eq(orders.status, "pending")));
+        .where(and(match, eq(orders.status, "pending")));
     }
   } catch (e) {
     console.error("sync order status error", e);
   }
-  return status;
+  return { status, externalReference: extRef };
+}
+
+type MpPreferenceItem = { title: string; quantity: number; unit_price: number };
+
+/**
+ * Cria uma preferência de Checkout Pro (o cliente é levado ao ambiente do
+ * Mercado Pago). Retorna a URL de pagamento (init_point).
+ */
+export async function mpCreatePreference(pref: {
+  items: MpPreferenceItem[];
+  payer?: Record<string, unknown>;
+  externalReference: string;
+  backUrls: { success: string; failure: string; pending: string };
+  notificationUrl: string;
+  installments?: number;
+}) {
+  const body = {
+    items: pref.items.map((i) => ({
+      title: i.title,
+      quantity: i.quantity,
+      unit_price: i.unit_price,
+      currency_id: "BRL",
+    })),
+    payer: pref.payer,
+    external_reference: pref.externalReference,
+    back_urls: pref.backUrls,
+    auto_return: "approved",
+    notification_url: pref.notificationUrl,
+    statement_descriptor: "GGPEITAS",
+    payment_methods: pref.installments ? { installments: pref.installments } : undefined,
+  };
+
+  const res = await fetch(`${MP_BASE}/checkout/preferences`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data };
 }
 
 type MpPayload = Record<string, unknown>;

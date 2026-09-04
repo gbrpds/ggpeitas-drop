@@ -554,6 +554,10 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .pay-method:hover { border-color:var(--green); }
 .pay-method.on { border-color:var(--green); background:rgba(15,138,61,.06); }
 
+.mp-note { display:flex; align-items:flex-start; gap:9px; margin:14px 0 4px; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:var(--surface); color:var(--muted); font-size:.82rem; line-height:1.45; }
+.mp-note svg { flex:0 0 auto; color:var(--green-deep); margin-top:1px; }
+.mp-note b { color:var(--ink); font-weight:700; }
+
 .pix-box { text-align:center; }
 .pix-box h3 { font-family:var(--disp); font-weight:800; font-size:1rem; margin:6px 0 12px; }
 .pix-qr { width:220px; height:220px; border:1px solid var(--line); border-radius:12px; background:#fff; padding:8px; }

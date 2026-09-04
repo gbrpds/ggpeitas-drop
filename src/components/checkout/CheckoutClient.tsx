@@ -9,7 +9,6 @@ import { User, Truck, CreditCard, QrCode, Check, ArrowRight, ArrowLeft, Shopping
 import { useCart } from "@/store/cart";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
-import { CardPaymentBrick } from "./CardPaymentBrick";
 import { PixDisplay } from "./PixDisplay";
 
 type Customer = { name: string; cpf: string; email: string; phone: string };
@@ -38,7 +37,6 @@ export function CheckoutClient() {
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
   const [pix, setPix] = useState<{ qrCodeBase64?: string; qrCode?: string; number?: string; paymentId?: string; orderId?: string } | null>(null);
-  const [result, setResult] = useState<{ status: string; number?: string } | null>(null);
 
   useEffect(() => {
     if (session?.user) {
@@ -148,56 +146,30 @@ export function CheckoutClient() {
     }
   }
 
-  async function pagarCartao(formData: any) {
+  async function pagarCartao() {
     setError(null);
-    const res = await fetch("/api/checkout/card", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...orderPayload(),
-        payment: {
-          token: formData.token,
-          payment_method_id: formData.payment_method_id,
-          issuer_id: formData.issuer_id,
-          installments: Number(formData.installments),
-        },
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error ?? "Pagamento não aprovado.");
-      throw new Error("card failed");
-    }
-    if (data.status === "approved" && data.orderId) {
-      clear();
-      router.push(`/pedido/${data.orderId}`);
-    } else {
-      setResult({ status: data.status, number: data.number });
+    setLoading(true);
+    try {
+      const res = await fetch("/api/checkout/preference", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderPayload()),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.initPoint) {
+        setError(data.error ?? "Não foi possível abrir o checkout do Mercado Pago.");
+        return;
+      }
+      clear(); // pedido já registrado (pendente) → esvazia o carrinho
+      window.location.href = data.initPoint; // vai para o ambiente do Mercado Pago
+    } catch {
+      setError("Falha de conexão ao abrir o checkout.");
+    } finally {
+      setLoading(false);
     }
   }
 
   if (!mounted) return <div className="cart-empty">Carregando…</div>;
-
-  // Resultado de cartão não aprovado (em análise / recusado)
-  if (result) {
-    const analise = result.status === "in_process" || result.status === "pending";
-    return (
-      <div className="co-result">
-        <div className={`co-result-icon ${analise ? "wait" : "fail"}`}><Check strokeWidth={3} /></div>
-        <h2>{analise ? "Pagamento em análise" : "Pagamento recusado"}</h2>
-        <p>
-          {analise
-            ? "Assim que for aprovado, você recebe a confirmação por e-mail."
-            : "Tente outro cartão ou volte e escolha PIX."}
-        </p>
-        {result.number && <div className="co-order-num">Pedido <b>#{result.number}</b></div>}
-        <div className="co-result-actions">
-          <Link className="btn btn-g" href="/pedidos">Meus pedidos</Link>
-          <Link className="cs-continue" href="/">Voltar à loja</Link>
-        </div>
-      </div>
-    );
-  }
 
   // Tela do PIX (sem timer — a expiração é tratada no servidor em 15 min)
   if (pix) {
@@ -307,7 +279,7 @@ export function CheckoutClient() {
                 <QrCode strokeWidth={1.8} /> <b>PIX</b> <span>Aprovação na hora · 1% OFF</span>
               </button>
               <button className={`pay-method${payMethod === "card" ? " on" : ""}`} onClick={() => setPayMethod("card")}>
-                <CreditCard strokeWidth={1.8} /> <b>Cartão de crédito</b> <span>Em até 12x</span>
+                <CreditCard strokeWidth={1.8} /> <b>Cartão de crédito</b> <span>Em até 12x · via Mercado Pago</span>
               </button>
             </div>
 
@@ -317,9 +289,16 @@ export function CheckoutClient() {
               </button>
             )}
             {payMethod === "card" && (
-              <div className="card-brick">
-                <CardPaymentBrick amount={total} onPay={pagarCartao} />
-              </div>
+              <>
+                <div className="mp-note">
+                  <CreditCard size={16} strokeWidth={1.8} />
+                  Você será levado ao <b>ambiente seguro do Mercado Pago</b> para pagar com cartão
+                  (crédito ou débito), em até 12x. Após o pagamento você volta para acompanhar o pedido.
+                </div>
+                <button className="co-next" onClick={pagarCartao} disabled={loading}>
+                  {loading ? "Abrindo checkout…" : "Pagar com Mercado Pago"} <ArrowRight size={18} strokeWidth={2.4} />
+                </button>
+              </>
             )}
 
             <div className="co-nav">

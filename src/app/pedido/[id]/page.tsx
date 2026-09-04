@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Package } from "lucide-react";
 import { getDb } from "@/db";
-import { getOwnedOrder, expireStaleOrders } from "@/lib/order";
+import { getOwnedOrder, getOrderById, expireStaleOrders } from "@/lib/order";
+import { syncPaymentStatus } from "@/lib/mp";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
@@ -14,15 +15,37 @@ export const metadata = { title: "Pedido — GG Peitas" };
 
 type Item = { id: string; name: string; price: number; qty: number };
 
-export default async function PedidoPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PedidoPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ payment_id?: string; status?: string }>;
+}) {
   const { id } = await params;
+  const { payment_id: paymentId } = await searchParams;
+
+  // Retorno do Checkout Pro do Mercado Pago: sincroniza o status na hora,
+  // sem esperar o webhook (que confirma em definitivo em segundo plano).
+  let paidHere = false;
+  if (paymentId) {
+    try {
+      const { externalReference } = await syncPaymentStatus(String(paymentId));
+      // só libera se o pagamento realmente pertence a este pedido
+      paidHere = externalReference === id;
+    } catch {
+      /* segue */
+    }
+  }
 
   try {
     await expireStaleOrders(getDb());
   } catch {
     /* segue */
   }
-  const order = await getOwnedOrder(id);
+  // Dono logado vê sempre; quem pagou como visitante volta do MP com payment_id
+  // válido, então liberamos a visualização desse pedido específico.
+  const order = (await getOwnedOrder(id)) ?? (paidHere ? await getOrderById(id) : null);
 
   return (
     <>

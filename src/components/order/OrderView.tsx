@@ -1,11 +1,9 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, QrCode, CreditCard, Clock, XCircle } from "lucide-react";
+import { Check, QrCode, CreditCard, Clock, XCircle, ArrowRight } from "lucide-react";
 import { brl } from "@/lib/format";
-import { CardPaymentBrick } from "@/components/checkout/CardPaymentBrick";
 import { PixDisplay } from "@/components/checkout/PixDisplay";
 
 type Item = { id: string; name: string; price: number; qty: number };
@@ -60,25 +58,26 @@ export function OrderView({ order }: { order: Order }) {
     }
   }
 
-  async function pagarCartao(formData: any) {
+  async function pagarCartao() {
     setError(null);
-    const res = await fetch(`/api/orders/${order.id}/card`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token: formData.token,
-        payment_method_id: formData.payment_method_id,
-        issuer_id: formData.issuer_id,
-        installments: Number(formData.installments),
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error ?? "Pagamento não aprovado.");
-      throw new Error("card failed");
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/orders/${order.id}/preference`, { method: "POST" });
+      const data = await res.json();
+      if (data.status === "approved") {
+        setStatus("approved");
+        return;
+      }
+      if (!res.ok || !data.initPoint) {
+        setError(data.error ?? "Não foi possível abrir o checkout do Mercado Pago.");
+        return;
+      }
+      window.location.href = data.initPoint; // ambiente do Mercado Pago
+    } catch {
+      setError("Falha de conexão ao abrir o checkout.");
+    } finally {
+      setLoading(false);
     }
-    if (data.status === "approved") setStatus("approved");
-    else setError("Pagamento não aprovado. Tente outro cartão ou PIX.");
   }
 
   const summary = (
@@ -136,7 +135,7 @@ export function OrderView({ order }: { order: Order }) {
                 <QrCode strokeWidth={1.8} /> <b>PIX</b> <span>Aprovação na hora</span>
               </button>
               <button className={`pay-method${payMethod === "card" ? " on" : ""}`} onClick={() => setPayMethod("card")}>
-                <CreditCard strokeWidth={1.8} /> <b>Cartão de crédito</b> <span>Em até 12x</span>
+                <CreditCard strokeWidth={1.8} /> <b>Cartão de crédito</b> <span>Em até 12x · via Mercado Pago</span>
               </button>
             </div>
 
@@ -146,9 +145,15 @@ export function OrderView({ order }: { order: Order }) {
               </button>
             )}
             {payMethod === "card" && (
-              <div className="card-brick">
-                <CardPaymentBrick amount={total} onPay={pagarCartao} />
-              </div>
+              <>
+                <div className="mp-note">
+                  <CreditCard size={16} strokeWidth={1.8} />
+                  Você será levado ao <b>ambiente seguro do Mercado Pago</b> para pagar com cartão, em até 12x.
+                </div>
+                <button className="co-next" onClick={pagarCartao} disabled={loading}>
+                  {loading ? "Abrindo checkout…" : "Pagar com Mercado Pago"} <ArrowRight size={18} strokeWidth={2.4} />
+                </button>
+              </>
             )}
           </div>
         )}

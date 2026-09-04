@@ -47,6 +47,17 @@ export async function getOwnedOrder(id: string) {
   }
 }
 
+/** Carrega um pedido pelo id, sem checar dono (uso interno/pós-pagamento). */
+export async function getOrderById(id: string) {
+  try {
+    const db = getDb();
+    const [o] = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
+    return o ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /** Descobre o id do usuário logado (por e-mail) para vincular ao pedido. */
 export async function resolveUserId(): Promise<string | null> {
   try {
