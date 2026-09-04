@@ -305,7 +305,7 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 @media (max-width:560px){ .team-float-label { display:none; } .team-float { padding:8px; } }
 
 /* seção "seu time do coração" */
-.team-sec { margin-top:22px; }
+.team-sec { margin:22px auto 30px; }
 .team-sec .car-head h2 { border-bottom-color:#c8102e; }
 .team-sec-empty, .team-sec-loading { background:var(--surface); border:1px solid var(--line); border-radius:12px;
   padding:20px; color:var(--muted); font-size:.9rem; }
