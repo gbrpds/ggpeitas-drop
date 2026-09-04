@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { desc } from "drizzle-orm";
+import { and, desc, gte, inArray, lte, type SQL } from "drizzle-orm";
 import { Lock, ShoppingBag } from "lucide-react";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
@@ -13,6 +13,7 @@ import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminOrderTracking } from "@/components/admin/AdminOrderTracking";
+import { AdminOrderFilters } from "@/components/admin/AdminOrderFilters";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin · Pedidos — GG Peitas" };
@@ -27,13 +28,55 @@ const STATUS: Record<string, { label: string; cls: string }> = {
 type Item = { name: string; qty: number };
 type Customer = { name?: string; email?: string; phone?: string };
 
-export default async function AdminPedidosPage() {
+const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
+export default async function AdminPedidosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; from?: string; to?: string; q?: string }>;
+}) {
+  const sp = await searchParams;
+  const status = sp.status ?? "";
+  const from = sp.from ?? "";
+  const to = sp.to ?? "";
+  const q = (sp.q ?? "").trim();
+
   const ok = await isAdmin();
   let list: (typeof orders.$inferSelect)[] = [];
   if (ok) {
     const db = getDb();
-    list = await db.select().from(orders).orderBy(desc(orders.createdAt));
+    const conds: SQL[] = [];
+    // status (cancelado engloba rejected)
+    if (status === "cancelled") conds.push(inArray(orders.status, ["cancelled", "rejected"]));
+    else if (status === "pending" || status === "approved") conds.push(inArray(orders.status, [status]));
+    // período (dia inteiro nas duas pontas)
+    if (from) conds.push(gte(orders.createdAt, new Date(`${from}T00:00:00`)));
+    if (to) conds.push(lte(orders.createdAt, new Date(`${to}T23:59:59.999`)));
+
+    list = await db
+      .select()
+      .from(orders)
+      .where(conds.length ? and(...conds) : undefined)
+      .orderBy(desc(orders.createdAt));
+
+    // busca textual (nº do pedido, nome ou e-mail) — feita aqui por causa do jsonb
+    if (q) {
+      const nq = norm(q);
+      list = list.filter((o) => {
+        const c = (o.customer as Customer) ?? {};
+        return (
+          norm(o.number ?? "").includes(nq) ||
+          norm(c.name ?? "").includes(nq) ||
+          norm(c.email ?? "").includes(nq)
+        );
+      });
+    }
   }
+
+  const totalPago = list
+    .filter((o) => o.status === "approved")
+    .reduce((s, o) => s + o.totalCents, 0);
+  const hasFilter = !!(status || from || to || q);
 
   return (
     <>
@@ -48,8 +91,18 @@ export default async function AdminPedidosPage() {
             <>
               <AdminNav />
               <h1 className="page-title">Pedidos ({list.length})</h1>
+              <AdminOrderFilters initial={{ status, from, to, q }} />
+              {totalPago > 0 && (
+                <div className="ordf-summary">
+                  {list.length} {list.length === 1 ? "pedido" : "pedidos"} · pago: <b>{brl(totalPago / 100)}</b>
+                </div>
+              )}
               {list.length === 0 ? (
-                <div className="cart-empty"><ShoppingBag strokeWidth={1.5} /><h2>Nenhum pedido ainda</h2></div>
+                <div className="cart-empty">
+                  <ShoppingBag strokeWidth={1.5} />
+                  <h2>{hasFilter ? "Nenhum pedido para esse filtro" : "Nenhum pedido ainda"}</h2>
+                  {hasFilter && <Link className="btn btn-g" href="/admin/pedidos">Limpar filtros</Link>}
+                </div>
               ) : (
                 <div className="orders-list">
                   {list.map((o) => {

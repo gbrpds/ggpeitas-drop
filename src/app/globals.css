@@ -727,6 +727,28 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .ov-track-wait { display:flex; align-items:center; gap:8px; justify-content:center; color:var(--muted);
   font-size:.84rem; background:var(--surface); border:1px dashed var(--line); border-radius:12px; padding:14px; }
 
+/* filtros de pedidos no admin */
+.ordf { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-bottom:14px; }
+.ordf-row { display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap; }
+.ordf-field { display:flex; flex-direction:column; gap:4px; font-size:.74rem; color:var(--muted); }
+.ordf-field span { display:flex; align-items:center; gap:5px; }
+.ordf-field.ordf-grow { flex:1; min-width:200px; }
+.ordf-field input, .ordf-field select { border:1px solid var(--line); background:var(--ground); color:var(--ink);
+  border-radius:8px; padding:9px 11px; font-size:.85rem; }
+.ordf-field.ordf-grow input { width:100%; }
+.ordf-apply { border:0; border-radius:8px; background:var(--green); color:#fff; font-family:var(--disp); font-weight:800;
+  text-transform:uppercase; letter-spacing:.03em; font-size:.76rem; padding:10px 18px; }
+.ordf-apply:hover { background:var(--green-deep); }
+.ordf-clear { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line); border-radius:8px;
+  background:var(--ground); color:var(--muted); font-size:.78rem; padding:9px 12px; }
+.ordf-clear:hover { color:var(--ink); border-color:var(--muted); }
+.ordf-presets { display:flex; gap:8px; margin-top:10px; }
+.ordf-presets button { border:1px solid var(--line); border-radius:999px; background:var(--ground); color:var(--muted);
+  font-size:.76rem; padding:5px 13px; }
+.ordf-presets button:hover { color:var(--green-deep); border-color:var(--green); }
+.ordf-summary { font-size:.84rem; color:var(--muted); margin:0 0 12px 2px; }
+.ordf-summary b { color:var(--green-deep); }
+
 /* rastreio no admin */
 .ord-track { margin-top:12px; padding-top:12px; border-top:1px dashed var(--line); }
 .ord-track-row { display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap; }
