@@ -4,6 +4,8 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { users } from "@/db/schema";
+import { sendEmail } from "@/lib/email";
+import { welcomeEmail } from "@/lib/email-templates";
 
 export const runtime = "nodejs";
 
@@ -41,6 +43,14 @@ export async function POST(req: Request) {
 
     const passwordHash = await bcrypt.hash(password, 10);
     await db.insert(users).values({ name, email: em, passwordHash, provider: "credentials" });
+
+    // e-mail de boas-vindas (não bloqueia o cadastro se falhar)
+    try {
+      const tpl = welcomeEmail(name, new URL(req.url).origin);
+      await sendEmail({ to: em, subject: tpl.subject, html: tpl.html });
+    } catch (e) {
+      console.error("welcome email error", e);
+    }
 
     return NextResponse.json({ ok: true });
   } catch (e) {

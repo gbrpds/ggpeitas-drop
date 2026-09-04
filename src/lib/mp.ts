@@ -1,8 +1,14 @@
 import { and, eq, ne, or } from "drizzle-orm";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
+import { sendEmail } from "@/lib/email";
+import { orderConfirmedEmail } from "@/lib/email-templates";
+import { baseUrl } from "@/lib/site-url";
 
 const MP_BASE = "https://api.mercadopago.com";
+
+type OrderItem = { name: string; qty: number; price: number };
+type Customer = { name?: string; email?: string };
 
 /**
  * Consulta o status de um pagamento no Mercado Pago e sincroniza o pedido.
@@ -31,10 +37,30 @@ export async function syncPaymentStatus(
     if (status === "approved") {
       // pagamento confirmado tem prioridade — vale mesmo se já tinha expirado.
       // grava também o payment id (no Checkout Pro ele só é conhecido agora).
-      await db
+      const changed = await db
         .update(orders)
         .set({ status: "approved", mpPaymentId: String(paymentId) })
-        .where(and(match, ne(orders.status, "approved")));
+        .where(and(match, ne(orders.status, "approved")))
+        .returning({
+          id: orders.id,
+          number: orders.number,
+          items: orders.items,
+          totalCents: orders.totalCents,
+          customer: orders.customer,
+        });
+      // envia a confirmação SÓ na transição (evita duplicar no polling/webhook)
+      for (const o of changed) {
+        const c = (o.customer as Customer) ?? {};
+        if (!c.email) continue;
+        const tpl = orderConfirmedEmail({
+          number: o.number,
+          items: (o.items as OrderItem[]) ?? [],
+          totalCents: o.totalCents,
+          customerName: c.name,
+          orderUrl: `${baseUrl()}/pedido/${o.id}`,
+        });
+        await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
+      }
     } else if (status === "cancelled" || status === "rejected") {
       await db
         .update(orders)
