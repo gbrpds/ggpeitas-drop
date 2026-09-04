@@ -12,6 +12,7 @@ import { MainNav } from "@/components/MainNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { AdminOrderTracking } from "@/components/admin/AdminOrderTracking";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin · Pedidos — GG Peitas" };
@@ -78,6 +79,13 @@ export default async function AdminPedidosPage() {
                             <a className="wa-btn" href={waLink(c.phone)} target="_blank" rel="noopener">WhatsApp</a>
                           )}
                         </div>
+                        {o.status === "approved" && (
+                          <AdminOrderTracking
+                            orderId={o.id}
+                            initialCode={o.trackingCode}
+                            initialStage={o.shippingStatus}
+                          />
+                        )}
                       </div>
                     );
                   })}

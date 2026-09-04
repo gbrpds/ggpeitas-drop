@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, QrCode, CreditCard, Clock, XCircle, ArrowRight } from "lucide-react";
+import { Check, QrCode, CreditCard, Clock, XCircle, ArrowRight, Package, Truck, MapPin, ExternalLink } from "lucide-react";
 import { brl } from "@/lib/format";
 import { PixDisplay } from "@/components/checkout/PixDisplay";
+import { correiosLink, SHIPPING_STAGES } from "@/lib/correios";
 
 type Item = { id: string; name: string; price: number; qty: number };
 type Order = {
@@ -14,6 +15,8 @@ type Order = {
   paymentMethod: string;
   totalCents: number;
   items: Item[];
+  trackingCode?: string | null;
+  shippingStatus?: string | null;
 };
 
 export function OrderView({ order }: { order: Order }) {
@@ -99,12 +102,56 @@ export function OrderView({ order }: { order: Order }) {
 
   // ---- Pedido confirmado ----
   if (status === "approved") {
+    // etapas de envio: Pago (sempre) → Preparando → Enviado → Entregue
+    const stageIcons: Record<string, typeof Package> = {
+      preparando: Package,
+      enviado: Truck,
+      entregue: MapPin,
+    };
+    const currentIdx = SHIPPING_STAGES.findIndex((s) => s.key === order.shippingStatus);
+    const steps = [
+      { key: "pago", label: "Pago", Icon: Check, done: true },
+      ...SHIPPING_STAGES.map((s, i) => ({
+        key: s.key,
+        label: s.label,
+        Icon: stageIcons[s.key],
+        done: currentIdx >= i,
+      })),
+    ];
+
     return (
       <div className="co-result">
         <div className="co-result-icon ok"><Check strokeWidth={3} /></div>
         <h2>Pedido confirmado!</h2>
         {order.number && <div className="co-order-num">Pedido <b>#{order.number}</b></div>}
-        <p>Recebemos seu pagamento — em breve você recebe a atualização por e-mail. Obrigado! 💚</p>
+        <p>Recebemos seu pagamento — acompanhe o envio abaixo. Obrigado! 💚</p>
+
+        <div className="ov-track">
+          <div className="ov-track-steps">
+            {steps.map((s, i) => (
+              <div key={s.key} className={`ov-track-step${s.done ? " done" : ""}${i > 0 ? " has-bar" : ""}`}>
+                <span className="ov-track-dot"><s.Icon size={16} strokeWidth={2.2} /></span>
+                <span className="ov-track-label">{s.label}</span>
+              </div>
+            ))}
+          </div>
+          {order.trackingCode ? (
+            <div className="ov-track-code">
+              <div>
+                <span className="ov-track-code-label">Código de rastreio</span>
+                <b>{order.trackingCode}</b>
+              </div>
+              <a className="btn btn-g" href={correiosLink(order.trackingCode)} target="_blank" rel="noopener">
+                <ExternalLink size={16} /> Rastrear nos Correios
+              </a>
+            </div>
+          ) : (
+            <p className="ov-track-wait">
+              <Truck size={15} /> Assim que despacharmos, o código de rastreio aparece aqui.
+            </p>
+          )}
+        </div>
+
         <div className="ov-confirm-summary">{summary}</div>
         <div className="co-result-actions">
           <Link className="btn btn-g" href="/pedidos">Meus pedidos</Link>

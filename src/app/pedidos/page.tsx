@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
-import { Package } from "lucide-react";
+import { Package, Truck } from "lucide-react";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
@@ -91,6 +91,11 @@ export default async function PedidosPage() {
                       </span>
                       <b className="order-total">{brl(o.totalCents / 100)}</b>
                     </div>
+                    {o.status === "approved" && o.trackingCode && (
+                      <div className="order-track-hint">
+                        <Truck size={14} /> Rastreio disponível — código <b>{o.trackingCode}</b>
+                      </div>
+                    )}
                     <div className="order-foot">
                       <span className="order-pay">
                         {o.paymentMethod === "pix" ? "PIX" : "Cartão de crédito"}
