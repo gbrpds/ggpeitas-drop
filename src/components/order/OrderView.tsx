@@ -161,15 +161,33 @@ export function OrderView({ order }: { order: Order }) {
     );
   }
 
-  // ---- Pagamento pendente / cancelado: retomar ----
+  // ---- Pedido cancelado: final, sem retomar ----
+  if (status === "cancelled") {
+    return (
+      <div className="co-result">
+        <div className="co-result-icon fail"><XCircle strokeWidth={2.4} /></div>
+        <h2>Pedido cancelado</h2>
+        {order.number && <div className="co-order-num">Pedido <b>#{order.number}</b></div>}
+        <p>
+          Este pedido foi cancelado por falta de pagamento dentro do prazo (10 minutos).
+          Para comprar, é só fazer um novo pedido.
+        </p>
+        <div className="ov-confirm-summary">{summary}</div>
+        <div className="co-result-actions">
+          <Link className="btn btn-g" href="/">Fazer novo pedido</Link>
+          <Link className="cs-continue" href="/pedidos">Meus pedidos</Link>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- Pagamento pendente: retomar ----
   return (
     <div className="ov-grid">
       <div className="co-main">
-        <div className={`ov-status ${status === "cancelled" ? "cancelled" : "pending"}`}>
-          {status === "cancelled" ? <XCircle size={18} /> : <Clock size={18} />}
-          {status === "cancelled"
-            ? "Este pedido foi cancelado por falta de pagamento — você pode refazer abaixo."
-            : "Pagamento pendente. Finalize abaixo para confirmar seu pedido."}
+        <div className="ov-status pending">
+          <Clock size={18} />
+          Pagamento pendente. Finalize abaixo para confirmar seu pedido.
         </div>
 
         {order.number && <h2 className="ov-number">Pedido #{order.number}</h2>}

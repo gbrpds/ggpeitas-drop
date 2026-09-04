@@ -4,7 +4,7 @@ import { Package, Truck } from "lucide-react";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
-import { resolveUserId, expireStaleOrders } from "@/lib/order";
+import { resolveUserId, expireStaleOrders, effectiveStatus } from "@/lib/order";
 import { brl } from "@/lib/format";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
@@ -67,7 +67,8 @@ export default async function PedidosPage() {
           ) : (
             <div className="orders-list">
               {list.map((o) => {
-                const st = STATUS[o.status] ?? STATUS.pending;
+                const effStatus = effectiveStatus(o);
+                const st = STATUS[effStatus] ?? STATUS.pending;
                 const items = (o.items as OrderItem[]) ?? [];
                 const qty = items.reduce((s, i) => s + i.qty, 0);
                 const date = new Date(o.createdAt).toLocaleDateString("pt-BR", {
@@ -91,7 +92,7 @@ export default async function PedidosPage() {
                       </span>
                       <b className="order-total">{brl(o.totalCents / 100)}</b>
                     </div>
-                    {o.status === "approved" && o.trackingCode && (
+                    {effStatus === "approved" && o.trackingCode && (
                       <div className="order-track-hint">
                         <Truck size={14} /> Rastreio disponível — código <b>{o.trackingCode}</b>
                       </div>
@@ -100,13 +101,17 @@ export default async function PedidosPage() {
                       <span className="order-pay">
                         {o.paymentMethod === "pix" ? "PIX" : "Cartão de crédito"}
                       </span>
-                      <Link className="order-action" href={`/pedido/${o.id}`}>
-                        {o.status === "pending"
-                          ? "Retomar pagamento →"
-                          : o.status === "approved"
-                            ? "Ver pedido →"
-                            : "Refazer pagamento →"}
-                      </Link>
+                      {effStatus === "pending" ? (
+                        <Link className="order-action" href={`/pedido/${o.id}`}>
+                          Retomar pagamento →
+                        </Link>
+                      ) : effStatus === "approved" ? (
+                        <Link className="order-action" href={`/pedido/${o.id}`}>
+                          Ver pedido →
+                        </Link>
+                      ) : (
+                        <span className="order-cancelled-note">Cancelado por falta de pagamento</span>
+                      )}
                     </div>
                   </div>
                 );

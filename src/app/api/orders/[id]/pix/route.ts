@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 import { mpCreatePayment } from "@/lib/mp";
-import { getOwnedOrder } from "@/lib/order";
+import { getOwnedOrder, effectiveStatus } from "@/lib/order";
 
 export const runtime = "nodejs";
 
@@ -13,6 +13,12 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   const order = await getOwnedOrder(id);
   if (!order) return NextResponse.json({ error: "Pedido não encontrado." }, { status: 404 });
   if (order.status === "approved") return NextResponse.json({ status: "approved" });
+  if (effectiveStatus(order) === "cancelled") {
+    return NextResponse.json(
+      { error: "Pedido cancelado por falta de pagamento. Faça um novo pedido." },
+      { status: 409 },
+    );
+  }
 
   const customer = order.customer as { name: string; cpf: string; email: string };
   const amount = order.totalCents / 100;

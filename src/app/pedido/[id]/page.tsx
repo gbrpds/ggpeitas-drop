@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Package } from "lucide-react";
 import { getDb } from "@/db";
-import { getOwnedOrder, getOrderById, expireStaleOrders } from "@/lib/order";
+import { getOwnedOrder, getOrderById, expireStaleOrders, effectiveStatus } from "@/lib/order";
 import { syncPaymentStatus } from "@/lib/mp";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
@@ -66,7 +66,7 @@ export default async function PedidoPage({
               order={{
                 id: order.id,
                 number: order.number,
-                status: order.status,
+                status: effectiveStatus(order),
                 paymentMethod: order.paymentMethod,
                 totalCents: order.totalCents,
                 items: (order.items as Item[]) ?? [],

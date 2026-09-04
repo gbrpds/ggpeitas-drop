@@ -5,9 +5,25 @@ import { users, orders } from "@/db/schema";
 
 type Db = ReturnType<typeof getDb>;
 
-/** Cancela pedidos "em aberto" há mais de 15 minutos (expiração no servidor). */
+/** Tempo máximo que um pedido fica "em aberto" antes de cancelar (10 min). */
+export const ORDER_TTL_MS = 10 * 60 * 1000;
+
+/** Pedido pendente que já passou dos 10 min (tratado como cancelado na leitura). */
+export function isExpiredPending(o: { status: string; createdAt: Date | string }): boolean {
+  return (
+    o.status === "pending" &&
+    Date.now() - new Date(o.createdAt).getTime() > ORDER_TTL_MS
+  );
+}
+
+/** Status "efetivo": pendente expirado vira cancelado mesmo antes do carimbo no banco. */
+export function effectiveStatus(o: { status: string; createdAt: Date | string }): string {
+  return isExpiredPending(o) ? "cancelled" : o.status;
+}
+
+/** Cancela pedidos "em aberto" há mais de 10 minutos (expiração no servidor). */
 export async function expireStaleOrders(db: Db): Promise<void> {
-  const cutoff = new Date(Date.now() - 15 * 60 * 1000);
+  const cutoff = new Date(Date.now() - ORDER_TTL_MS);
   try {
     await db
       .update(orders)
