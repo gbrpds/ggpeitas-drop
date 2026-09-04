@@ -1014,6 +1014,16 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 /* nota nos cards */
 .card-rate { display:flex; align-items:center; gap:5px; margin:2px 0 4px; font-size:.74rem; color:var(--muted); }
 
+/* verificação de e-mail (código) */
+.auth-verify-title { font-family:var(--disp); font-weight:800; font-size:1.1rem; margin:0 0 6px; }
+.auth-info { background:rgba(15,138,61,.08); border:1px solid rgba(15,138,61,.25); color:var(--green-deep);
+  border-radius:9px; padding:10px 12px; font-size:.82rem; margin-bottom:12px; }
+.auth-code-input { letter-spacing:10px; text-align:center; font-size:1.4rem; font-family:monospace; font-weight:800; }
+.auth-verify-actions { display:flex; justify-content:space-between; margin-top:12px; }
+.auth-verify-actions button { background:none; border:0; color:var(--green-deep); font-size:.82rem; text-decoration:underline; }
+.auth-verify-actions button:hover { color:var(--green); }
+.auth-verify-actions button:disabled { opacity:.5; }
+
 /* linha de desconto (carrinho/checkout/pedido) */
 .cd-promo span, .cd-promo b { color:var(--green-deep); font-weight:700; }
 

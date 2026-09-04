@@ -30,6 +30,22 @@ export function AuthForm({ googleEnabled, next }: { googleEnabled: boolean; next
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // verificação por código (quando ativada no servidor)
+  const [verifying, setVerifying] = useState(false);
+  const [code, setCode] = useState("");
+  const [info, setInfo] = useState<string | null>(null);
+
+  async function signInAndGo() {
+    const result = await signIn("credentials", { email, password, redirect: false });
+    if (result?.error) {
+      setError("Conta criada, mas o login falhou. Tente entrar.");
+      setLoading(false);
+      return;
+    }
+    router.push(dest);
+    router.refresh();
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -47,30 +63,97 @@ export function AuthForm({ googleEnabled, next }: { googleEnabled: boolean; next
           setLoading(false);
           return;
         }
+        // servidor pediu verificação por código → vai para o passo do código
+        if (data.pending) {
+          setVerifying(true);
+          setInfo(`Enviamos um código para ${email}. Verifique sua caixa de entrada.`);
+          setLoading(false);
+          return;
+        }
       }
 
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError("E-mail ou senha incorretos.");
-        setLoading(false);
-        return;
-      }
-
-      router.push(dest);
-      router.refresh();
+      await signInAndGo();
     } catch {
       setError("Algo deu errado. Tente novamente.");
       setLoading(false);
     }
   }
 
+  async function handleVerify(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/register/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Código inválido.");
+        setLoading(false);
+        return;
+      }
+      await signInAndGo(); // conta criada → entra
+    } catch {
+      setError("Algo deu errado. Tente novamente.");
+      setLoading(false);
+    }
+  }
+
+  async function resendCode() {
+    setError(null);
+    setInfo(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) setError(data.error ?? "Não foi possível reenviar.");
+      else setInfo(`Novo código enviado para ${email}.`);
+    } catch {
+      setError("Falha ao reenviar.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="auth-card">
+      {verifying ? (
+        <form className="auth-form" onSubmit={handleVerify}>
+          <h3 className="auth-verify-title">Confirme seu e-mail</h3>
+          {info && <div className="auth-info">{info}</div>}
+          <div className="auth-field">
+            <label htmlFor="a-code">Código de 6 dígitos</label>
+            <input
+              id="a-code"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              placeholder="000000"
+              className="auth-code-input"
+              required
+            />
+          </div>
+          {error && <div className="auth-error">{error}</div>}
+          <button className="auth-submit" type="submit" disabled={loading || code.length !== 6}>
+            {loading ? <Loader2 size={18} className="spin" /> : "Confirmar e entrar"}
+          </button>
+          <div className="auth-verify-actions">
+            <button type="button" onClick={resendCode} disabled={loading}>Reenviar código</button>
+            <button type="button" onClick={() => { setVerifying(false); setCode(""); setError(null); setInfo(null); }}>
+              Voltar
+            </button>
+          </div>
+        </form>
+      ) : (
+      <>
       <div className="auth-tabs">
         <button className={mode === "login" ? "on" : ""} onClick={() => { setMode("login"); setError(null); }}>
           Entrar
@@ -121,6 +204,8 @@ export function AuthForm({ googleEnabled, next }: { googleEnabled: boolean; next
             <GoogleIcon /> Continuar com Google
           </button>
         </>
+      )}
+      </>
       )}
     </div>
   );

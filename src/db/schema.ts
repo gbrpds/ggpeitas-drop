@@ -102,6 +102,17 @@ export const reviews = pgTable("reviews", {
 export type ReviewRow = typeof reviews.$inferSelect;
 export type NewReviewRow = typeof reviews.$inferInsert;
 
+/** Verificações de e-mail pendentes (código enviado ao criar conta). */
+export const emailVerifications = pgTable("email_verifications", {
+  email: text("email").primaryKey(),
+  name: text("name").notNull(),
+  passwordHash: text("password_hash").notNull(),
+  codeHash: text("code_hash").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  attempts: integer("attempts").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 /** Cupons de desconto (gerenciados no admin). */
 export const coupons = pgTable("coupons", {
   id: uuid("id").defaultRandom().primaryKey(),

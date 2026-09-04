@@ -75,6 +75,27 @@ function itemsTable(
     </table>`;
 }
 
+/** Código de verificação de e-mail (criação de conta). */
+export function verificationCodeEmail(name: string, code: string) {
+  const first = name?.split(" ")[0] || "torcedor";
+  return {
+    subject: `Seu código de verificação: ${code}`,
+    html: layout(
+      "Confirme seu e-mail",
+      `<p style="font-size:14px;line-height:1.6;color:#444;">
+        Olá, ${first}! Use o código abaixo para concluir a criação da sua conta na GG Peitas.
+      </p>
+      <div style="text-align:center;margin:22px 0;">
+        <span style="display:inline-block;font-family:monospace;font-size:32px;font-weight:800;letter-spacing:8px;
+          color:${INK};background:#f6f6f3;border:1px solid #e4e4de;border-radius:12px;padding:14px 22px;">${code}</span>
+      </div>
+      <p style="font-size:13px;color:#8a8a80;">
+        O código expira em 15 minutos. Se você não tentou criar uma conta, ignore este e-mail.
+      </p>`,
+    ),
+  };
+}
+
 /** Boas-vindas ao criar conta. */
 export function welcomeEmail(name: string, siteUrl: string) {
   const first = name?.split(" ")[0] || "torcedor";
