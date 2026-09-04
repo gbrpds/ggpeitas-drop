@@ -227,6 +227,26 @@ nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(
 .card .off svg { width:13px; height:13px; }
 .card .new { position:absolute; top:10px; left:10px; background:var(--yellow); color:#241b00;
   font-family:var(--disp); font-weight:800; font-size:.68rem; padding:4px 8px; border-radius:6px; }
+.card .soldout { position:absolute; top:10px; left:10px; background:#4b4b45; color:#fff;
+  font-family:var(--disp); font-weight:800; font-size:.68rem; padding:4px 8px; border-radius:6px; letter-spacing:.03em; }
+.card .btn.add-out { background:var(--surface); color:var(--green-deep); border:1.5px solid var(--green); }
+.card .btn.add-out:hover { background:rgba(15,138,61,.07); }
+
+/* produto sem estoque — "avise-me quando voltar" (página do produto) */
+.stock-out { margin:14px 0 6px; padding:16px; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
+.stock-out-badge { display:inline-block; background:#4b4b45; color:#fff; font-family:var(--disp); font-weight:800;
+  text-transform:uppercase; font-size:.72rem; letter-spacing:.03em; padding:4px 10px; border-radius:6px; margin-bottom:10px; }
+.stock-out-lead { font-size:.88rem; color:var(--ink); margin:0 0 10px; }
+.stock-out-form { display:flex; gap:8px; }
+.stock-out-form input { flex:1; border:1px solid var(--line); background:var(--ground); color:var(--ink);
+  border-radius:9px; padding:11px 13px; font-size:.9rem; }
+.stock-out-form button { display:inline-flex; align-items:center; gap:6px; border:0; border-radius:9px; background:var(--green);
+  color:#fff; font-family:var(--disp); font-weight:800; text-transform:uppercase; letter-spacing:.02em; font-size:.78rem;
+  padding:0 16px; white-space:nowrap; }
+.stock-out-form button:hover { background:var(--green-deep); }
+.stock-out-form button:disabled { opacity:.6; }
+.stock-out-done { display:flex; align-items:center; gap:7px; color:var(--green-deep); font-size:.9rem; margin:0; }
+.stock-out-err { display:block; margin-top:8px; color:#c62828; font-size:.8rem; }
 .card .body { padding:12px 12px 14px; display:flex; flex-direction:column; gap:6px; flex:1; }
 .card .pr { display:flex; align-items:baseline; gap:7px; }
 .card .now { font-family:var(--disp); font-weight:900; font-size:1.15rem; color:var(--price); }

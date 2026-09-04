@@ -95,6 +95,21 @@ export function orderConfirmedEmail(order: {
   };
 }
 
+/** Aviso de "voltou ao estoque". */
+export function backInStockEmail(opts: { productName: string; productUrl: string }) {
+  return {
+    subject: `Voltou! ${opts.productName} disponível de novo 🔥`,
+    html: layout(
+      "Voltou ao estoque! 🔥",
+      `<p style="font-size:14px;line-height:1.6;color:#444;">
+        A camisa que você queria — <b>${opts.productName}</b> — está disponível de novo na GG Peitas.
+        Corre que pode acabar rápido!
+      </p>
+      <p style="margin:20px 0 6px;">${button(opts.productUrl, "Comprar agora")}</p>`,
+    ),
+  };
+}
+
 /** Aviso de envio com código de rastreio. */
 export function orderShippedEmail(order: {
   number: string | null;

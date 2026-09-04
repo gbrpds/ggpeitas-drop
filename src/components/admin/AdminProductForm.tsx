@@ -25,6 +25,7 @@ export type ProductInitial = {
   version: string | null;
   images: string[];
   active: boolean;
+  inStock: boolean;
 };
 
 const centsToStr = (c?: number | null) => (c ? (c / 100).toFixed(2).replace(".", ",") : "");
@@ -39,6 +40,7 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
   const [version, setVersion] = useState(initial?.version ?? "");
   const [images, setImages] = useState<string[]>(initial?.images ?? []);
   const [active, setActive] = useState(initial?.active ?? true);
+  const [inStock, setInStock] = useState(initial?.inStock ?? true);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,6 +94,7 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
           version: version || null,
           images,
           active,
+          inStock,
         }),
       });
       const data = await res.json();
@@ -174,6 +177,14 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
             <span>{active ? "Ativo" : "Inativo"}</span>
           </label>
         </div>
+      </div>
+
+      <div className="co-field adm-active">
+        <label>Estoque</label>
+        <label className="adm-switch">
+          <input type="checkbox" checked={inStock} onChange={(e) => setInStock(e.target.checked)} />
+          <span>{inStock ? "Em estoque" : "Sem estoque (avise-me quando voltar)"}</span>
+        </label>
       </div>
 
       <button className="co-next" onClick={save} disabled={saving || uploading}>

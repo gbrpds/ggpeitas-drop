@@ -18,7 +18,9 @@ export function ProductCard({ product }: { product: Product }) {
       transition={{ duration: 0.14 }}
     >
       <Link className="media" href={`/produto/${product.id}`} aria-label={product.name}>
-        {product.isNew ? (
+        {product.inStock === false ? (
+          <span className="soldout">SEM ESTOQUE</span>
+        ) : product.isNew ? (
           <span className="new">NOVO</span>
         ) : (
           off > 0 && (
@@ -53,8 +55,8 @@ export function ProductCard({ product }: { product: Product }) {
           <b>3x</b> de <b>{parcela(product.now, 3)}</b> sem juros
         </div>
         <span className="frete">FRETE GRÁTIS</span>
-        <Link className="btn add" href={`/produto/${product.id}`}>
-          Comprar agora
+        <Link className={`btn add${product.inStock === false ? " add-out" : ""}`} href={`/produto/${product.id}`}>
+          {product.inStock === false ? "Avise-me quando voltar" : "Comprar agora"}
         </Link>
       </div>
     </motion.article>

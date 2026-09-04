@@ -12,6 +12,7 @@ export type Product = {
   team?: string;
   version?: string;
   rating?: { avg: number; count: number }; // média e total de avaliações
+  inStock?: boolean; // false = sem estoque (dropshipping) → "avise-me quando voltar"
 };
 
 export type ProductSection = {

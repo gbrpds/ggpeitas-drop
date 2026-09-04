@@ -45,6 +45,7 @@ function mapRow(r: Row): Product {
     images: (r.images as string[]) ?? [],
     team: r.team ?? undefined,
     version: r.version ?? undefined,
+    inStock: r.inStock,
   };
 }
 

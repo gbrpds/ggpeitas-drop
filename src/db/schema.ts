@@ -45,12 +45,24 @@ export const products = pgTable("products", {
   compareCents: integer("compare_cents"), // preço "de" (riscado), opcional
   version: text("version"), // torcedor | jogador (opcional)
   images: jsonb("images").notNull().default([]), // string[] de URLs (Vercel Blob)
-  active: boolean("active").notNull().default(true),
+  active: boolean("active").notNull().default(true), // aparece na loja
+  inStock: boolean("in_stock").notNull().default(true), // dropshipping: disponível p/ compra
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export type ProductRow = typeof products.$inferSelect;
 export type NewProductRow = typeof products.$inferInsert;
+
+/** Inscrições "avise-me quando voltar" (produto sem estoque). */
+export const stockNotifications = pgTable("stock_notifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  productId: uuid("product_id").notNull(),
+  email: text("email").notNull(),
+  notified: boolean("notified").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type StockNotificationRow = typeof stockNotifications.$inferSelect;
 
 /** Escudos oficiais dos times (upload pelo admin, exibidos no modal de time). */
 export const teamCrests = pgTable("team_crests", {

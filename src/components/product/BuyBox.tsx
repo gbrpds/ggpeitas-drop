@@ -11,6 +11,7 @@ import type { ReviewSummary } from "@/lib/reviews";
 import { CorreiosBox } from "./CorreiosBox";
 import { PromoRibbon } from "./PromoRibbon";
 import { ProvadorModal } from "./ProvadorModal";
+import { StockNotify } from "./StockNotify";
 
 export function BuyBox({ product, summary }: { product: Product; summary?: ReviewSummary }) {
   const addItem = useCart((s) => s.addItem);
@@ -22,6 +23,7 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
 
   const off = desconto(product.now, product.was);
   const economia = product.was ? product.was - product.now : 0;
+  const outOfStock = product.inStock === false;
 
   const add = () => {
     addItem(product, { size, version, qty });
@@ -61,6 +63,10 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
       </div>
       {economia > 0 && <span className="economia">{brl(economia)} de desconto</span>}
 
+      {outOfStock ? (
+        <StockNotify productId={product.id} />
+      ) : (
+      <>
       {/* Tamanho */}
       <div className="opt">
         <div className="opt-label">
@@ -137,6 +143,8 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
 
       <CorreiosBox />
       <PromoRibbon />
+      </>
+      )}
 
       <ProvadorModal open={provOpen} onClose={() => setProvOpen(false)} onPick={(s) => setSize(s)} />
     </div>
