@@ -61,7 +61,7 @@ export function HomeTeamSection() {
 
   return (
     <section className="wrap team-sec">
-      <div className="team-hero" style={heroBg}>
+      <div className="team-hero reveal" style={heroBg}>
         <div className="team-hero-crest">
           {crest ? <img src={crest} alt={team.name} /> : <Jersey colors={team.colors} />}
         </div>

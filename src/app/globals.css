@@ -1115,18 +1115,26 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(15, 138, 61, .12);
 }
 
-/* zoom suave na foto do card ao passar o mouse */
+/* zoom na foto do card ao passar o mouse */
 .card .media { overflow: hidden; }
 .card .media img, .card .media svg { transition: transform var(--t-slow) var(--ease-out); }
-.card:hover .media img, .card:hover .media svg { transform: scale(1.05); }
+.card:hover .media img, .card:hover .media svg { transform: scale(1.09); }
 
-/* realce leve nos itens de menu e cards clicáveis */
+/* elevação clara nos botões/CTAs ao passar o mouse */
+.btn:hover, .co-next:hover, .cd-checkout:hover, .team-hero-cta:hover,
+.rv-submit:hover, .auth-submit:hover, .add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -12px rgba(0, 0, 0, .45);
+}
+
+/* realce nos itens de menu e cards clicáveis */
 .navlink:hover { transform: translateY(-1px); }
-.account-card:hover, .trust-badge:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -16px rgba(0,0,0,.28); }
+.account-card:hover, .trust-badge:hover { transform: translateY(-3px); box-shadow: 0 14px 28px -16px rgba(0,0,0,.3); }
+.see:hover { gap: 10px; }
 
 /* entrada suave da página */
-main { animation: pageIn var(--t-slow) var(--ease-out) both; }
-@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+main { animation: pageIn .5s var(--ease-out) both; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
 /* reveal on scroll — só quando o JS marca o <html> (progressive enhancement) */
 .reveal-ready .reveal { opacity: 0; transform: translateY(24px); will-change: opacity, transform;

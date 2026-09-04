@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 
 export function PromoBanner() {
   return (
-    <section className="promo-sec wrap">
+    <section className="promo-sec wrap reveal">
       <div className="promo">
         <div>
           <span className="eb">Oferta relâmpago</span>

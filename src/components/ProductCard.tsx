@@ -14,8 +14,9 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <motion.article
       className="card"
-      whileHover={{ y: -4, boxShadow: "0 16px 30px -14px rgba(0,0,0,.28)" }}
-      transition={{ duration: 0.14 }}
+      whileHover={{ y: -8, boxShadow: "0 26px 44px -20px rgba(0,0,0,.38)" }}
+      whileTap={{ scale: 0.985 }}
+      transition={{ type: "spring", stiffness: 320, damping: 24 }}
     >
       <Link className="media" href={`/produto/${product.id}`} aria-label={product.name}>
         {product.inStock === false ? (
