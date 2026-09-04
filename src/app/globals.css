@@ -1006,6 +1006,10 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
   .search { order:3; flex-basis:100%; max-width:none; margin-top:4px; }
   .topbar { flex-wrap:wrap; gap:10px; }
   .foot { grid-template-columns:1fr; }
+  /* dropdown da conta: ancora na direita da barra p/ não sair da tela */
+  .acts { position:relative; }
+  .acc { position:static; }
+  .acc-drop { right:0; left:auto; top:calc(100% + 4px); min-width:210px; max-width:calc(100vw - 24px); }
 }
 /* nota nos cards */
 .card-rate { display:flex; align-items:center; gap:5px; margin:2px 0 4px; font-size:.74rem; color:var(--muted); }
