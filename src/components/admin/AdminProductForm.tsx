@@ -10,7 +10,6 @@ export const CATEGORIES = [
   { value: "selecoes", label: "Seleções" },
   { value: "feminina", label: "Feminina" },
   { value: "infantil", label: "Conjunto Infantil" },
-  { value: "player", label: "Player (Authentic)" },
   { value: "retro", label: "Retrô" },
   { value: "brasileirao", label: "Brasileirão" },
   { value: "europa", label: "Europa" },
@@ -38,7 +37,7 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
   const [category, setCategory] = useState(initial?.category ?? "futebol");
   const [price, setPrice] = useState(centsToStr(initial?.priceCents));
   const [compare, setCompare] = useState(centsToStr(initial?.compareCents));
-  const [version, setVersion] = useState(initial?.version ?? "");
+  const version = "Torcedor"; // único modelo
   const [images, setImages] = useState<string[]>(initial?.images ?? []);
   const [active, setActive] = useState(initial?.active ?? true);
   const [inStock, setInStock] = useState(initial?.inStock ?? true);
@@ -164,22 +163,12 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
         </div>
       </div>
 
-      <div className="co-row">
-        <div className="co-field">
-          <label>Versão (opcional)</label>
-          <select value={version} onChange={(e) => setVersion(e.target.value)} className="adm-select">
-            <option value="">—</option>
-            <option value="Torcedor">Torcedor</option>
-            <option value="Jogador (Authentic)">Jogador (Authentic)</option>
-          </select>
-        </div>
-        <div className="co-field adm-active">
-          <label>Publicar na loja</label>
-          <label className="adm-switch">
-            <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
-            <span>{active ? "Ativo" : "Inativo"}</span>
-          </label>
-        </div>
+      <div className="co-field adm-active">
+        <label>Publicar na loja</label>
+        <label className="adm-switch">
+          <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
+          <span>{active ? "Ativo" : "Inativo"}</span>
+        </label>
       </div>
 
       <div className="co-field adm-active">

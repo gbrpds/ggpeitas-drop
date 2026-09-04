@@ -118,7 +118,10 @@ export function CartDrawer() {
               {discount > 0 && (
                 <div className="cd-line cd-promo"><span>{PROMO_TITLE}</span><b>− {brl(discount)}</b></div>
               )}
-              <div className="cd-line"><span>Frete</span><b className="free">Grátis</b></div>
+              <div className="cd-line">
+                <span>Frete</span>
+                {total >= FRETE_MIN ? <b className="free">Grátis</b> : <b>a calcular</b>}
+              </div>
               <div className="cd-total"><span>Total</span><b>{brl(total)}</b></div>
               <p className="cd-parc">ou em até 3x de {brl(total / 3)} sem juros</p>
               <Link className="cd-checkout" href="/checkout" onClick={close}>

@@ -4,7 +4,7 @@ import { defaultDescription } from "@/lib/product";
 
 const specs = [
   { Icon: Award, text: "Tailandesa 1ª linha — acabamento premium" },
-  { Icon: Ruler, text: "Tamanhos P ao XGG (torcedor e jogador)" },
+  { Icon: Ruler, text: "Tamanhos P ao XGG · versão Torcedor" },
   { Icon: Truck, text: "Frete grátis e envio para todo o Brasil" },
   { Icon: ShieldCheck, text: "Troca em até 7 dias · compra segura" },
 ];

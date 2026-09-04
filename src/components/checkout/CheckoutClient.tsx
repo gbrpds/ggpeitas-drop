@@ -388,7 +388,10 @@ export function CheckoutClient() {
         {coupon && (
           <div className="cs-line cd-promo"><span>Cupom {coupon.code}</span><b>− {brl(couponValue)}</b></div>
         )}
-        <div className="cs-line"><span>Frete</span><b className="free">Grátis</b></div>
+        <div className="cs-line">
+          <span>Frete</span>
+          {total >= 299 ? <b className="free">Grátis</b> : <b>a calcular</b>}
+        </div>
 
         <div className="cs-coupon">
           {coupon ? (

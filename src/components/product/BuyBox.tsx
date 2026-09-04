@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowDown, ShoppingCart, Sparkles, Check } from "lucide-react";
 import type { Product } from "@/data/products";
 import { brl, parcela, desconto } from "@/lib/format";
-import { SIZES, VERSIONS } from "@/lib/product";
+import { SIZES } from "@/lib/product";
 import { useCart } from "@/store/cart";
 import { Stars } from "@/components/reviews/Stars";
 import type { ReviewSummary } from "@/lib/reviews";
@@ -16,7 +16,7 @@ import { StockNotify } from "./StockNotify";
 export function BuyBox({ product, summary }: { product: Product; summary?: ReviewSummary }) {
   const addItem = useCart((s) => s.addItem);
   const [size, setSize] = useState<string>("M");
-  const [version, setVersion] = useState<string>(VERSIONS[0]);
+  const version = "Torcedor"; // único modelo
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [provOpen, setProvOpen] = useState(false);
@@ -80,24 +80,6 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
               onClick={() => setSize(s)}
             >
               {s}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Versão */}
-      <div className="opt">
-        <div className="opt-label">
-          Versão: <span>{version}</span>
-        </div>
-        <div className="versions">
-          {VERSIONS.map((v) => (
-            <button
-              key={v}
-              className={`version${version === v ? " active" : ""}`}
-              onClick={() => setVersion(v)}
-            >
-              {v}
             </button>
           ))}
         </div>

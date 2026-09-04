@@ -9,7 +9,6 @@ const CAT_LABELS: Record<string, string> = {
   futebol: "Futebol",
   feminina: "Feminina",
   infantil: "Conjunto Infantil",
-  player: "Player (Authentic)",
   retro: "Retrô",
 };
 
