@@ -143,18 +143,10 @@ nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(
 
 /* banner slot */
 .banner-sec { padding-block:0 18px; }
-.banner { position:relative; overflow:hidden; background:
-  repeating-linear-gradient(45deg,#e2e2e2 0 22px,#dadada 22px 44px);
-  border:1px dashed #bdbdbd; display:grid; place-items:center; text-align:center; color:#7a7a7a; }
-.banner.desk { aspect-ratio:1920/640; width:100%; border-radius:0; border-inline:0; }
+.banner { position:relative; overflow:hidden; background:var(--surface); }
+.banner img { width:100%; height:100%; object-fit:cover; display:block; }
+.banner.desk { aspect-ratio:1920/640; width:100%; border-radius:0; }
 .banner.mob { aspect-ratio:1080/1350; max-width:420px; margin:0 16px; margin-inline:auto; border-radius:12px; display:none; }
-.banner .tag { background:var(--surface); border:1px solid var(--line); border-radius:10px;
-  padding:16px 22px; box-shadow:0 6px 18px -10px rgba(0,0,0,.25); }
-.banner .tag svg { width:34px; height:34px; color:var(--green); display:block; margin:0 auto 8px; }
-.banner .tag b { font-family:var(--disp); font-weight:800; text-transform:uppercase; letter-spacing:.05em;
-  font-size:.85rem; color:var(--ink); display:block; }
-.banner .tag .res { font-family:var(--disp); font-weight:900; font-size:1.5rem; color:var(--green-deep); margin:4px 0 2px; }
-.banner .tag span { font-size:.75rem; color:var(--muted); }
 @media (max-width:640px) {
   .banner.desk { display:none; } .banner.mob { display:grid; }
 }
@@ -463,6 +455,7 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .correios { display:flex; align-items:center; gap:12px; border:2px solid var(--ink); border-radius:12px;
   padding:12px 14px; margin-top:18px; background:var(--surface); }
 .correios .cimg { width:54px; height:54px; flex:none; display:grid; place-items:center; }
+.correios .cimg img { max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; }
 .correios .cinfo { flex:1; line-height:1.4; }
 .correios .cinfo b { font-size:.9rem; }
 .correios .cinfo span { display:block; font-size:.78rem; color:var(--muted); }
@@ -479,13 +472,8 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
   animation:sh 2.6s infinite; }
 
 /* banner promo do produto (placeholder) */
-.pbanner { margin:26px auto 0; border-radius:14px; overflow:hidden; border:1px dashed #bdbdbd; aspect-ratio:1200/240;
-  background:repeating-linear-gradient(45deg,#e2e2e2 0 22px,#dadada 22px 44px); display:grid; place-items:center;
-  text-align:center; color:#7a7a7a; }
-.pbanner .tag { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:12px 18px; }
-.pbanner .tag b { font-family:var(--disp); font-weight:800; text-transform:uppercase; letter-spacing:.05em;
-  font-size:.8rem; color:var(--ink); display:block; }
-.pbanner .tag span { font-size:.72rem; color:var(--muted); }
+.pbanner { margin:26px auto 0; border-radius:14px; overflow:hidden; border:1px solid var(--line); line-height:0; }
+.pbanner img { width:100%; height:auto; display:block; }
 
 /* descrição */
 .pdesc { max-width:900px; margin:34px auto 0; }

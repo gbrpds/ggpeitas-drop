@@ -1,12 +1,11 @@
-/** Espaço reservado para um banner de promoção na página de produto. */
+/* eslint-disable @next/next/no-img-element */
+
+/** Banner de promoção na página de produto (proporção 5:1). */
 export function ProductBanner() {
   return (
     <section className="wrap">
-      <div className="pbanner" role="img" aria-label="Espaço reservado para banner de promoção">
-        <div className="tag">
-          <b>Banner de promoção</b>
-          <span>1200 × 240 px · proporção 5:1</span>
-        </div>
+      <div className="pbanner">
+        <img src="/banner-camisas.png" alt="Camisas GG Peitas" />
       </div>
     </section>
   );

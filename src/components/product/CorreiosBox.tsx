@@ -1,19 +1,7 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
-
-function CorreiosLogo() {
-  return (
-    <svg viewBox="0 0 64 64" width="54" height="54" aria-hidden="true">
-      <rect x="4" y="18" width="56" height="30" rx="5" fill="#004b8d" />
-      <path d="M12 26h30l8 7-8 7H12z" fill="#ffd200" />
-      <path d="M20 30l8 3-8 3zM30 30l8 3-8 3z" fill="#004b8d" />
-      <text x="32" y="58" textAnchor="middle" fontFamily="Archivo,sans-serif" fontWeight="800" fontSize="9" fill="#004b8d">
-        CORREIOS
-      </text>
-    </svg>
-  );
-}
 
 export function CorreiosBox() {
   const [regiao, setRegiao] = useState<string | null>(null);
@@ -40,7 +28,7 @@ export function CorreiosBox() {
   return (
     <div className="correios">
       <span className="cimg">
-        <CorreiosLogo />
+        <img src="/correios.png" alt="Correios" />
       </span>
       <div className="cinfo">
         <b>Entrega via Correios®</b>
