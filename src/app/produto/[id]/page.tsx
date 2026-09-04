@@ -11,8 +11,12 @@ import { Gallery } from "@/components/product/Gallery";
 import { BuyBox } from "@/components/product/BuyBox";
 import { ProductBanner } from "@/components/product/ProductBanner";
 import { Description } from "@/components/product/Description";
+import { TrustBadges } from "@/components/TrustBadges";
+import { ProductReviews } from "@/components/reviews/ProductReviews";
 import { getCatalogProduct } from "@/lib/catalog";
 import { metaFor } from "@/lib/catalog";
+import { getProductReviews } from "@/lib/reviews";
+import { resolveUserId } from "@/lib/order";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +26,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   if (!product) notFound();
 
   const cat = metaFor(product.category);
+  const uid = await resolveUserId();
+  const { list, summary } = await getProductReviews(id, uid);
 
   return (
     <>
@@ -41,12 +47,14 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
           <div className="pdp-grid">
             <Gallery product={product} />
-            <BuyBox product={product} />
+            <BuyBox product={product} summary={summary} />
           </div>
         </div>
 
+        <TrustBadges />
         <ProductBanner />
         <Description product={product} />
+        <ProductReviews productId={id} productName={product.name} summary={summary} list={list} />
       </main>
 
       <FooterTrust />

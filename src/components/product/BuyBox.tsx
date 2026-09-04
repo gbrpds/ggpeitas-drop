@@ -6,11 +6,13 @@ import type { Product } from "@/data/products";
 import { brl, parcela, desconto } from "@/lib/format";
 import { SIZES, VERSIONS } from "@/lib/product";
 import { useCart } from "@/store/cart";
+import { Stars } from "@/components/reviews/Stars";
+import type { ReviewSummary } from "@/lib/reviews";
 import { CorreiosBox } from "./CorreiosBox";
 import { PromoRibbon } from "./PromoRibbon";
 import { ProvadorModal } from "./ProvadorModal";
 
-export function BuyBox({ product }: { product: Product }) {
+export function BuyBox({ product, summary }: { product: Product; summary?: ReviewSummary }) {
   const addItem = useCart((s) => s.addItem);
   const [size, setSize] = useState<string>("M");
   const [version, setVersion] = useState<string>(VERSIONS[0]);
@@ -31,7 +33,17 @@ export function BuyBox({ product }: { product: Product }) {
     <div className="buy">
       <h1 className="ptitle">{product.name}</h1>
       <div className="sold">
-        <span className="stars">★★★★★</span> Novo · 1.589 vendidos
+        {summary && summary.count > 0 ? (
+          <a href="#avaliacoes" className="sold-rate">
+            <Stars value={summary.avg} size={14} />
+            <b>{summary.avg.toFixed(1)}</b>
+            <span>({summary.count} {summary.count === 1 ? "avaliação" : "avaliações"})</span>
+          </a>
+        ) : (
+          <a href="#avaliacoes" className="sold-rate sold-new">
+            <Stars value={0} size={14} /> Seja o primeiro a avaliar
+          </a>
+        )}
       </div>
 
       <div className="priceblock">

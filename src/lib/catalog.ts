@@ -3,6 +3,18 @@ import { getDb } from "@/db";
 import { products } from "@/db/schema";
 import { sections as mockSections, type Product, type ProductSection } from "@/data/products";
 import { getProduct as getMockProduct } from "@/lib/product";
+import { getRatingsFor } from "@/lib/reviews";
+
+/** Anexa média/total de avaliações a uma lista de produtos (uma consulta só). */
+async function withRatings(items: Product[]): Promise<Product[]> {
+  if (!items.length) return items;
+  const map = await getRatingsFor(items.map((p) => p.id));
+  for (const p of items) {
+    const r = map.get(p.id);
+    if (r) p.rating = r;
+  }
+  return items;
+}
 
 const FALLBACK_COLORS: [string, string, string] = ["#0f8a3d", "#ffc400", "#ffffff"];
 
@@ -66,10 +78,12 @@ export async function getHomeSections(): Promise<ProductSection[]> {
       return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
     });
 
-    return cats.map((cat) => {
+    const built = cats.map((cat) => {
       const m = metaFor(cat);
       return { id: cat, title: m.title, emoji: m.emoji, href: m.href, products: byCat.get(cat)! };
     });
+    await withRatings(built.flatMap((s) => s.products));
+    return built;
   } catch {
     return mockSections;
   }
@@ -79,7 +93,9 @@ export async function getHomeSections(): Promise<ProductSection[]> {
 export async function getCategoryProducts(cat: string): Promise<Product[]> {
   try {
     const rows = await allRows();
-    if (rows.length) return rows.filter((r) => r.active && r.category === cat).map(mapRow);
+    if (rows.length) {
+      return withRatings(rows.filter((r) => r.active && r.category === cat).map(mapRow));
+    }
   } catch {
     /* cai no mock */
   }
@@ -91,7 +107,7 @@ export async function getCategoryProducts(cat: string): Promise<Product[]> {
 export async function getAllActive(): Promise<Product[]> {
   try {
     const rows = await allRows();
-    if (rows.length) return rows.filter((r) => r.active).map(mapRow);
+    if (rows.length) return withRatings(rows.filter((r) => r.active).map(mapRow));
   } catch {
     /* cai no mock */
   }

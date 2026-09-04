@@ -6,6 +6,7 @@ import { ArrowDown } from "lucide-react";
 import type { Product } from "@/data/products";
 import { brl, parcela, desconto } from "@/lib/format";
 import { Jersey } from "./Jersey";
+import { Stars } from "./reviews/Stars";
 
 export function ProductCard({ product }: { product: Product }) {
   const off = desconto(product.now, product.was);
@@ -42,6 +43,12 @@ export function ProductCard({ product }: { product: Product }) {
         <Link className="name" href={`/produto/${product.id}`}>
           {product.name}
         </Link>
+        {product.rating && product.rating.count > 0 && (
+          <div className="card-rate">
+            <Stars value={product.rating.avg} size={12} />
+            <span>({product.rating.count})</span>
+          </div>
+        )}
         <div className="parc">
           <b>3x</b> de <b>{parcela(product.now, 3)}</b> sem juros
         </div>

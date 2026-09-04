@@ -11,6 +11,7 @@ export type Product = {
   images?: string[]; // fotos reais (Vercel Blob) — quando vazio, usa o mock (SVG)
   team?: string;
   version?: string;
+  rating?: { avg: number; count: number }; // média e total de avaliações
 };
 
 export type ProductSection = {

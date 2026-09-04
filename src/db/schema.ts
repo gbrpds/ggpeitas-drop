@@ -70,3 +70,18 @@ export const teams = pgTable("teams", {
 });
 
 export type TeamRow = typeof teams.$inferSelect;
+
+/** Avaliações de produtos (1 por usuário por produto). */
+export const reviews = pgTable("reviews", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  productId: text("product_id").notNull(), // id do catálogo (uuid do DB ou id do mock)
+  userId: uuid("user_id"), // quem avaliou (nulo = legado)
+  userName: text("user_name").notNull(),
+  rating: integer("rating").notNull(), // 1..5
+  comment: text("comment"),
+  verified: boolean("verified").notNull().default(false), // comprou o produto
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type ReviewRow = typeof reviews.$inferSelect;
+export type NewReviewRow = typeof reviews.$inferInsert;
