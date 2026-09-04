@@ -8,6 +8,7 @@ import { useUI } from "@/store/ui";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
 import { promoDiscountFromItems, PROMO_TITLE } from "@/lib/promo";
+import { FreteCalc } from "@/components/FreteCalc";
 
 export function CartDrawer() {
   const open = useUI((s) => s.cartOpen);
@@ -120,7 +121,11 @@ export function CartDrawer() {
               )}
               <div className="cd-line">
                 <span>Frete</span>
-                {total >= FRETE_MIN ? <b className="free">Grátis</b> : <b>a calcular</b>}
+                {total >= FRETE_MIN ? (
+                  <b className="free">Grátis</b>
+                ) : (
+                  <span className="cd-frete-right"><b>a calcular</b> <FreteCalc subtotal={total} /></span>
+                )}
               </div>
               <div className="cd-total"><span>Total</span><b>{brl(total)}</b></div>
               <p className="cd-parc">ou em até 3x de {brl(total / 3)} sem juros</p>

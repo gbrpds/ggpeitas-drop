@@ -1014,6 +1014,39 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 /* nota nos cards */
 .card-rate { display:flex; align-items:center; gap:5px; margin:2px 0 4px; font-size:.74rem; color:var(--muted); }
 
+/* calcular frete (link verde + modal) */
+.cd-frete-right { display:inline-flex; align-items:center; gap:8px; }
+.cd-frete-calc { background:none; border:0; color:var(--green-deep); font-size:.76rem; font-weight:700;
+  text-decoration:underline; cursor:pointer; padding:0; }
+.cd-frete-calc:hover { color:var(--green); }
+.fc-scrim { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:120; display:grid; place-items:center; padding:16px; }
+.fc-modal { width:min(420px,100%); background:var(--surface); border:1px solid var(--line); border-radius:16px;
+  padding:20px; box-shadow:0 24px 60px -20px rgba(0,0,0,.5); }
+.fc-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.fc-head b { display:flex; align-items:center; gap:8px; font-family:var(--disp); font-weight:800; font-size:1.05rem; }
+.fc-head svg { color:var(--green-deep); }
+.fc-close { background:none; border:0; color:var(--muted); }
+.fc-close:hover { color:var(--ink); }
+.fc-form { display:flex; gap:8px; }
+.fc-form input { flex:1; border:1px solid var(--line); background:var(--ground); color:var(--ink);
+  border-radius:9px; padding:11px 13px; font-size:.9rem; }
+.fc-form button { border:0; border-radius:9px; background:var(--green); color:#fff; font-family:var(--disp);
+  font-weight:800; text-transform:uppercase; letter-spacing:.03em; font-size:.8rem; padding:0 18px; }
+.fc-form button:hover { background:var(--green-deep); }
+.fc-form button:disabled { opacity:.6; }
+.fc-err { margin-top:10px; color:#c62828; font-size:.82rem; }
+.fc-result { margin-top:14px; background:var(--ground); border:1px solid var(--line); border-radius:12px; padding:14px; }
+.fc-local { font-size:.82rem; color:var(--muted); margin-bottom:8px; }
+.fc-local span { color:var(--green-deep); font-weight:700; }
+.fc-price { display:flex; align-items:baseline; justify-content:space-between; }
+.fc-price b { font-family:var(--disp); font-weight:900; font-size:1.5rem; color:var(--price); }
+.fc-free { font-size:1rem; color:var(--green-deep); }
+.fc-free b { font-family:var(--disp); font-weight:900; }
+.fc-free span { font-size:.76rem; color:var(--muted); }
+.fc-prazo { margin-top:6px; font-size:.84rem; color:var(--ink); }
+.fc-hint { margin-top:8px; font-size:.78rem; color:var(--green-deep); }
+.fc-note { margin:12px 0 0; font-size:.72rem; color:var(--muted); line-height:1.5; }
+
 /* verificação de e-mail (código) */
 .auth-verify-title { font-family:var(--disp); font-weight:800; font-size:1.1rem; margin:0 0 6px; }
 .auth-info { background:rgba(15,138,61,.08); border:1px solid rgba(15,138,61,.25); color:var(--green-deep);

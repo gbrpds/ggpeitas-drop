@@ -10,6 +10,7 @@ import { useCart } from "@/store/cart";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
 import { promoDiscountFromItems, PROMO_TITLE } from "@/lib/promo";
+import { FreteCalc } from "@/components/FreteCalc";
 import { PixDisplay } from "./PixDisplay";
 
 type Customer = { name: string; cpf: string; email: string; phone: string };
@@ -390,7 +391,11 @@ export function CheckoutClient() {
         )}
         <div className="cs-line">
           <span>Frete</span>
-          {total >= 299 ? <b className="free">Grátis</b> : <b>a calcular</b>}
+          {total >= 299 ? (
+            <b className="free">Grátis</b>
+          ) : (
+            <span className="cd-frete-right"><b>a calcular</b> <FreteCalc subtotal={total} /></span>
+          )}
         </div>
 
         <div className="cs-coupon">
