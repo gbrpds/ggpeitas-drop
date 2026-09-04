@@ -11,7 +11,15 @@ export const runtime = "nodejs";
  */
 function verifySignature(req: Request, dataId: string | null): boolean {
   const secret = process.env.MP_WEBHOOK_SECRET;
-  if (!secret) return true; // sem segredo configurado → não valida (fase de teste)
+  if (!secret) {
+    // fail-closed em produção: sem segredo configurado, recusa a notificação.
+    // Em dev/preview, deixa passar para facilitar os testes.
+    if (process.env.NODE_ENV === "production") {
+      console.error("MP_WEBHOOK_SECRET ausente em produção — webhook recusado.");
+      return false;
+    }
+    return true;
+  }
 
   const sig = req.headers.get("x-signature");
   const requestId = req.headers.get("x-request-id") ?? "";

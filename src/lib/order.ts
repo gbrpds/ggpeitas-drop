@@ -2,6 +2,7 @@ import { eq, like, and, lt } from "drizzle-orm";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { users, orders } from "@/db/schema";
+import type { NewOrder } from "@/db/schema";
 
 type Db = ReturnType<typeof getDb>;
 
@@ -34,7 +35,7 @@ export async function expireStaleOrders(db: Db): Promise<void> {
   }
 }
 
-/** Gera o número do pedido no padrão AAAAMM + contador de 4 dígitos (por mês). */
+/** Gera o número do pedido no padrão AAAAMM + sequência de 4 dígitos (por mês). */
 export async function genOrderNumber(db: Db): Promise<string> {
   const now = new Date();
   const prefix = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -42,8 +43,42 @@ export async function genOrderNumber(db: Db): Promise<string> {
     .select({ number: orders.number })
     .from(orders)
     .where(like(orders.number, `${prefix}%`));
-  const seq = rows.length + 1;
-  return `${prefix}${String(seq).padStart(4, "0")}`;
+  // usa o MAIOR sufixo existente + 1 (robusto a exclusões, ao contrário de count)
+  let maxSeq = 0;
+  for (const r of rows) {
+    const seq = Number((r.number ?? "").slice(prefix.length));
+    if (Number.isFinite(seq) && seq > maxSeq) maxSeq = seq;
+  }
+  return `${prefix}${String(maxSeq + 1).padStart(4, "0")}`;
+}
+
+function isUniqueViolation(e: unknown): boolean {
+  const msg = (e as { message?: string })?.message ?? "";
+  return /duplicate key|unique constraint|23505/i.test(msg);
+}
+
+/**
+ * Cria o pedido gerando um `number` único, com retry caso duas requisições
+ * peguem o mesmo número ao mesmo tempo (a coluna `number` é UNIQUE no banco).
+ */
+export async function createOrder(
+  db: Db,
+  base: Omit<NewOrder, "number">,
+): Promise<{ id: string; number: string }> {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const number = await genOrderNumber(db);
+    try {
+      const [row] = await db
+        .insert(orders)
+        .values({ ...base, number })
+        .returning({ id: orders.id });
+      return { id: row.id, number };
+    } catch (e) {
+      if (isUniqueViolation(e) && attempt < 5) continue; // colisão → tenta o próximo número
+      throw e;
+    }
+  }
+  throw new Error("Não foi possível gerar o número do pedido.");
 }
 
 /** Carrega um pedido que pertence ao usuário logado (ou null). */

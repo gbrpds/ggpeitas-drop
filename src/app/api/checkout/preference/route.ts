@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getDb } from "@/db";
-import { orders } from "@/db/schema";
 import { mpCreatePreference } from "@/lib/mp";
 import { priceOrder, PricingError } from "@/lib/pricing";
 import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schema";
-import { resolveUserId, genOrderNumber } from "@/lib/order";
+import { resolveUserId, createOrder } from "@/lib/order";
 
 export const runtime = "nodejs";
 
@@ -42,22 +41,17 @@ export async function POST(req: Request) {
   let number: string | null = null;
   let orderId: string | null = null;
   try {
-    const db = getDb();
-    number = await genOrderNumber(db);
-    const [row] = await db
-      .insert(orders)
-      .values({
-        number,
-        userId,
-        status: "pending",
-        paymentMethod: "card",
-        totalCents: Math.round(amount * 100),
-        items,
-        customer,
-        shipping,
-      })
-      .returning({ id: orders.id });
-    orderId = row?.id ?? null;
+    const created = await createOrder(getDb(), {
+      userId,
+      status: "pending",
+      paymentMethod: "card",
+      totalCents: Math.round(amount * 100),
+      items,
+      customer,
+      shipping,
+    });
+    number = created.number;
+    orderId = created.id;
   } catch (e) {
     console.error("save preference order error", e);
   }
@@ -87,7 +81,7 @@ export async function POST(req: Request) {
   if (!mp.ok) {
     console.error("MP preference error", mp.data);
     return NextResponse.json(
-      { error: "Não foi possível abrir o checkout do Mercado Pago.", detail: mp.data?.message },
+      { error: "Não foi possível abrir o checkout do Mercado Pago." },
       { status: 502 },
     );
   }
