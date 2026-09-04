@@ -7,6 +7,7 @@ import { useCart } from "@/store/cart";
 import { useUI } from "@/store/ui";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
+import { promoDiscountFromItems, PROMO_TITLE } from "@/lib/promo";
 
 export function CartDrawer() {
   const open = useUI((s) => s.cartOpen);
@@ -30,7 +31,12 @@ export function CartDrawer() {
 
   const list = mounted ? items : [];
   const count = list.reduce((n, i) => n + i.qty, 0);
-  const total = list.reduce((s, i) => s + i.price * i.qty, 0);
+  const subtotal = list.reduce((s, i) => s + i.price * i.qty, 0);
+  const discount =
+    promoDiscountFromItems(
+      list.map((i) => ({ priceCents: Math.round(i.price * 100), qty: i.qty, promo: !!i.promo })),
+    ) / 100;
+  const total = subtotal - discount;
   const FRETE_MIN = 299;
 
   return (
@@ -108,7 +114,10 @@ export function CartDrawer() {
             </div>
 
             <div className="cd-foot">
-              <div className="cd-line"><span>Subtotal</span><b>{brl(total)}</b></div>
+              <div className="cd-line"><span>Subtotal</span><b>{brl(subtotal)}</b></div>
+              {discount > 0 && (
+                <div className="cd-line cd-promo"><span>{PROMO_TITLE}</span><b>− {brl(discount)}</b></div>
+              )}
               <div className="cd-line"><span>Frete</span><b className="free">Grátis</b></div>
               <div className="cd-total"><span>Total</span><b>{brl(total)}</b></div>
               <p className="cd-parc">ou em até 3x de {brl(total / 3)} sem juros</p>

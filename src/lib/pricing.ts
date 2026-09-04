@@ -1,6 +1,7 @@
 import { inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import { products } from "@/db/schema";
+import { promoDiscountFromItems } from "@/lib/promo";
 
 export type ClientItem = {
   productId: string;
@@ -26,6 +27,8 @@ export class PricingError extends Error {}
  * cliente. Lança PricingError se algum produto não existe / está inativo.
  */
 export async function priceOrder(items: ClientItem[]): Promise<{
+  grossCents: number;
+  discountCents: number;
   totalCents: number;
   items: PricedItem[];
 }> {
@@ -35,15 +38,18 @@ export async function priceOrder(items: ClientItem[]): Promise<{
   const rows = await db.select().from(products).where(inArray(products.id, ids));
   const byId = new Map(rows.map((r) => [r.id, r]));
 
-  let totalCents = 0;
+  let grossCents = 0;
+  const promoItems: { priceCents: number; qty: number; promo: boolean }[] = [];
   const priced: PricedItem[] = items.map((i) => {
     const p = byId.get(i.productId);
     if (!p) throw new PricingError("Produto não encontrado.");
     if (!p.active) throw new PricingError(`"${p.name}" está indisponível.`);
+    if (!p.inStock) throw new PricingError(`"${p.name}" está sem estoque.`);
     if (i.qty < 1 || i.qty > 20 || !Number.isInteger(i.qty)) {
       throw new PricingError("Quantidade inválida.");
     }
-    totalCents += p.priceCents * i.qty; // inteiro, em centavos — sem float
+    grossCents += p.priceCents * i.qty; // inteiro, em centavos — sem float
+    promoItems.push({ priceCents: p.priceCents, qty: i.qty, promo: p.promo3x2 });
     const suffix = [i.size, i.version].filter(Boolean).join(" · ");
     return {
       productId: p.id,
@@ -55,5 +61,6 @@ export async function priceOrder(items: ClientItem[]): Promise<{
     };
   });
 
-  return { totalCents, items: priced };
+  const discountCents = promoDiscountFromItems(promoItems); // Leve 3, Pague 2
+  return { grossCents, discountCents, totalCents: grossCents - discountCents, items: priced };
 }

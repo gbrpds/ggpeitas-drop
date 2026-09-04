@@ -1022,6 +1022,24 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 /* nota nos cards */
 .card-rate { display:flex; align-items:center; gap:5px; margin:2px 0 4px; font-size:.74rem; color:var(--muted); }
 
+/* linha de desconto (carrinho/checkout/pedido) */
+.cd-promo span, .cd-promo b { color:var(--green-deep); font-weight:700; }
+
+/* página /promocao */
+.promo-hero { text-align:center; padding:26px 0 22px; }
+.promo-hero-eb { display:inline-flex; align-items:center; gap:6px; background:var(--yellow); color:#241b00;
+  font-family:var(--disp); font-weight:800; text-transform:uppercase; letter-spacing:.05em; font-size:.72rem;
+  padding:5px 12px; border-radius:99px; }
+.promo-hero h1 { font-family:var(--mega), var(--disp); font-weight:900; text-transform:uppercase; font-size:2.6rem;
+  line-height:1; margin:12px 0 8px; letter-spacing:.01em; }
+.promo-hero > p { max-width:640px; margin:0 auto; color:var(--muted); font-size:.95rem; line-height:1.55; }
+.promo-hero > p b { color:var(--ink); }
+.promo-hero-steps { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:16px; }
+.promo-hero-steps span { display:inline-flex; align-items:center; gap:6px; font-size:.82rem; color:var(--ink);
+  background:var(--surface); border:1px solid var(--line); border-radius:99px; padding:7px 14px; }
+.promo-hero-steps svg { color:var(--green); }
+@media (max-width:560px){ .promo-hero h1 { font-size:2rem; } }
+
 /* selos de confiança (produto) */
 .trust-badges { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:22px auto; }
 .trust-badge { display:flex; align-items:center; gap:11px; background:var(--surface); border:1px solid var(--line);

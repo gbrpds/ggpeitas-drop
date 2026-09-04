@@ -26,6 +26,7 @@ export type ProductInitial = {
   images: string[];
   active: boolean;
   inStock: boolean;
+  promo3x2: boolean;
 };
 
 const centsToStr = (c?: number | null) => (c ? (c / 100).toFixed(2).replace(".", ",") : "");
@@ -41,6 +42,7 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
   const [images, setImages] = useState<string[]>(initial?.images ?? []);
   const [active, setActive] = useState(initial?.active ?? true);
   const [inStock, setInStock] = useState(initial?.inStock ?? true);
+  const [promo3x2, setPromo3x2] = useState(initial?.promo3x2 ?? false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,6 +97,7 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
           images,
           active,
           inStock,
+          promo3x2,
         }),
       });
       const data = await res.json();
@@ -184,6 +187,14 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
         <label className="adm-switch">
           <input type="checkbox" checked={inStock} onChange={(e) => setInStock(e.target.checked)} />
           <span>{inStock ? "Em estoque" : "Sem estoque (avise-me quando voltar)"}</span>
+        </label>
+      </div>
+
+      <div className="co-field adm-active">
+        <label>Promoção “Leve 3, Pague 2”</label>
+        <label className="adm-switch">
+          <input type="checkbox" checked={promo3x2} onChange={(e) => setPromo3x2(e.target.checked)} />
+          <span>{promo3x2 ? "Participa da promoção" : "Fora da promoção"}</span>
         </label>
       </div>
 

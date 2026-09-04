@@ -55,6 +55,7 @@ export default async function EditarProdutoPage({ params }: { params: Promise<{ 
                   images: (row.images as string[]) ?? [],
                   active: row.active,
                   inStock: row.inStock,
+                  promo3x2: row.promo3x2,
                 }}
               />
             </>

@@ -13,6 +13,7 @@ export type Product = {
   version?: string;
   rating?: { avg: number; count: number }; // média e total de avaliações
   inStock?: boolean; // false = sem estoque (dropshipping) → "avise-me quando voltar"
+  promo3x2?: boolean; // participa do "Leve 3, Pague 2"
 };
 
 export type ProductSection = {

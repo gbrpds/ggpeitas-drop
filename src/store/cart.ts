@@ -12,6 +12,7 @@ export type CartItem = {
   qty: number;
   colors: Product["colors"];
   image?: string; // foto principal (quando o produto tem foto real)
+  promo?: boolean; // participa do "Leve 3, Pague 2"
   size?: string;
   version?: string;
 };
@@ -61,6 +62,7 @@ export const useCart = create<CartState>()(
                 qty,
                 colors: p.colors,
                 image: p.images?.[0],
+                promo: p.promo3x2,
                 size,
                 version,
               },

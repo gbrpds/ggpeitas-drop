@@ -46,7 +46,19 @@ function mapRow(r: Row): Product {
     team: r.team ?? undefined,
     version: r.version ?? undefined,
     inStock: r.inStock,
+    promo3x2: r.promo3x2,
   };
+}
+
+/** Produtos ativos participando do "Leve 3, Pague 2". */
+export async function getPromoProducts(): Promise<Product[]> {
+  try {
+    const rows = await allRows();
+    if (rows.length) return withRatings(rows.filter((r) => r.active && r.promo3x2).map(mapRow));
+  } catch {
+    /* sem banco */
+  }
+  return [];
 }
 
 /** Todos os produtos (ativos e inativos) — usado p/ decidir o fallback ao mock. */

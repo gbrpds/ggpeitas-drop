@@ -36,8 +36,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const origin = new URL(req.url).origin;
   const backUrl = `${origin}/pedido/${order.id}`;
 
+  // total líquido do pedido (já com Leve 3, Pague 2, se houver)
+  const netAmount = order.totalCents / 100;
+  const mpItems =
+    order.discountCents > 0
+      ? [{ title: `Pedido GG Peitas #${order.number} (Leve 3, Pague 2)`, quantity: 1, unit_price: netAmount }]
+      : items.map((i) => ({ title: i.name, quantity: i.qty, unit_price: i.price }));
+
   const mp = await mpCreatePreference({
-    items: items.map((i) => ({ title: i.name, quantity: i.qty, unit_price: i.price })),
+    items: mpItems,
     payer: {
       name: firstName,
       surname: rest.join(" ") || firstName,

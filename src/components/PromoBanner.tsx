@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { PROMO_HREF } from "@/lib/promo";
 
 export function PromoBanner() {
   return (
@@ -11,10 +13,10 @@ export function PromoBanner() {
             Em toda a coleção de clubes nacionais. Monte o kit da família e economize de verdade.
           </p>
         </div>
-        <button className="btn btn-g" style={{ background: "var(--yellow)", color: "#241b00" }}>
+        <Link className="btn btn-g" href={PROMO_HREF} style={{ background: "var(--yellow)", color: "#241b00" }}>
           Aproveitar agora
           <ArrowRight size={16} strokeWidth={2.4} />
-        </button>
+        </Link>
       </div>
     </section>
   );

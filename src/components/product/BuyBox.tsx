@@ -142,7 +142,7 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
       </div>
 
       <CorreiosBox />
-      <PromoRibbon />
+      {product.promo3x2 && <PromoRibbon />}
       </>
       )}
 

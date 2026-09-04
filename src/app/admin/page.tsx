@@ -18,7 +18,7 @@ export const metadata = { title: "Admin — GG Peitas" };
 export default async function AdminPage() {
   const ok = await isAdmin();
 
-  let rows: { id: string; name: string; category: string; priceCents: number; active: boolean; inStock: boolean; images: string[] }[] = [];
+  let rows: { id: string; name: string; category: string; priceCents: number; active: boolean; inStock: boolean; promo3x2: boolean; images: string[] }[] = [];
   if (ok) {
     const db = getDb();
     const data = await db.select().from(products).orderBy(desc(products.createdAt));
@@ -29,6 +29,7 @@ export default async function AdminPage() {
       priceCents: p.priceCents,
       active: p.active,
       inStock: p.inStock,
+      promo3x2: p.promo3x2,
       images: (p.images as string[]) ?? [],
     }));
   }

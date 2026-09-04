@@ -22,7 +22,8 @@ export const orders = pgTable("orders", {
   userId: uuid("user_id"), // nulo = compra como visitante
   status: text("status").default("pending").notNull(), // pending | approved | cancelled | rejected
   paymentMethod: text("payment_method").notNull(), // pix | card
-  totalCents: integer("total_cents").notNull(),
+  totalCents: integer("total_cents").notNull(), // total líquido (já com desconto)
+  discountCents: integer("discount_cents").notNull().default(0), // desconto Leve 3 Pague 2
   items: jsonb("items").notNull(),
   customer: jsonb("customer").notNull(), // { name, cpf, email, phone }
   shipping: jsonb("shipping").notNull(), // { cep, rua, numero, bairro, cidade, uf }
@@ -47,6 +48,7 @@ export const products = pgTable("products", {
   images: jsonb("images").notNull().default([]), // string[] de URLs (Vercel Blob)
   active: boolean("active").notNull().default(true), // aparece na loja
   inStock: boolean("in_stock").notNull().default(true), // dropshipping: disponível p/ compra
+  promo3x2: boolean("promo3x2").notNull().default(false), // participa do "Leve 3, Pague 2"
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

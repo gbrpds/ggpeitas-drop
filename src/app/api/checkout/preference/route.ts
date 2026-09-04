@@ -28,10 +28,12 @@ export async function POST(req: Request) {
   const { customer, shipping } = parsed.data;
   // PREÇO REAL vindo do banco — nunca do cliente
   let amount: number;
+  let discountCents = 0;
   let items: Awaited<ReturnType<typeof priceOrder>>["items"];
   try {
     const priced = await priceOrder(parsed.data.items);
-    amount = priced.totalCents / 100;
+    amount = priced.totalCents / 100; // já líquido (Leve 3, Pague 2)
+    discountCents = priced.discountCents;
     items = priced.items;
   } catch (e) {
     const msg = e instanceof PricingError ? e.message : "Não foi possível validar o pedido.";
@@ -50,6 +52,7 @@ export async function POST(req: Request) {
       status: "pending",
       paymentMethod: "card",
       totalCents: Math.round(amount * 100),
+      discountCents,
       items,
       customer,
       shipping,
@@ -68,8 +71,15 @@ export async function POST(req: Request) {
   const origin = new URL(req.url).origin;
   const backUrl = `${origin}/pedido/${orderId}`;
 
+  // Com desconto (Leve 3, Pague 2) consolida em 1 item pelo total líquido,
+  // pois o Checkout Pro soma os itens e não aceita linha de desconto negativa.
+  const mpItems =
+    discountCents > 0
+      ? [{ title: `Pedido GG Peitas · ${items.length} itens (Leve 3, Pague 2)`, quantity: 1, unit_price: amount }]
+      : items.map((i) => ({ title: i.name, quantity: i.qty, unit_price: i.price }));
+
   const mp = await mpCreatePreference({
-    items: items.map((i) => ({ title: i.name, quantity: i.qty, unit_price: i.price })),
+    items: mpItems,
     payer: {
       name: firstName,
       surname: rest.join(" ") || firstName,

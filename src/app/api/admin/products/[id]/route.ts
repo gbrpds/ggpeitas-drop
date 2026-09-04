@@ -18,6 +18,7 @@ const updateSchema = z.object({
   images: z.array(z.string().url()).default([]),
   active: z.boolean().default(true),
   inStock: z.boolean().default(true),
+  promo3x2: z.boolean().default(false),
 });
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -68,6 +69,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const patch: Record<string, unknown> = {};
     if ("active" in body) patch.active = !!body.active;
     if ("inStock" in body) patch.inStock = !!body.inStock;
+    if ("promo3x2" in body) patch.promo3x2 = !!body.promo3x2;
     if (Object.keys(patch).length === 0) {
       return NextResponse.json({ error: "Nada para atualizar." }, { status: 400 });
     }

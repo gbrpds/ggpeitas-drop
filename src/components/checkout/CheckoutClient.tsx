@@ -9,6 +9,7 @@ import { User, Truck, CreditCard, QrCode, Check, ArrowRight, ArrowLeft, Shopping
 import { useCart } from "@/store/cart";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
+import { promoDiscountFromItems, PROMO_TITLE } from "@/lib/promo";
 import { PixDisplay } from "./PixDisplay";
 
 type Customer = { name: string; cpf: string; email: string; phone: string };
@@ -65,7 +66,15 @@ export function CheckoutClient() {
     return () => clearInterval(poll);
   }, [pix?.paymentId, pix?.orderId, router]);
 
-  const total = useMemo(() => items.reduce((s, i) => s + i.price * i.qty, 0), [items]);
+  const subtotal = useMemo(() => items.reduce((s, i) => s + i.price * i.qty, 0), [items]);
+  const discount = useMemo(
+    () =>
+      promoDiscountFromItems(
+        items.map((i) => ({ priceCents: Math.round(i.price * 100), qty: i.qty, promo: !!i.promo })),
+      ) / 100,
+    [items],
+  );
+  const total = subtotal - discount;
   const orderPayload = () => ({
     // só o que identifica o item — o servidor recalcula o preço real
     items: items.map((i) => ({ productId: i.productId, qty: i.qty, size: i.size, version: i.version })),
@@ -330,6 +339,10 @@ export function CheckoutClient() {
             </div>
           ))}
         </div>
+        <div className="cs-line"><span>Subtotal</span><b>{brl(subtotal)}</b></div>
+        {discount > 0 && (
+          <div className="cs-line cd-promo"><span>{PROMO_TITLE}</span><b>− {brl(discount)}</b></div>
+        )}
         <div className="cs-line"><span>Frete</span><b className="free">Grátis</b></div>
         <div className="cs-total"><span>Total</span><b>{brl(total)}</b></div>
       </aside>

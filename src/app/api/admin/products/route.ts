@@ -16,6 +16,7 @@ const schema = z.object({
   images: z.array(z.string().url()).default([]),
   active: z.boolean().default(true),
   inStock: z.boolean().default(true),
+  promo3x2: z.boolean().default(false),
 });
 
 export async function POST(req: Request) {

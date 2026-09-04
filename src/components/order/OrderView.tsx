@@ -14,6 +14,7 @@ type Order = {
   status: string;
   paymentMethod: string;
   totalCents: number;
+  discountCents?: number;
   items: Item[];
   trackingCode?: string | null;
   shippingStatus?: string | null;
@@ -96,6 +97,9 @@ export function OrderView({ order }: { order: Order }) {
           </div>
         ))}
       </div>
+      {!!order.discountCents && order.discountCents > 0 && (
+        <div className="cs-line cd-promo"><span>Leve 3, Pague 2</span><b>− {brl(order.discountCents / 100)}</b></div>
+      )}
       <div className="cs-total"><span>Total</span><b>{brl(total)}</b></div>
     </div>
   );

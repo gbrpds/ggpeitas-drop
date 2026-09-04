@@ -14,6 +14,7 @@ type Row = {
   priceCents: number;
   active: boolean;
   inStock: boolean;
+  promo3x2: boolean;
   images: string[];
 };
 
@@ -61,6 +62,20 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
     }
   }
 
+  async function togglePromo(id: string, promo3x2: boolean) {
+    setBusy(id);
+    try {
+      await fetch(`/api/admin/products/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ promo3x2: !promo3x2 }),
+      });
+      router.refresh();
+    } finally {
+      setBusy(null);
+    }
+  }
+
   if (rows.length === 0) {
     return <div className="cart-empty"><h2>Nenhum produto ainda</h2><p>Clique em “Novo produto” para cadastrar o primeiro.</p></div>;
   }
@@ -86,6 +101,11 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
             <input type="checkbox" checked={p.inStock} disabled={busy === p.id} onChange={() => toggleStock(p.id, p.inStock)} />
             <span className={`adm-toggle-track${p.inStock ? " on" : ""}`}><span className="adm-toggle-dot" /></span>
             <span className="adm-toggle-label">{p.inStock ? "Estoque" : "Esgotado"}</span>
+          </label>
+          <label className="adm-toggle" title={p.promo3x2 ? "Na promoção Leve 3 Pague 2" : "Fora da promoção"}>
+            <input type="checkbox" checked={p.promo3x2} disabled={busy === p.id} onChange={() => togglePromo(p.id, p.promo3x2)} />
+            <span className={`adm-toggle-track${p.promo3x2 ? " on" : ""}`}><span className="adm-toggle-dot" /></span>
+            <span className="adm-toggle-label">3x2</span>
           </label>
           <Link className="adm-edit" href={`/admin/produto/${p.id}`} aria-label="Editar"><Pencil size={16} /></Link>
           <button className="adm-del" onClick={() => del(p.id, p.name)} disabled={busy === p.id} aria-label="Excluir">
