@@ -121,7 +121,9 @@ nav.main li:hover > .navlink .chev { transform:rotate(180deg); color:var(--green
 .drop { position:absolute; top:100%; left:0; min-width:230px; background:var(--surface);
   border:1px solid var(--line); border-top:3px solid var(--green); border-radius:0 0 10px 10px;
   box-shadow:0 16px 34px -14px rgba(0,0,0,.35); padding:8px; opacity:0; visibility:hidden;
-  transform:translateY(6px); transition:.16s; z-index:70; }
+  transform:translateY(6px); transition:.16s; z-index:70;
+  display:flex; gap:6px; align-items:flex-start; max-height:min(76vh, 620px); overflow-y:auto; }
+.drop > div { min-width:172px; display:flex; flex-direction:column; }
 nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(0); }
 .drop a { display:block; padding:8px 10px; border-radius:7px; font-size:.86rem; font-weight:500; color:var(--ink); }
 .drop a:hover { background:var(--ground); color:var(--green-deep); }
