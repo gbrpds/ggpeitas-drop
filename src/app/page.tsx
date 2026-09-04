@@ -3,7 +3,6 @@ import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
 import { Banner } from "@/components/Banner";
 import { TrustStrip } from "@/components/TrustStrip";
-import { CategoryCircles } from "@/components/CategoryCircles";
 import { ProductCarousel } from "@/components/ProductCarousel";
 import { PromoBanner } from "@/components/PromoBanner";
 import { FooterTrust } from "@/components/FooterTrust";
@@ -27,7 +26,6 @@ export default async function Home() {
       <Banner />
       <HomeTeamSection />
       <TrustStrip />
-      <CategoryCircles />
 
       {/* Primeira seção, depois a promo, depois o restante */}
       {first && <ProductCarousel section={first} />}
