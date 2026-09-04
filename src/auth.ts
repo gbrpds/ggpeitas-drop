@@ -6,6 +6,9 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import { isAdminEmail } from "@/lib/admin-emails";
+import { sendEmail } from "@/lib/email";
+import { welcomeEmail } from "@/lib/email-templates";
+import { baseUrl } from "@/lib/site-url";
 
 export const googleEnabled =
   !!process.env.AUTH_GOOGLE_ID && !!process.env.AUTH_GOOGLE_SECRET;
@@ -59,6 +62,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             image: user.image ?? null,
             provider: "google",
           });
+          // boas-vindas só no primeiro login Google (não bloqueia o acesso se falhar)
+          try {
+            const tpl = welcomeEmail(user.name ?? "", baseUrl());
+            await sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
+          } catch (e) {
+            console.error("google welcome email error", e);
+          }
         }
       }
       return true;
