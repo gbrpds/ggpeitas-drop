@@ -49,11 +49,14 @@
   --font-mega: var(--mega);
 }
 
-html { background:var(--ground); scroll-behavior:smooth; }
+html { background:var(--ground); scroll-behavior:smooth; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 body {
   margin:0; background:var(--ground); color:var(--ink); font-family:var(--body);
   -webkit-font-smoothing:antialiased; line-height:1.45; font-size:14px;
+  overflow-x:hidden; /* evita rolagem/zoom horizontal acidental no mobile */
 }
+*, *::before, *::after { box-sizing:border-box; }
+img, svg, video { max-width:100%; }
 .logo { width:auto; display:block; }
 .brand .logo { height:64px; }
 .fbrand .logo { height:52px; }
@@ -1270,6 +1273,12 @@ main { animation: pageIn .5s var(--ease-out) both; }
 .reveal-ready .reveal { opacity: 0; transform: translateY(24px); will-change: opacity, transform;
   transition: opacity .5s var(--ease-out), transform .6s var(--ease-out); }
 .reveal-ready .reveal.in { opacity: 1; transform: none; }
+
+/* iOS: campos com fonte < 16px causam zoom automático ao focar (e o zoom
+   "gruda" ao trocar de página). Forçar 16px no mobile evita isso. */
+@media (max-width: 768px) {
+  input, select, textarea { font-size: 16px !important; }
+}
 
 @media (prefers-reduced-motion:reduce) {
   html { scroll-behavior: auto; }

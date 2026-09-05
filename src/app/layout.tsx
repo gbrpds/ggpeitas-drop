@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Anton, Archivo, Inter } from "next/font/google";
 import "./globals.css";
 import { JerseySymbol } from "@/components/Jersey";
@@ -28,6 +28,13 @@ export const metadata: Metadata = {
   title: "GG Peitas — Camisas de Futebol",
   description:
     "Camisas de clubes e seleções do mundo todo. Frete grátis, até 12x sem juros e envio para todo o Brasil.",
+};
+
+// Viewport explícito — evita zoom estranho ao trocar de página no mobile.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 // Aplica o tema salvo antes da pintura, evitando "flash" de tema errado.
