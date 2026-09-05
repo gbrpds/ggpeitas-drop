@@ -22,3 +22,13 @@ export function shippingForUf(uf: string): { cents: number; label: string } {
   const r = byUf.get(uf.toUpperCase()) ?? REGIONS[3];
   return { cents: r.cents, label: r.label };
 }
+
+/**
+ * Frete cobrado no pedido: grátis quando o valor das mercadorias (em centavos,
+ * já com personalização e pós "Leve 3, Pague 2") atinge o mínimo; senão, a
+ * tarifa da região da UF.
+ */
+export function freightCentsFor(uf: string, goodsBaseCents: number): number {
+  if (goodsBaseCents >= FREE_SHIPPING_MIN * 100) return 0;
+  return shippingForUf(uf).cents;
+}

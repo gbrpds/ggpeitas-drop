@@ -1014,6 +1014,19 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 /* nota nos cards */
 .card-rate { display:flex; align-items:center; gap:5px; margin:2px 0 4px; font-size:.74rem; color:var(--muted); }
 
+/* personalização (nome + número) no produto */
+.perso { margin:14px 0 4px; border:1px solid var(--line); border-radius:12px; padding:12px 14px; background:var(--surface); }
+.perso-toggle { display:flex; align-items:center; gap:9px; cursor:pointer; font-size:.9rem; }
+.perso-toggle input { width:17px; height:17px; accent-color:var(--green); }
+.perso-toggle span { display:inline-flex; align-items:center; gap:6px; }
+.perso-toggle svg { color:var(--green-deep); }
+.perso-fee { margin-left:auto; color:var(--green-deep); font-family:var(--disp); font-weight:800; font-size:.85rem; }
+.perso-fields { display:flex; gap:8px; margin-top:10px; }
+.perso-fields input { border:1px solid var(--line); background:var(--ground); color:var(--ink);
+  border-radius:9px; padding:10px 12px; font-size:.9rem; text-transform:uppercase; }
+.perso-fields input:first-child { flex:1; }
+.perso-fields input:last-child { width:70px; text-align:center; }
+
 /* calcular frete (link verde + modal) */
 .cd-frete-right { display:inline-flex; align-items:center; gap:8px; }
 .cd-frete-calc { background:none; border:0; color:var(--green-deep); font-size:.76rem; font-weight:700;

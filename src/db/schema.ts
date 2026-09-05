@@ -26,6 +26,7 @@ export const orders = pgTable("orders", {
   discountCents: integer("discount_cents").notNull().default(0), // desconto Leve 3 Pague 2
   couponCode: text("coupon_code"), // cupom aplicado (se houver)
   couponCents: integer("coupon_cents").notNull().default(0), // desconto do cupom
+  freightCents: integer("freight_cents").notNull().default(0), // frete cobrado (0 = grátis)
   items: jsonb("items").notNull(),
   customer: jsonb("customer").notNull(), // { name, cpf, email, phone }
   shipping: jsonb("shipping").notNull(), // { cep, rua, numero, bairro, cidade, uf }

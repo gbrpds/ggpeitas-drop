@@ -10,6 +10,7 @@ import { useCart } from "@/store/cart";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
 import { promoDiscountFromItems, PROMO_TITLE } from "@/lib/promo";
+import { shippingForUf, FREE_SHIPPING_MIN } from "@/lib/shipping";
 import { FreteCalc } from "@/components/FreteCalc";
 import { PixDisplay } from "./PixDisplay";
 
@@ -79,12 +80,27 @@ export function CheckoutClient() {
       ) / 100,
     [items],
   );
-  const total = subtotal - discount; // pós Leve 3, Pague 2
+  const total = subtotal - discount; // pós Leve 3, Pague 2 (personalização inclusa no price)
   const couponValue = coupon ? coupon.discountCents / 100 : 0;
-  const finalTotal = Math.max(0, total - couponValue);
+
+  // frete pela UF do endereço (grátis acima do mínimo); null = ainda sem UF
+  const uf = shipping.uf?.trim().toUpperCase();
+  const freeShip = total >= FREE_SHIPPING_MIN;
+  const freightValue = freeShip ? 0 : uf && uf.length === 2 ? shippingForUf(uf).cents / 100 : null;
+
+  const finalTotal = Math.max(0, total - couponValue + (freightValue ?? 0));
+
+  const itemsPayload = () =>
+    items.map((i) => ({
+      productId: i.productId,
+      qty: i.qty,
+      size: i.size,
+      version: i.version,
+      customName: i.customName,
+      customNumber: i.customNumber,
+    }));
   const orderPayload = () => ({
-    // só o que identifica o item — o servidor recalcula o preço real
-    items: items.map((i) => ({ productId: i.productId, qty: i.qty, size: i.size, version: i.version })),
+    items: itemsPayload(), // o servidor recalcula o preço real
     customer,
     shipping,
     couponCode: coupon?.code,
@@ -99,10 +115,7 @@ export function CheckoutClient() {
       const res = await fetch("/api/coupon/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code,
-          items: items.map((i) => ({ productId: i.productId, qty: i.qty, size: i.size, version: i.version })),
-        }),
+        body: JSON.stringify({ code, items: itemsPayload() }),
       });
       const data = await res.json();
       if (!data.ok) {
@@ -391,8 +404,10 @@ export function CheckoutClient() {
         )}
         <div className="cs-line">
           <span>Frete</span>
-          {total >= 299 ? (
+          {freeShip ? (
             <b className="free">Grátis</b>
+          ) : freightValue != null ? (
+            <b>{brl(freightValue)}</b>
           ) : (
             <span className="cd-frete-right"><b>a calcular</b> <FreteCalc subtotal={total} /></span>
           )}

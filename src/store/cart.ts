@@ -4,6 +4,9 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Product } from "@/data/products";
 
+/** Valor adicional da personalização (nome + número), por camisa — espelha o servidor. */
+export const CUSTOM_FEE = 20;
+
 export type CartItem = {
   id: string;
   productId: string; // id cru do produto (para o servidor recalcular o preço real)
@@ -15,12 +18,16 @@ export type CartItem = {
   promo?: boolean; // participa do "Leve 3, Pague 2"
   size?: string;
   version?: string;
+  customName?: string; // personalização (nome)
+  customNumber?: string; // personalização (número)
 };
 
 export type AddOptions = {
   size?: string;
   version?: string;
   qty?: number;
+  customName?: string;
+  customNumber?: string;
 };
 
 type CartState = {
@@ -39,9 +46,10 @@ export const useCart = create<CartState>()(
       items: [],
       addItem: (p, opts = {}) =>
         set((state) => {
-          const { size, version, qty = 1 } = opts;
-          // id único por variação (produto + tamanho + versão)
-          const id = [p.id, size, version].filter(Boolean).join("-");
+          const { size, version, qty = 1, customName, customNumber } = opts;
+          const persLabel = [customName?.trim(), customNumber?.trim()].filter(Boolean).join(" ");
+          // id único por variação (produto + tamanho + versão + personalização)
+          const id = [p.id, size, version, persLabel].filter(Boolean).join("-");
           const found = state.items.find((i) => i.id === id);
           if (found) {
             return {
@@ -51,20 +59,24 @@ export const useCart = create<CartState>()(
             };
           }
           const suffix = [size, version].filter(Boolean).join(" · ");
+          let name = suffix ? `${p.name} (${suffix})` : p.name;
+          if (persLabel) name += ` — ${persLabel}`;
           return {
             items: [
               ...state.items,
               {
                 id,
                 productId: p.id,
-                name: suffix ? `${p.name} (${suffix})` : p.name,
-                price: p.now,
+                name,
+                price: p.now + (persLabel ? CUSTOM_FEE : 0), // +R$20 se personalizada
                 qty,
                 colors: p.colors,
                 image: p.images?.[0],
                 promo: p.promo3x2,
                 size,
                 version,
+                customName: customName?.trim() || undefined,
+                customNumber: customNumber?.trim() || undefined,
               },
             ],
           };

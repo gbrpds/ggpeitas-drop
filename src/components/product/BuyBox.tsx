@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDown, ShoppingCart, Sparkles, Check } from "lucide-react";
+import { ArrowDown, ShoppingCart, Sparkles, Check, Shirt } from "lucide-react";
 import type { Product } from "@/data/products";
 import { brl, parcela, desconto } from "@/lib/format";
 import { SIZES } from "@/lib/product";
-import { useCart } from "@/store/cart";
+import { useCart, CUSTOM_FEE } from "@/store/cart";
 import { Stars } from "@/components/reviews/Stars";
 import type { ReviewSummary } from "@/lib/reviews";
 import { CorreiosBox } from "./CorreiosBox";
@@ -20,13 +20,22 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [provOpen, setProvOpen] = useState(false);
+  const [personalize, setPersonalize] = useState(false);
+  const [customName, setCustomName] = useState("");
+  const [customNumber, setCustomNumber] = useState("");
 
   const off = desconto(product.now, product.was);
   const economia = product.was ? product.was - product.now : 0;
   const outOfStock = product.inStock === false;
 
   const add = () => {
-    addItem(product, { size, version, qty });
+    addItem(product, {
+      size,
+      version,
+      qty,
+      customName: personalize ? customName : undefined,
+      customNumber: personalize ? customNumber : undefined,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
   };
@@ -83,6 +92,32 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Personalização */}
+      <div className="perso">
+        <label className="perso-toggle">
+          <input type="checkbox" checked={personalize} onChange={(e) => setPersonalize(e.target.checked)} />
+          <span><Shirt size={16} /> Personalizar nome e número</span>
+          <b className="perso-fee">+ {brl(CUSTOM_FEE)}</b>
+        </label>
+        {personalize && (
+          <div className="perso-fields">
+            <input
+              value={customName}
+              onChange={(e) => setCustomName(e.target.value.toUpperCase().slice(0, 20))}
+              placeholder="Nome (ex: MESSI)"
+              maxLength={20}
+            />
+            <input
+              value={customNumber}
+              onChange={(e) => setCustomNumber(e.target.value.replace(/\D/g, "").slice(0, 3))}
+              placeholder="Nº"
+              inputMode="numeric"
+              maxLength={3}
+            />
+          </div>
+        )}
       </div>
 
       {/* Quantidade */}

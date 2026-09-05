@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { mpCreatePreference } from "@/lib/mp";
 import { priceOrder, PricingError } from "@/lib/pricing";
 import { validateCoupon } from "@/lib/coupons";
+import { freightCentsFor } from "@/lib/shipping";
 import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schema";
 import { resolveUserId, createOrder } from "@/lib/order";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
@@ -29,12 +30,12 @@ export async function POST(req: Request) {
 
   const { customer, shipping } = parsed.data;
   // PREÇO REAL vindo do banco — nunca do cliente
-  let amount: number;
+  let goodsNetCents = 0;
   let discountCents = 0;
   let items: Awaited<ReturnType<typeof priceOrder>>["items"];
   try {
     const priced = await priceOrder(parsed.data.items);
-    amount = priced.totalCents / 100; // já líquido (Leve 3, Pague 2)
+    goodsNetCents = priced.totalCents; // pós "Leve 3, Pague 2" (personalização inclusa)
     discountCents = priced.discountCents;
     items = priced.items;
   } catch (e) {
@@ -46,14 +47,18 @@ export async function POST(req: Request) {
   let couponCode: string | null = null;
   let couponCents = 0;
   if (parsed.data.couponCode) {
-    const netCents = Math.round(amount * 100);
-    const c = await validateCoupon(parsed.data.couponCode, netCents);
+    const c = await validateCoupon(parsed.data.couponCode, goodsNetCents);
     if (c.ok && c.discountCents > 0) {
       couponCode = c.code;
       couponCents = c.discountCents;
-      amount = (netCents - couponCents) / 100;
     }
   }
+
+  // frete da região (grátis se as mercadorias atingem o mínimo)
+  const freightCents = freightCentsFor(shipping.uf, goodsNetCents);
+  const goodsAfterCoupon = goodsNetCents - couponCents;
+  const finalCents = goodsAfterCoupon + freightCents;
+
   const cpf = customer.cpf.replace(/\D/g, "");
   const [firstName, ...rest] = customer.name.trim().split(" ");
 
@@ -66,10 +71,11 @@ export async function POST(req: Request) {
       userId,
       status: "pending",
       paymentMethod: "card",
-      totalCents: Math.round(amount * 100),
+      totalCents: finalCents,
       discountCents,
       couponCode,
       couponCents,
+      freightCents,
       items,
       customer,
       shipping,
@@ -88,12 +94,17 @@ export async function POST(req: Request) {
   const origin = new URL(req.url).origin;
   const backUrl = `${origin}/pedido/${orderId}`;
 
-  // Com desconto (Leve 3, Pague 2) consolida em 1 item pelo total líquido,
-  // pois o Checkout Pro soma os itens e não aceita linha de desconto negativa.
-  const mpItems =
+  // Mercadorias: itens detalhados, ou 1 item consolidado quando há desconto
+  // (o Checkout Pro soma os itens e não aceita linha de desconto negativa).
+  const goodsItems =
     discountCents > 0 || couponCents > 0
-      ? [{ title: `Pedido GG Peitas · ${items.length} itens`, quantity: 1, unit_price: amount }]
+      ? [{ title: `Pedido GG Peitas · ${items.length} itens`, quantity: 1, unit_price: goodsAfterCoupon / 100 }]
       : items.map((i) => ({ title: i.name, quantity: i.qty, unit_price: i.price }));
+  // frete entra como linha própria (positiva)
+  const mpItems =
+    freightCents > 0
+      ? [...goodsItems, { title: "Frete", quantity: 1, unit_price: freightCents / 100 }]
+      : goodsItems;
 
   const mp = await mpCreatePreference({
     items: mpItems,

@@ -41,6 +41,7 @@ function itemsTable(
   discountCents = 0,
   couponCents = 0,
   couponCode?: string | null,
+  freightCents = 0,
 ): string {
   const rows = items
     .map(
@@ -64,10 +65,15 @@ function itemsTable(
         <td style="padding:8px 0 0;font-size:14px;text-align:right;color:${GREEN};">− ${brl(couponCents)}</td>
       </tr>`
       : "";
+  const freightRow = `<tr>
+        <td style="padding:8px 0 0;font-size:14px;">Frete</td>
+        <td style="padding:8px 0 0;font-size:14px;text-align:right;">${freightCents > 0 ? brl(freightCents) : "Grátis"}</td>
+      </tr>`;
   return `<table style="width:100%;border-collapse:collapse;margin:8px 0 4px;">
       ${rows}
       ${discountRow}
       ${couponRow}
+      ${freightRow}
       <tr>
         <td style="padding:12px 0 0;font-size:15px;font-weight:800;">Total</td>
         <td style="padding:12px 0 0;font-size:15px;font-weight:800;text-align:right;color:${GREEN};">${brl(totalCents)}</td>
@@ -120,6 +126,7 @@ export function orderConfirmedEmail(order: {
   discountCents?: number;
   couponCents?: number;
   couponCode?: string | null;
+  freightCents?: number;
   customerName?: string;
   orderUrl: string;
 }) {
@@ -132,7 +139,7 @@ export function orderConfirmedEmail(order: {
         Oba, ${first}! Recebemos o pagamento do seu pedido
         <b>#${order.number ?? ""}</b>. Já estamos preparando tudo para o envio.
       </p>
-      ${itemsTable(order.items, order.totalCents, order.discountCents ?? 0, order.couponCents ?? 0, order.couponCode)}
+      ${itemsTable(order.items, order.totalCents, order.discountCents ?? 0, order.couponCents ?? 0, order.couponCode, order.freightCents ?? 0)}
       <p style="margin:20px 0 6px;">${button(order.orderUrl, "Acompanhar pedido")}</p>
       <p style="font-size:13px;color:#8a8a80;margin-top:14px;">
         Assim que despacharmos, você recebe o código de rastreio por aqui.

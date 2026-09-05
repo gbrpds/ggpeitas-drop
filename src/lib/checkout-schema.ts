@@ -6,6 +6,8 @@ export const itemSchema = z.object({
   qty: z.number().int().positive().max(20),
   size: z.string().max(8).optional(),
   version: z.string().max(40).optional(),
+  customName: z.string().trim().max(20).optional(),
+  customNumber: z.string().trim().max(3).optional(),
 });
 
 export const customerSchema = z.object({

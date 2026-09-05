@@ -49,6 +49,7 @@ export async function syncPaymentStatus(
           discountCents: orders.discountCents,
           couponCents: orders.couponCents,
           couponCode: orders.couponCode,
+          freightCents: orders.freightCents,
           customer: orders.customer,
         });
       // envia a confirmação SÓ na transição (evita duplicar no polling/webhook)
@@ -62,6 +63,7 @@ export async function syncPaymentStatus(
           discountCents: o.discountCents,
           couponCents: o.couponCents,
           couponCode: o.couponCode,
+          freightCents: o.freightCents,
           customerName: c.name,
           orderUrl: `${baseUrl()}/pedido/${o.id}`,
         });

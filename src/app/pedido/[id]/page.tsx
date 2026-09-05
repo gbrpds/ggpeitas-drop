@@ -72,6 +72,7 @@ export default async function PedidoPage({
                 discountCents: order.discountCents,
                 couponCode: order.couponCode,
                 couponCents: order.couponCents,
+                freightCents: order.freightCents,
                 items: (order.items as Item[]) ?? [],
                 trackingCode: order.trackingCode,
                 shippingStatus: order.shippingStatus,

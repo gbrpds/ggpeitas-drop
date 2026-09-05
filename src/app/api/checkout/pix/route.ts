@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { mpCreatePayment } from "@/lib/mp";
 import { priceOrder, PricingError } from "@/lib/pricing";
 import { validateCoupon } from "@/lib/coupons";
+import { freightCentsFor } from "@/lib/shipping";
 import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schema";
 import { resolveUserId, createOrder } from "@/lib/order";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
@@ -29,12 +30,12 @@ export async function POST(req: Request) {
 
   const { customer, shipping } = parsed.data;
   // PREÇO REAL vindo do banco — nunca do cliente
-  let amount: number;
+  let goodsNetCents = 0; // mercadorias pós "Leve 3, Pague 2" (personalização inclusa)
   let discountCents = 0;
   let items: Awaited<ReturnType<typeof priceOrder>>["items"];
   try {
     const priced = await priceOrder(parsed.data.items);
-    amount = priced.totalCents / 100; // já líquido (Leve 3, Pague 2)
+    goodsNetCents = priced.totalCents;
     discountCents = priced.discountCents;
     items = priced.items;
   } catch (e) {
@@ -46,14 +47,18 @@ export async function POST(req: Request) {
   let couponCode: string | null = null;
   let couponCents = 0;
   if (parsed.data.couponCode) {
-    const netCents = Math.round(amount * 100);
-    const c = await validateCoupon(parsed.data.couponCode, netCents);
+    const c = await validateCoupon(parsed.data.couponCode, goodsNetCents);
     if (c.ok && c.discountCents > 0) {
       couponCode = c.code;
       couponCents = c.discountCents;
-      amount = (netCents - couponCents) / 100;
     }
   }
+
+  // frete: grátis se as mercadorias atingem o mínimo, senão tarifa da região
+  const freightCents = freightCentsFor(shipping.uf, goodsNetCents);
+
+  const finalCents = goodsNetCents - couponCents + freightCents;
+  const amount = finalCents / 100;
   const [firstName, ...rest] = customer.name.trim().split(" ");
   const cpf = customer.cpf.replace(/\D/g, "");
 
@@ -85,10 +90,11 @@ export async function POST(req: Request) {
       userId,
       status: "pending",
       paymentMethod: "pix",
-      totalCents: Math.round(amount * 100),
+      totalCents: finalCents,
       discountCents,
       couponCode,
       couponCents,
+      freightCents,
       items,
       customer,
       shipping,

@@ -17,6 +17,7 @@ type Order = {
   discountCents?: number;
   couponCode?: string | null;
   couponCents?: number;
+  freightCents?: number;
   items: Item[];
   trackingCode?: string | null;
   shippingStatus?: string | null;
@@ -105,6 +106,10 @@ export function OrderView({ order }: { order: Order }) {
       {!!order.couponCents && order.couponCents > 0 && (
         <div className="cs-line cd-promo"><span>Cupom {order.couponCode}</span><b>− {brl(order.couponCents / 100)}</b></div>
       )}
+      <div className="cs-line">
+        <span>Frete</span>
+        {order.freightCents && order.freightCents > 0 ? <b>{brl(order.freightCents / 100)}</b> : <b className="free">Grátis</b>}
+      </div>
       <div className="cs-total"><span>Total</span><b>{brl(total)}</b></div>
     </div>
   );
