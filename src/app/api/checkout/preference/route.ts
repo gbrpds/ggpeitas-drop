@@ -96,9 +96,10 @@ export async function POST(req: Request) {
 
   // Mercadorias: itens detalhados, ou 1 item consolidado quando há desconto
   // (o Checkout Pro soma os itens e não aceita linha de desconto negativa).
+  const units = items.reduce((n, i) => n + i.qty, 0);
   const goodsItems =
     discountCents > 0 || couponCents > 0
-      ? [{ title: `Pedido GG Peitas · ${items.length} itens`, quantity: 1, unit_price: goodsAfterCoupon / 100 }]
+      ? [{ title: `Pedido GG Peitas · ${units} ${units === 1 ? "camisa" : "camisas"}`, quantity: 1, unit_price: goodsAfterCoupon / 100 }]
       : items.map((i) => ({ title: i.name, quantity: i.qty, unit_price: i.price }));
   // frete entra como linha própria (positiva)
   const mpItems =

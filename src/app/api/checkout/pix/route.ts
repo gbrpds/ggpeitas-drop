@@ -65,7 +65,7 @@ export async function POST(req: Request) {
   const mp = await mpCreatePayment(
     {
       transaction_amount: amount,
-      description: `Pedido GG Peitas · ${items.length} item(ns)`,
+      description: `Pedido GG Peitas · ${items.reduce((n, i) => n + i.qty, 0)} camisa(s)`,
       payment_method_id: "pix",
       payer: {
         email: customer.email,
