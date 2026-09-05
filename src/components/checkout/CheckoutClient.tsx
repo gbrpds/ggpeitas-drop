@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { User, Truck, CreditCard, QrCode, Check, ArrowRight, ArrowLeft, ShoppingBag } from "lucide-react";
+import { User, Truck, CreditCard, QrCode, Check, ArrowRight, ArrowLeft, ShoppingBag, Barcode } from "lucide-react";
 import { useCart } from "@/store/cart";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
@@ -43,7 +43,7 @@ export function CheckoutClient() {
   const [step, setStep] = useState(1);
   const [customer, setCustomer] = useState<Customer>({ name: "", cpf: "", email: "", phone: "" });
   const [shipping, setShipping] = useState<Shipping>({ cep: "", rua: "", numero: "", bairro: "", cidade: "", uf: "" });
-  const [payMethod, setPayMethod] = useState<"pix" | "card" | null>(null);
+  const [payMethod, setPayMethod] = useState<"pix" | "card" | "boleto" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
@@ -234,14 +234,14 @@ export function CheckoutClient() {
     }
   }
 
-  async function pagarCartao() {
+  async function pagarMercadoPago(method: "card" | "boleto") {
     setError(null);
     setLoading(true);
     try {
       const res = await fetch("/api/checkout/preference", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderPayload()),
+        body: JSON.stringify({ ...orderPayload(), method }),
       });
       const data = await res.json();
       if (!res.ok || !data.initPoint) {
@@ -383,6 +383,9 @@ export function CheckoutClient() {
               <button className={`pay-method${payMethod === "card" ? " on" : ""}`} onClick={() => setPayMethod("card")}>
                 <CreditCard strokeWidth={1.8} /> <b>Cartão de crédito</b> <span>Em até 12x · via Mercado Pago</span>
               </button>
+              <button className={`pay-method${payMethod === "boleto" ? " on" : ""}`} onClick={() => setPayMethod("boleto")}>
+                <Barcode strokeWidth={1.8} /> <b>Boleto bancário</b> <span>Compensa em 1 a 3 dias úteis</span>
+              </button>
             </div>
 
             {payMethod === "pix" && (
@@ -397,8 +400,20 @@ export function CheckoutClient() {
                   Você será levado ao <b>ambiente seguro do Mercado Pago</b> para pagar com cartão
                   (crédito ou débito), em até 12x. Após o pagamento você volta para acompanhar o pedido.
                 </div>
-                <button className="co-next" onClick={pagarCartao} disabled={loading}>
+                <button className="co-next" onClick={() => pagarMercadoPago("card")} disabled={loading}>
                   {loading ? "Abrindo checkout…" : "Pagar com Mercado Pago"} <ArrowRight size={18} strokeWidth={2.4} />
+                </button>
+              </>
+            )}
+            {payMethod === "boleto" && (
+              <>
+                <div className="mp-note">
+                  <Barcode size={16} strokeWidth={1.8} />
+                  Geramos o <b>boleto</b> no ambiente do Mercado Pago. A confirmação leva de
+                  <b> 1 a 3 dias úteis</b> — seu pedido fica reservado até lá e é confirmado automaticamente.
+                </div>
+                <button className="co-next" onClick={() => pagarMercadoPago("boleto")} disabled={loading}>
+                  {loading ? "Gerando boleto…" : "Gerar boleto"} <ArrowRight size={18} strokeWidth={2.4} />
                 </button>
               </>
             )}

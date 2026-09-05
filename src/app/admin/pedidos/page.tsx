@@ -127,7 +127,7 @@ export default async function AdminPedidosPage({
                           <b className="order-total">{brl(o.totalCents / 100)}</b>
                         </div>
                         <div className="order-foot">
-                          <span className="order-pay">{o.paymentMethod === "pix" ? "PIX" : "Cartão"}</span>
+                          <span className="order-pay">{o.paymentMethod === "pix" ? "PIX" : o.paymentMethod === "boleto" ? "Boleto" : "Cartão"}</span>
                           {c.phone && (
                             <a className="wa-btn" href={waLink(c.phone)} target="_blank" rel="noopener">WhatsApp</a>
                           )}

@@ -16,7 +16,14 @@ const bodySchema = z.object({
   customer: customerSchema,
   shipping: shippingSchema,
   couponCode: z.string().max(40).optional(),
+  method: z.enum(["card", "boleto"]).default("card"),
 });
+
+// tipos de pagamento a esconder no Checkout Pro conforme a opção escolhida
+const EXCLUDE_FOR = {
+  card: ["ticket"], // cartão: sem boleto
+  boleto: ["credit_card", "debit_card", "prepaid_card", "bank_transfer", "digital_wallet", "atm"],
+} as const;
 
 export async function POST(req: Request) {
   const rl = await rateLimit(`chk:${clientIp(req)}`, 15, 60);
@@ -28,7 +35,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Dados incompletos para o pagamento." }, { status: 400 });
   }
 
-  const { customer, shipping } = parsed.data;
+  const { customer, shipping, method } = parsed.data;
   // PREÇO REAL vindo do banco — nunca do cliente
   let goodsNetCents = 0;
   let discountCents = 0;
@@ -70,7 +77,7 @@ export async function POST(req: Request) {
     const created = await createOrder(getDb(), {
       userId,
       status: "pending",
-      paymentMethod: "card",
+      paymentMethod: method,
       totalCents: finalCents,
       discountCents,
       couponCode,
@@ -119,6 +126,7 @@ export async function POST(req: Request) {
     backUrls: { success: backUrl, failure: backUrl, pending: backUrl },
     notificationUrl: `${origin}/api/webhooks/mp`,
     installments: 12,
+    excludePaymentTypes: [...EXCLUDE_FOR[method]],
   });
 
   if (!mp.ok) {

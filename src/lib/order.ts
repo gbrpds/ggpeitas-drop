@@ -1,4 +1,4 @@
-import { eq, like, and, lt } from "drizzle-orm";
+import { eq, like, and, lt, or, ne } from "drizzle-orm";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { users, orders } from "@/db/schema";
@@ -6,30 +6,50 @@ import type { NewOrder } from "@/db/schema";
 
 type Db = ReturnType<typeof getDb>;
 
-/** Tempo máximo que um pedido fica "em aberto" antes de cancelar (10 min). */
+/** Tempo máximo "em aberto" antes de cancelar: PIX/cartão 10 min; boleto 4 dias. */
 export const ORDER_TTL_MS = 10 * 60 * 1000;
+export const BOLETO_TTL_MS = 4 * 24 * 60 * 60 * 1000; // boleto não é instantâneo
 
-/** Pedido pendente que já passou dos 10 min (tratado como cancelado na leitura). */
-export function isExpiredPending(o: { status: string; createdAt: Date | string }): boolean {
-  return (
-    o.status === "pending" &&
-    Date.now() - new Date(o.createdAt).getTime() > ORDER_TTL_MS
-  );
+function ttlFor(o: { paymentMethod?: string }): number {
+  return o.paymentMethod === "boleto" ? BOLETO_TTL_MS : ORDER_TTL_MS;
+}
+
+/** Pedido pendente que já passou do prazo (tratado como cancelado na leitura). */
+export function isExpiredPending(o: {
+  status: string;
+  createdAt: Date | string;
+  paymentMethod?: string;
+}): boolean {
+  return o.status === "pending" && Date.now() - new Date(o.createdAt).getTime() > ttlFor(o);
 }
 
 /** Status "efetivo": pendente expirado vira cancelado mesmo antes do carimbo no banco. */
-export function effectiveStatus(o: { status: string; createdAt: Date | string }): string {
+export function effectiveStatus(o: {
+  status: string;
+  createdAt: Date | string;
+  paymentMethod?: string;
+}): string {
   return isExpiredPending(o) ? "cancelled" : o.status;
 }
 
-/** Cancela pedidos "em aberto" há mais de 10 minutos (expiração no servidor). */
+/** Cancela pedidos "em aberto" vencidos (10 min para PIX/cartão; 4 dias para boleto). */
 export async function expireStaleOrders(db: Db): Promise<void> {
-  const cutoff = new Date(Date.now() - ORDER_TTL_MS);
+  const now = Date.now();
+  const cutoff = new Date(now - ORDER_TTL_MS);
+  const boletoCutoff = new Date(now - BOLETO_TTL_MS);
   try {
     await db
       .update(orders)
       .set({ status: "cancelled" })
-      .where(and(eq(orders.status, "pending"), lt(orders.createdAt, cutoff)));
+      .where(
+        and(
+          eq(orders.status, "pending"),
+          or(
+            and(ne(orders.paymentMethod, "boleto"), lt(orders.createdAt, cutoff)),
+            and(eq(orders.paymentMethod, "boleto"), lt(orders.createdAt, boletoCutoff)),
+          ),
+        ),
+      );
   } catch (e) {
     console.error("expireStaleOrders error", e);
   }

@@ -99,7 +99,7 @@ export default async function PedidosPage() {
                     )}
                     <div className="order-foot">
                       <span className="order-pay">
-                        {o.paymentMethod === "pix" ? "PIX" : "Cartão de crédito"}
+                        {o.paymentMethod === "pix" ? "PIX" : o.paymentMethod === "boleto" ? "Boleto" : "Cartão de crédito"}
                       </span>
                       {effStatus === "pending" ? (
                         <Link className="order-action" href={`/pedido/${o.id}`}>

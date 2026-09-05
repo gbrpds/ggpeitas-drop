@@ -94,7 +94,13 @@ export async function mpCreatePreference(pref: {
   backUrls: { success: string; failure: string; pending: string };
   notificationUrl: string;
   installments?: number;
+  excludePaymentTypes?: string[]; // ex.: ["ticket"] p/ não oferecer boleto
 }) {
+  const paymentMethods: Record<string, unknown> = {};
+  if (pref.installments) paymentMethods.installments = pref.installments;
+  if (pref.excludePaymentTypes?.length) {
+    paymentMethods.excluded_payment_types = pref.excludePaymentTypes.map((id) => ({ id }));
+  }
   const body = {
     items: pref.items.map((i) => ({
       title: i.title,
@@ -108,7 +114,7 @@ export async function mpCreatePreference(pref: {
     auto_return: "approved",
     notification_url: pref.notificationUrl,
     statement_descriptor: "GGPEITAS",
-    payment_methods: pref.installments ? { installments: pref.installments } : undefined,
+    payment_methods: Object.keys(paymentMethods).length ? paymentMethods : undefined,
   };
 
   const res = await fetch(`${MP_BASE}/checkout/preferences`, {

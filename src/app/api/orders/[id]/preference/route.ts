@@ -59,6 +59,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     backUrls: { success: backUrl, failure: backUrl, pending: backUrl },
     notificationUrl: `${origin}/api/webhooks/mp`,
     installments: 12,
+    excludePaymentTypes: ["ticket"], // na retomada, cartão/PIX (pagamento na hora)
   });
 
   if (!mp.ok) {
