@@ -21,6 +21,17 @@ export function Header() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  // dropdown da conta controlado por clique (essencial no mobile, sem hover)
+  const [accOpen, setAccOpen] = useState(false);
+  useEffect(() => {
+    if (!accOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest(".acc")) setAccOpen(false);
+    };
+    document.addEventListener("click", onDoc);
+    return () => document.removeEventListener("click", onDoc);
+  }, [accOpen]);
+
   const count = mounted ? items.reduce((n, i) => n + i.qty, 0) : 0;
   const total = mounted ? items.reduce((s, i) => s + i.price * i.qty, 0) : 0;
 
@@ -49,37 +60,44 @@ export function Header() {
 
         <div className="acts">
           <ThemeToggle />
-          <div className="acc">
-            <Link className="act hide-sm" href="/conta">
-              <User strokeWidth={1.8} />
-              <span className="lbl">
-                {mounted && loggedIn ? (
-                  <>
-                    <small>Olá,</small>
-                    <b>{firstName}</b>
-                  </>
-                ) : (
-                  <>
-                    <small>Entrar</small>
-                    <b>Minha conta</b>
-                  </>
-                )}
-              </span>
-            </Link>
+          <div className={`acc${accOpen ? " open" : ""}`}>
+            {mounted && loggedIn ? (
+              <button
+                type="button"
+                className="act hide-sm"
+                aria-haspopup="menu"
+                aria-expanded={accOpen}
+                onClick={() => setAccOpen((o) => !o)}
+              >
+                <User strokeWidth={1.8} />
+                <span className="lbl">
+                  <small>Olá,</small>
+                  <b>{firstName}</b>
+                </span>
+              </button>
+            ) : (
+              <Link className="act hide-sm" href="/conta">
+                <User strokeWidth={1.8} />
+                <span className="lbl">
+                  <small>Entrar</small>
+                  <b>Minha conta</b>
+                </span>
+              </Link>
+            )}
             {mounted && loggedIn && (
-              <div className="acc-drop">
+              <div className={`acc-drop${accOpen ? " open" : ""}`}>
                 <div className="greet">
                   Bem vindo <b>{firstName}</b>!
                 </div>
                 <div className="sep" />
-                <Link href="/conta">
+                <Link href="/conta" onClick={() => setAccOpen(false)}>
                   <User strokeWidth={1.8} /> Minha conta
                 </Link>
-                <Link href="/pedidos">
+                <Link href="/pedidos" onClick={() => setAccOpen(false)}>
                   <Package strokeWidth={1.8} /> Meus pedidos
                 </Link>
                 {isAdmin && (
-                  <Link href="/admin">
+                  <Link href="/admin" onClick={() => setAccOpen(false)}>
                     <LayoutDashboard strokeWidth={1.8} /> Painel Admin
                   </Link>
                 )}
