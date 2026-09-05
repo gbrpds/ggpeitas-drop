@@ -27,7 +27,7 @@ export function SiteFooter() {
             Brasil.
           </p>
           <div className="socials">
-            <a href="#" aria-label="Instagram">
+            <a href="https://www.instagram.com/ggpeitas/" target="_blank" rel="noopener noreferrer" aria-label="Instagram da GG Peitas">
               <InstagramIcon />
             </a>
             <a href="#" aria-label="WhatsApp">
