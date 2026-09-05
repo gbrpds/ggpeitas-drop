@@ -605,14 +605,23 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .mp-note svg { flex:0 0 auto; color:var(--green-deep); margin-top:1px; }
 .mp-note b { color:var(--ink); font-weight:700; }
 
-.pix-box { text-align:center; }
-.pix-box h3 { font-family:var(--disp); font-weight:800; font-size:1rem; margin:6px 0 12px; }
-.pix-qr { width:220px; height:220px; border:1px solid var(--line); border-radius:12px; background:#fff; padding:8px; }
-.pix-label { font-size:.82rem; color:var(--muted); margin:14px 0 6px; }
+.pix-box { text-align:center; max-width:420px; margin:0 auto; }
+.pix-card { background:var(--surface); border:1px solid var(--line); border-top:4px solid var(--green);
+  border-radius:16px; padding:20px 18px; box-shadow:0 14px 34px -18px rgba(0,0,0,.35); }
+.pix-card-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(15,138,61,.1); color:var(--green-deep);
+  font-family:var(--disp); font-weight:800; text-transform:uppercase; letter-spacing:.04em; font-size:.7rem;
+  padding:5px 11px; border-radius:99px; }
+.pix-box h3 { font-family:var(--disp); font-weight:800; font-size:1rem; margin:10px 0 14px; }
+.pix-qr { width:240px; max-width:78vw; aspect-ratio:1; height:auto; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:12px; background:#fff; padding:10px; }
+.pix-label { font-size:.82rem; color:var(--muted); margin:16px 0 6px; }
 .pix-code { display:flex; gap:8px; }
-.pix-code input { flex:1; border:1.5px solid var(--line); border-radius:9px; padding:11px; font-size:.78rem; background:var(--ground); color:var(--ink); }
-.pix-code button { display:inline-flex; align-items:center; gap:6px; background:var(--green); color:#fff; border:0; border-radius:9px; padding:0 14px; font-weight:700; font-size:.82rem; }
-.pix-note { font-size:.78rem; color:var(--muted); margin-top:12px; }
+.pix-code input { flex:1; min-width:0; border:1.5px solid var(--line); border-radius:9px; padding:11px; font-size:.78rem;
+  background:var(--ground); color:var(--ink); text-overflow:ellipsis; }
+.pix-code button { display:inline-flex; align-items:center; gap:6px; background:var(--green); color:#fff; border:0;
+  border-radius:9px; padding:0 14px; font-weight:700; font-size:.82rem; white-space:nowrap; }
+.pix-code button:hover { background:var(--green-deep); }
+.pix-note { font-size:.78rem; color:var(--muted); margin-top:14px; }
 .card-brick { margin-top:6px; }
 
 /* tela do PIX com contador */
@@ -1006,10 +1015,11 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
   .search { order:3; flex-basis:100%; max-width:none; margin-top:4px; }
   .topbar { flex-wrap:wrap; gap:10px; }
   .foot { grid-template-columns:1fr; }
-  /* dropdown da conta: ancora na direita da barra p/ não sair da tela */
+  /* dropdown da conta: no mobile os ícones ficam à esquerda, então ancora
+     pela ESQUERDA da barra (cresce para dentro da tela, sem cortar) */
   .acts { position:relative; }
   .acc { position:static; }
-  .acc-drop { right:0; left:auto; top:calc(100% + 4px); min-width:210px; max-width:calc(100vw - 24px); }
+  .acc-drop { left:0; right:auto; top:calc(100% + 4px); min-width:200px; max-width:calc(100vw - 24px); }
 }
 /* nota nos cards */
 .card-rate { display:flex; align-items:center; gap:5px; margin:2px 0 4px; font-size:.74rem; color:var(--muted); }
@@ -1026,6 +1036,7 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
   border-radius:9px; padding:10px 12px; font-size:.9rem; text-transform:uppercase; }
 .perso-fields input:first-child { flex:1; }
 .perso-fields input:last-child { width:70px; text-align:center; }
+.perso-err { display:block; margin-top:8px; font-size:.78rem; color:#c62828; }
 
 /* calcular frete (link verde + modal) */
 .cd-frete-right { display:inline-flex; align-items:center; gap:8px; }
@@ -1072,6 +1083,17 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 
 /* linha de desconto (carrinho/checkout/pedido) */
 .cd-promo span, .cd-promo b { color:var(--green-deep); font-weight:700; }
+
+/* toast da promoção Leve 3, Pague 2 */
+.promo-toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:130;
+  display:flex; align-items:center; gap:10px; max-width:calc(100vw - 32px);
+  background:var(--green); color:#fff; border-radius:12px; padding:12px 14px;
+  box-shadow:0 16px 40px -12px rgba(0,0,0,.5); font-size:.86rem; animation:toastUp .35s var(--ease-out) both; }
+.promo-toast b { font-weight:800; }
+.promo-toast svg { flex:none; }
+.promo-toast button { background:rgba(255,255,255,.2); border:0; color:#fff; border-radius:6px; padding:3px; display:grid; place-items:center; flex:none; }
+.promo-toast button:hover { background:rgba(255,255,255,.35); }
+@keyframes toastUp { from { opacity:0; transform:translate(-50%, 16px); } to { opacity:1; transform:translate(-50%, 0); } }
 
 /* frete no passo de Entrega */
 .co-frete-box { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px; padding:12px 14px;

@@ -23,12 +23,19 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
   const [personalize, setPersonalize] = useState(false);
   const [customName, setCustomName] = useState("");
   const [customNumber, setCustomNumber] = useState("");
+  const [persoErr, setPersoErr] = useState<string | null>(null);
 
   const off = desconto(product.now, product.was);
   const economia = product.was ? product.was - product.now : 0;
   const outOfStock = product.inStock === false;
 
   const add = () => {
+    // se marcou personalizar, precisa de nome ou número (senão a taxa não faz sentido)
+    if (personalize && !customName.trim() && !customNumber.trim()) {
+      setPersoErr("Digite o nome ou o número para personalizar (ou desmarque a opção).");
+      return;
+    }
+    setPersoErr(null);
     addItem(product, {
       size,
       version,
@@ -102,21 +109,24 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
           <b className="perso-fee">+ {brl(CUSTOM_FEE)}</b>
         </label>
         {personalize && (
-          <div className="perso-fields">
-            <input
-              value={customName}
-              onChange={(e) => setCustomName(e.target.value.toUpperCase().slice(0, 20))}
-              placeholder="Nome (ex: MESSI)"
-              maxLength={20}
-            />
-            <input
-              value={customNumber}
-              onChange={(e) => setCustomNumber(e.target.value.replace(/\D/g, "").slice(0, 3))}
-              placeholder="Nº"
-              inputMode="numeric"
-              maxLength={3}
-            />
-          </div>
+          <>
+            <div className="perso-fields">
+              <input
+                value={customName}
+                onChange={(e) => { setCustomName(e.target.value.toUpperCase().slice(0, 20)); setPersoErr(null); }}
+                placeholder="Nome (ex: MESSI)"
+                maxLength={20}
+              />
+              <input
+                value={customNumber}
+                onChange={(e) => { setCustomNumber(e.target.value.replace(/\D/g, "").slice(0, 3)); setPersoErr(null); }}
+                placeholder="Nº"
+                inputMode="numeric"
+                maxLength={3}
+              />
+            </div>
+            {persoErr && <span className="perso-err">{persoErr}</span>}
+          </>
         )}
       </div>
 

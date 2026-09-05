@@ -33,10 +33,48 @@ export function CartDrawer() {
   const list = mounted ? items : [];
   const count = list.reduce((n, i) => n + i.qty, 0);
   const subtotal = list.reduce((s, i) => s + i.price * i.qty, 0);
-  const discount =
+
+  // estimativa client (fallback) + cotação do servidor (fonte da verdade)
+  const clientDiscount =
     promoDiscountFromItems(
       list.map((i) => ({ priceCents: Math.round(i.price * 100), qty: i.qty, promo: !!i.promo })),
     ) / 100;
+  const [srvDiscount, setSrvDiscount] = useState<number | null>(null);
+  useEffect(() => {
+    if (!open || items.length === 0) {
+      setSrvDiscount(null);
+      return;
+    }
+    let ok = true;
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/checkout/quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: items.map((i) => ({
+              productId: i.productId,
+              qty: i.qty,
+              size: i.size,
+              version: i.version,
+              customName: i.customName,
+              customNumber: i.customNumber,
+            })),
+          }),
+        });
+        const d = await res.json();
+        if (ok && d.ok) setSrvDiscount(d.discountCents / 100);
+      } catch {
+        /* mantém a estimativa client */
+      }
+    }, 250);
+    return () => {
+      ok = false;
+      clearTimeout(t);
+    };
+  }, [open, items]);
+
+  const discount = srvDiscount ?? clientDiscount;
   const total = subtotal - discount;
   const FRETE_MIN = 299;
 

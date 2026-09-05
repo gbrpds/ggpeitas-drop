@@ -8,6 +8,7 @@ import { IdleLogout } from "@/components/IdleLogout";
 import { TeamModal } from "@/components/TeamModal";
 import { TeamFloat } from "@/components/TeamFloat";
 import { RevealOnScroll } from "@/components/RevealOnScroll";
+import { PromoToast } from "@/components/PromoToast";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const archivo = Archivo({
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <TeamModal />
           <TeamFloat />
           <RevealOnScroll />
+          <PromoToast />
         </Providers>
       </body>
     </html>
