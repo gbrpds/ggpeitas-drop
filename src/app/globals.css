@@ -1073,6 +1073,13 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 /* linha de desconto (carrinho/checkout/pedido) */
 .cd-promo span, .cd-promo b { color:var(--green-deep); font-weight:700; }
 
+/* frete no passo de Entrega */
+.co-frete-box { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px; padding:12px 14px;
+  border-radius:10px; background:rgba(15,138,61,.06); border:1px solid rgba(15,138,61,.25); font-size:.88rem; color:var(--ink); }
+.co-frete-box svg { color:var(--green-deep); flex:none; }
+.co-frete-box small { flex-basis:100%; color:var(--muted); font-size:.78rem; }
+.co-frete-box.ok b { color:var(--green-deep); }
+
 /* cupom no checkout */
 .cs-coupon { margin:12px 0; padding:12px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
 .cs-coupon-row { display:flex; gap:8px; }

@@ -9,13 +9,21 @@ import { User, Truck, CreditCard, QrCode, Check, ArrowRight, ArrowLeft, Shopping
 import { useCart } from "@/store/cart";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
-import { promoDiscountFromItems, PROMO_TITLE } from "@/lib/promo";
-import { shippingForUf, FREE_SHIPPING_MIN } from "@/lib/shipping";
+import { PROMO_TITLE } from "@/lib/promo";
 import { FreteCalc } from "@/components/FreteCalc";
 import { PixDisplay } from "./PixDisplay";
 
 type Customer = { name: string; cpf: string; email: string; phone: string };
 type Shipping = { cep: string; rua: string; numero: string; bairro: string; cidade: string; uf: string };
+type Quote = {
+  subtotalCents: number;
+  discountCents: number;
+  coupon: { code: string; discountCents: number } | null;
+  couponError?: string;
+  freightCents: number | null;
+  freeShipping: boolean;
+  totalCents: number;
+};
 
 const STEPS = [
   { n: 1, label: "Seus dados", Icon: User },
@@ -41,9 +49,9 @@ export function CheckoutClient() {
   const [cepLoading, setCepLoading] = useState(false);
   const [pix, setPix] = useState<{ qrCodeBase64?: string; qrCode?: string; number?: string; paymentId?: string; orderId?: string } | null>(null);
   const [couponInput, setCouponInput] = useState("");
-  const [coupon, setCoupon] = useState<{ code: string; discountCents: number } | null>(null);
+  const [appliedCode, setAppliedCode] = useState<string | null>(null);
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
-  const [couponLoading, setCouponLoading] = useState(false);
+  const [quote, setQuote] = useState<Quote | null>(null);
 
   useEffect(() => {
     if (session?.user) {
@@ -72,68 +80,82 @@ export function CheckoutClient() {
     return () => clearInterval(poll);
   }, [pix?.paymentId, pix?.orderId, router]);
 
-  const subtotal = useMemo(() => items.reduce((s, i) => s + i.price * i.qty, 0), [items]);
-  const discount = useMemo(
+  const itemsPayload = useMemo(
     () =>
-      promoDiscountFromItems(
-        items.map((i) => ({ priceCents: Math.round(i.price * 100), qty: i.qty, promo: !!i.promo })),
-      ) / 100,
+      items.map((i) => ({
+        productId: i.productId,
+        qty: i.qty,
+        size: i.size,
+        version: i.version,
+        customName: i.customName,
+        customNumber: i.customNumber,
+      })),
     [items],
   );
-  const total = subtotal - discount; // pós Leve 3, Pague 2 (personalização inclusa no price)
-  const couponValue = coupon ? coupon.discountCents / 100 : 0;
 
-  // frete pela UF do endereço (grátis acima do mínimo); null = ainda sem UF
+  // Cotação no SERVIDOR (fonte da verdade): promo + cupom + frete + total.
   const uf = shipping.uf?.trim().toUpperCase();
-  const freeShip = total >= FREE_SHIPPING_MIN;
-  const freightValue = freeShip ? 0 : uf && uf.length === 2 ? shippingForUf(uf).cents / 100 : null;
+  useEffect(() => {
+    if (!items.length) {
+      setQuote(null);
+      return;
+    }
+    let ok = true;
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/checkout/quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items: itemsPayload, couponCode: appliedCode ?? undefined, uf }),
+        });
+        const data = await res.json();
+        if (!ok) return;
+        if (data.ok) {
+          setQuote(data as Quote);
+          if (appliedCode && data.couponError) {
+            setCouponMsg(data.couponError);
+            setAppliedCode(null);
+          } else if (data.coupon) {
+            setCouponMsg(null);
+          }
+        }
+      } catch {
+        /* mantém a cotação anterior */
+      }
+    }, 350);
+    return () => {
+      ok = false;
+      clearTimeout(t);
+    };
+  }, [itemsPayload, appliedCode, uf]);
 
-  const finalTotal = Math.max(0, total - couponValue + (freightValue ?? 0));
+  // valores exibidos (da cotação; fallback simples enquanto carrega)
+  const clientSubtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const subtotal = quote ? quote.subtotalCents / 100 : clientSubtotal;
+  const discount = quote ? quote.discountCents / 100 : 0;
+  const coupon = quote?.coupon ?? null;
+  const couponValue = coupon ? coupon.discountCents / 100 : 0;
+  const freeShip = quote?.freeShipping ?? false;
+  const freightValue = quote ? (quote.freightCents == null ? null : quote.freightCents / 100) : null;
+  const total = subtotal - discount; // pós Leve 3, Pague 2
+  const finalTotal = quote ? quote.totalCents / 100 : clientSubtotal;
 
-  const itemsPayload = () =>
-    items.map((i) => ({
-      productId: i.productId,
-      qty: i.qty,
-      size: i.size,
-      version: i.version,
-      customName: i.customName,
-      customNumber: i.customNumber,
-    }));
   const orderPayload = () => ({
-    items: itemsPayload(), // o servidor recalcula o preço real
+    items: itemsPayload, // o servidor recalcula o preço real
     customer,
     shipping,
-    couponCode: coupon?.code,
+    couponCode: appliedCode ?? undefined,
   });
 
-  async function aplicarCupom() {
-    const code = couponInput.trim();
+  function aplicarCupom() {
+    const code = couponInput.trim().toUpperCase();
     if (!code) return;
-    setCouponLoading(true);
     setCouponMsg(null);
-    try {
-      const res = await fetch("/api/coupon/validate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, items: itemsPayload() }),
-      });
-      const data = await res.json();
-      if (!data.ok) {
-        setCoupon(null);
-        setCouponMsg(data.error ?? "Cupom inválido.");
-      } else {
-        setCoupon({ code: data.code, discountCents: data.discountCents });
-        setCouponMsg(null);
-      }
-    } catch {
-      setCouponMsg("Falha ao validar o cupom.");
-    } finally {
-      setCouponLoading(false);
-    }
+    setAppliedCode(code); // a cotação valida e reflete no resumo
   }
 
   function removerCupom() {
-    setCoupon(null);
+    setAppliedCode(null);
     setCouponInput("");
     setCouponMsg(null);
   }
@@ -330,6 +352,20 @@ export function CheckoutClient() {
                 <input value={shipping.uf} maxLength={2} onChange={(e) => setShipping({ ...shipping, uf: e.target.value.toUpperCase() })} />
               </div>
             </div>
+            {uf && uf.length === 2 && (
+              freeShip ? (
+                <div className="co-frete-box ok">
+                  <Truck size={18} /> <b>Frete grátis!</b> Seu pedido ultrapassou {brl(299)}. 🎉
+                </div>
+              ) : freightValue != null ? (
+                <div className="co-frete-box">
+                  <Truck size={18} />
+                  <span>Frete para <b>{uf}</b>: <b>{brl(freightValue)}</b></span>
+                  <small>Faltam {brl(Math.max(0, 299 - total))} para o frete grátis</small>
+                </div>
+              ) : null
+            )}
+
             <div className="co-nav">
               <button className="co-back" onClick={() => setStep(1)}><ArrowLeft size={17} /> Voltar</button>
               <button className="co-next" onClick={next}>Continuar <ArrowRight size={18} strokeWidth={2.4} /></button>
@@ -428,8 +464,8 @@ export function CheckoutClient() {
                   placeholder="Cupom de desconto"
                   aria-label="Cupom de desconto"
                 />
-                <button type="button" onClick={aplicarCupom} disabled={couponLoading || !couponInput.trim()}>
-                  {couponLoading ? "…" : "Aplicar"}
+                <button type="button" onClick={aplicarCupom} disabled={!couponInput.trim()}>
+                  Aplicar
                 </button>
               </div>
               {couponMsg && <span className="cs-coupon-err">{couponMsg}</span>}
