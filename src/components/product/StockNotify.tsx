@@ -41,7 +41,7 @@ export function StockNotify({ productId }: { productId: string }) {
       <div className="stock-out-badge">Produto sem estoque</div>
       {state === "done" ? (
         <p className="stock-out-done">
-          <Check size={16} /> Pronto! Avisaremos <b>{email}</b> assim que a camisa voltar. 💚
+          <Check size={16} /> Pronto! Avisaremos <b>{email}</b> assim que a camisa voltar.
         </p>
       ) : (
         <>

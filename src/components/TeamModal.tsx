@@ -84,7 +84,7 @@ export function TeamModal() {
               <Emblem t={done} big />
             </span>
             <h2>
-              Você é <b>{done.name}</b>! ❤️
+              Você é <b>{done.name}</b>!
             </h2>
             <p>Bora vestir a camisa? Separamos as opções do seu time.</p>
             <div className="tm-done-actions">

@@ -154,7 +154,7 @@ export function ProductReviews({
       {/* Lista */}
       <div className="rv-list">
         {list.length === 0 ? (
-          <p className="rv-empty">Seja o primeiro a avaliar este produto. 💬</p>
+          <p className="rv-empty">Seja o primeiro a avaliar este produto.</p>
         ) : (
           list.map((r) => (
             <div className="rv-item" key={r.id}>

@@ -29,7 +29,7 @@ export default async function PromocaoPage() {
           <h1>Leve 3, Pague 2</h1>
           <p>
             A cada <b>3 camisas participantes</b> no carrinho, a <b>mais barata sai grátis</b> —
-            o desconto é aplicado automaticamente. Monte o kit da família e economize de verdade. 💚
+            o desconto é aplicado automaticamente. Monte o kit da família e economize de verdade.
           </p>
           <div className="promo-hero-steps">
             <span><Check size={15} /> Junte 3 (ou 6, 9…) camisas da promoção</span>

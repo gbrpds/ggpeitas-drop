@@ -165,7 +165,7 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
             </>
           )}
         </button>
-        {added && <div className="added-msg">Produto adicionado ao carrinho ✓</div>}
+        {added && <div className="added-msg">Produto adicionado ao carrinho</div>}
       </div>
 
       <CorreiosBox />

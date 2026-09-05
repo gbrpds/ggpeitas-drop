@@ -5,7 +5,7 @@ import { Jersey } from "./Jersey";
 export function CategoryCircles() {
   return (
     <section className="cats-sec wrap">
-      <h2 className="sec-title">🌏 Navegue por categoria</h2>
+      <h2 className="sec-title">Navegue por categoria</h2>
       <div className="cats">
         {categories.map((c) => (
           <Link className="cat" href={c.href} key={c.name}>

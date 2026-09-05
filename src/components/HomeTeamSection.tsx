@@ -66,7 +66,7 @@ export function HomeTeamSection() {
           {crest ? <img src={crest} alt={team.name} /> : <Jersey colors={team.colors} />}
         </div>
         <div className="team-hero-text">
-          <span className="team-hero-eyebrow">❤️ Seu time do coração</span>
+          <span className="team-hero-eyebrow">Seu time do coração</span>
           <h2>Bem-vindo, torcedor do {team.name}!</h2>
           <p>A loja com a cara do seu time. Veja as camisas do {team.name}.</p>
         </div>
@@ -79,7 +79,7 @@ export function HomeTeamSection() {
         <div className="team-sec-loading">Carregando…</div>
       ) : items.length === 0 ? (
         <div className="team-sec-empty">
-          Em breve, camisas do <b>{team.name}</b> por aqui! Enquanto isso, dá uma olhada nos destaques abaixo. 👇
+          Em breve, camisas do <b>{team.name}</b> por aqui! Enquanto isso, dá uma olhada nos destaques abaixo.
         </div>
       ) : (
         <div className="car">

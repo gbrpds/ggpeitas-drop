@@ -31,7 +31,7 @@ export function PromoToast() {
     <div className="promo-toast" role="status">
       <PartyPopper size={18} />
       <span>
-        Você ativou a promoção <b>{PROMO_TITLE}</b>! A mais barata sai grátis. 🎉
+        Você ativou a promoção <b>{PROMO_TITLE}</b>! A mais barata sai grátis.
       </span>
       <button onClick={() => setShow(false)} aria-label="Fechar"><X size={16} /></button>
     </div>

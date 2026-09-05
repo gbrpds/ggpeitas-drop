@@ -355,7 +355,7 @@ export function CheckoutClient() {
             {uf && uf.length === 2 && (
               freeShip ? (
                 <div className="co-frete-box ok">
-                  <Truck size={18} /> <b>Frete grátis!</b> Seu pedido ultrapassou {brl(299)}. 🎉
+                  <Truck size={18} /> <b>Frete grátis!</b> Seu pedido ultrapassou {brl(299)}.
                 </div>
               ) : freightValue != null ? (
                 <div className="co-frete-box">

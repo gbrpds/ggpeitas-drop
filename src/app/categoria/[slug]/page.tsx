@@ -30,7 +30,7 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
       <main>
         <div className="wrap checkout-wrap">
           <h1 className="sec-title" style={{ fontSize: "1.6rem" }}>
-            {m.emoji} {m.title}
+            {m.title}
           </h1>
 
           {items.length === 0 ? (

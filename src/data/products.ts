@@ -32,7 +32,7 @@ export const sections: ProductSection[] = [
   {
     id: "vendidos",
     title: "Mais Vendidos",
-    emoji: "🔥",
+    emoji: "",
     href: "/mais-vendidos",
     products: [
       { id: "v1", name: "Flamengo 25/26 Home — Torcedor", category: "brasil", now: 189.9, was: 269.0, colors: ["#c8102e", "#111", "#fff"] },
@@ -46,7 +46,7 @@ export const sections: ProductSection[] = [
   {
     id: "selecoes",
     title: "Seleções · Copa 2026",
-    emoji: "🏆",
+    emoji: "",
     href: "/selecoes",
     products: [
       { id: "s1", name: "Brasil 2026/27 Home", category: "selecoes", now: 189.9, was: 269.0, colors: ["#ffc400", "#0f8a3d", "#0f8a3d"] },
@@ -60,7 +60,7 @@ export const sections: ProductSection[] = [
   {
     id: "brasil",
     title: "Gigantes do Brasileirão",
-    emoji: "🇧🇷",
+    emoji: "",
     href: "/brasileirao",
     products: [
       { id: "b1", name: "Flamengo 26/27 Home", category: "brasil", now: 189.9, was: 269.0, colors: ["#c8102e", "#111", "#fff"] },
@@ -74,7 +74,7 @@ export const sections: ProductSection[] = [
   {
     id: "europa",
     title: "Elite Europeia",
-    emoji: "🌍",
+    emoji: "",
     href: "/europa",
     products: [
       { id: "e1", name: "Barcelona 26/27 Home", category: "europa", now: 189.9, was: 269.0, colors: ["#a50044", "#004d98", "#ffc400"] },
@@ -88,7 +88,7 @@ export const sections: ProductSection[] = [
   {
     id: "retro",
     title: "Retrô Lendárias",
-    emoji: "🕰️",
+    emoji: "",
     href: "/retro",
     products: [
       { id: "r1", name: "Brasil 2002 — Ronaldo 9", category: "retro", now: 179.9, was: 239.9, colors: ["#ffc400", "#0f8a3d", "#0f8a3d"] },

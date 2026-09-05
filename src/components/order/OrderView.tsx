@@ -138,7 +138,7 @@ export function OrderView({ order }: { order: Order }) {
         <div className="co-result-icon ok"><Check strokeWidth={3} /></div>
         <h2>Pedido confirmado!</h2>
         {order.number && <div className="co-order-num">Pedido <b>#{order.number}</b></div>}
-        <p>Recebemos seu pagamento — acompanhe o envio abaixo. Obrigado! 💚</p>
+        <p>Recebemos seu pagamento — acompanhe o envio abaixo. Obrigado!</p>
 
         <div className="ov-track">
           <div className="ov-track-steps">

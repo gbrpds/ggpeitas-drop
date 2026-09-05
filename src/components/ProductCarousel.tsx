@@ -17,7 +17,7 @@ export function ProductCarousel({ section }: { section: ProductSection }) {
     >
       <div className="car-head">
         <h2>
-          {section.emoji} {section.title}
+          {section.title}
         </h2>
         <Link className="see" href={section.href}>
           Ver tudo <ArrowRight strokeWidth={2.4} />

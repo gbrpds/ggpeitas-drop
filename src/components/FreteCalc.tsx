@@ -77,7 +77,7 @@ export function FreteCalc({ subtotal = 0, className = "cd-frete-calc" }: { subto
               <div className="fc-result">
                 <div className="fc-local">{result.local} · <span>{result.label}</span></div>
                 {result.free ? (
-                  <div className="fc-free">Frete <b>GRÁTIS</b> 🎉 <span>(pedido acima de {brl(FREE_SHIPPING_MIN)})</span></div>
+                  <div className="fc-free">Frete <b>GRÁTIS</b> <span>(pedido acima de {brl(FREE_SHIPPING_MIN)})</span></div>
                 ) : (
                   <div className="fc-price">
                     <span>Frete</span> <b>{brl(result.cents / 100)}</b>
@@ -85,7 +85,7 @@ export function FreteCalc({ subtotal = 0, className = "cd-frete-calc" }: { subto
                 )}
                 <div className="fc-prazo">Entrega estimada: <b>{DELIVERY_ESTIMATE}</b></div>
                 {!result.free && (
-                  <div className="fc-hint">💚 Frete <b>grátis</b> em compras acima de {brl(FREE_SHIPPING_MIN)}.</div>
+                  <div className="fc-hint">Frete <b>grátis</b> em compras acima de {brl(FREE_SHIPPING_MIN)}.</div>
                 )}
               </div>
             )}

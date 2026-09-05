@@ -20,13 +20,13 @@ const FALLBACK_COLORS: [string, string, string] = ["#0f8a3d", "#ffc400", "#fffff
 
 /** Metadados por tag/categoria (título e emoji da seção na home). */
 const CATEGORY_META: Record<string, { title: string; emoji: string; href: string }> = {
-  brasileirao: { title: "Gigantes do Brasileirão", emoji: "🇧🇷", href: "/categoria/brasileirao" },
-  europa: { title: "Elite Europeia", emoji: "🌍", href: "/categoria/europa" },
-  selecoes: { title: "Seleções", emoji: "🏆", href: "/categoria/selecoes" },
-  futebol: { title: "Futebol", emoji: "⚽", href: "/categoria/futebol" },
-  feminina: { title: "Feminina", emoji: "👩", href: "/categoria/feminina" },
-  infantil: { title: "Conjunto Infantil", emoji: "💫", href: "/categoria/infantil" },
-  retro: { title: "Retrô Lendárias", emoji: "🕰️", href: "/categoria/retro" },
+  brasileirao: { title: "Gigantes do Brasileirão", emoji: "", href: "/categoria/brasileirao" },
+  europa: { title: "Elite Europeia", emoji: "", href: "/categoria/europa" },
+  selecoes: { title: "Seleções", emoji: "", href: "/categoria/selecoes" },
+  futebol: { title: "Futebol", emoji: "", href: "/categoria/futebol" },
+  feminina: { title: "Feminina", emoji: "", href: "/categoria/feminina" },
+  infantil: { title: "Conjunto Infantil", emoji: "", href: "/categoria/infantil" },
+  retro: { title: "Retrô Lendárias", emoji: "", href: "/categoria/retro" },
 };
 
 const ORDER = ["brasileirao", "europa", "selecoes", "futebol", "feminina", "infantil", "retro"];
@@ -67,7 +67,7 @@ async function allRows(): Promise<Row[]> {
 }
 
 export function metaFor(cat: string) {
-  return CATEGORY_META[cat] ?? { title: cat, emoji: "🔥", href: `/categoria/${cat}` };
+  return CATEGORY_META[cat] ?? { title: cat, emoji: "", href: `/categoria/${cat}` };
 }
 
 /** Seções da home a partir do banco (agrupadas por tag). Banco vazio → mock. */
