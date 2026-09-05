@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { getDb } from "@/db";
 import { products } from "@/db/schema";
@@ -30,6 +31,7 @@ export async function POST(req: Request) {
   try {
     const db = getDb();
     const [row] = await db.insert(products).values(parsed.data).returning({ id: products.id });
+    revalidateTag("products", "max");
     return NextResponse.json({ ok: true, id: row?.id });
   } catch (e) {
     console.error("create product error", e);

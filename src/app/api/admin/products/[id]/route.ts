@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
@@ -40,6 +41,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     if (parsed.data.inStock && prev && !prev.inStock) {
       await notifyBackInStock(id);
     }
+    revalidateTag("products", "max");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("update product error", e);
@@ -53,6 +55,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   try {
     const db = getDb();
     await db.delete(products).where(eq(products.id, id));
+    revalidateTag("products", "max");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("delete product error", e);
@@ -86,6 +89,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
     await db.update(products).set(patch).where(eq(products.id, id));
     if (notify) await notifyBackInStock(id);
+    revalidateTag("products", "max");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("patch product error", e);

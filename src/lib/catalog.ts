@@ -1,17 +1,48 @@
-import { desc, eq } from "drizzle-orm";
+import { desc } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import { getDb } from "@/db";
-import { products } from "@/db/schema";
+import { products, reviews } from "@/db/schema";
 import { sections as mockSections, type Product, type ProductSection } from "@/data/products";
 import { getProduct as getMockProduct } from "@/lib/product";
-import { getRatingsFor } from "@/lib/reviews";
 
-/** Anexa média/total de avaliações a uma lista de produtos (uma consulta só). */
+/**
+ * Leitura do catálogo em CACHE (produtos mudam pouco). Invalidada na hora
+ * que o admin cria/edita produto (revalidateTag("products")). Evita bater no
+ * Neon a cada visita — o maior ganho de velocidade nas páginas de navegação.
+ */
+const getProductRows = unstable_cache(
+  async () => {
+    const db = getDb();
+    return db.select().from(products).orderBy(desc(products.createdAt));
+  },
+  ["catalog:product-rows"],
+  { tags: ["products"], revalidate: 120 },
+);
+
+/** Avaliações (id do produto + nota) em cache; invalida em revalidateTag("reviews"). */
+const getRatingRows = unstable_cache(
+  async () => {
+    const db = getDb();
+    return db.select({ productId: reviews.productId, rating: reviews.rating }).from(reviews);
+  },
+  ["catalog:rating-rows"],
+  { tags: ["reviews"], revalidate: 120 },
+);
+
+/** Anexa média/total de avaliações a uma lista de produtos (do cache). */
 async function withRatings(items: Product[]): Promise<Product[]> {
   if (!items.length) return items;
-  const map = await getRatingsFor(items.map((p) => p.id));
+  const rows = await getRatingRows();
+  const acc = new Map<string, { sum: number; count: number }>();
+  for (const r of rows) {
+    const a = acc.get(r.productId) ?? { sum: 0, count: 0 };
+    a.sum += r.rating;
+    a.count++;
+    acc.set(r.productId, a);
+  }
   for (const p of items) {
-    const r = map.get(p.id);
-    if (r) p.rating = r;
+    const a = acc.get(p.id);
+    if (a) p.rating = { avg: a.sum / a.count, count: a.count };
   }
   return items;
 }
@@ -60,10 +91,9 @@ export async function getPromoProducts(): Promise<Product[]> {
   return [];
 }
 
-/** Todos os produtos (ativos e inativos) — usado p/ decidir o fallback ao mock. */
+/** Todos os produtos (ativos e inativos) — do cache. */
 async function allRows(): Promise<Row[]> {
-  const db = getDb();
-  return db.select().from(products).orderBy(desc(products.createdAt));
+  return getProductRows();
 }
 
 export function metaFor(cat: string) {
@@ -126,14 +156,14 @@ export async function getAllActive(): Promise<Product[]> {
   return mockSections.flatMap((s) => s.products);
 }
 
-/** Um produto: tenta o banco (uuid); senão, o mock. */
+/** Um produto: procura no catálogo em cache; senão, o mock. */
 export async function getCatalogProduct(id: string): Promise<Product | undefined> {
   try {
-    const db = getDb();
-    const [r] = await db.select().from(products).where(eq(products.id, id)).limit(1);
+    const rows = await allRows();
+    const r = rows.find((x) => x.id === id);
     if (r) return mapRow(r);
   } catch {
-    /* id não-uuid ou sem banco → mock */
+    /* sem banco → mock */
   }
   return getMockProduct(id);
 }

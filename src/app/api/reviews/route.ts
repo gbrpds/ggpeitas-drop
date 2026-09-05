@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/db";
@@ -59,6 +60,7 @@ export async function POST(req: Request) {
         verified,
       });
     }
+    revalidateTag("reviews", "max");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("create review error", e);
@@ -84,6 +86,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Sem permissão." }, { status: 403 });
     }
     await db.delete(reviews).where(eq(reviews.id, id));
+    revalidateTag("reviews", "max");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("delete review error", e);
