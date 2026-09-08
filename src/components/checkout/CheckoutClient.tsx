@@ -381,6 +381,18 @@ export function CheckoutClient({ savedProfile }: { savedProfile?: SavedProfile |
         {step === 2 && !(addrConfirmed && sa) && (
           <div className="co-panel">
             <h2>Endereço de entrega</h2>
+            {sa && (
+              <button
+                type="button"
+                className="co-addr-restore"
+                onClick={() => {
+                  setShipping({ cep: sa.cep, rua: sa.rua, numero: sa.numero, bairro: sa.bairro, cidade: sa.cidade, uf: sa.uf });
+                  setAddrConfirmed(true);
+                }}
+              >
+                <MapPin size={15} /> Usar meu endereço salvo
+              </button>
+            )}
             <div className="co-row">
               <div className="co-field">
                 <label>CEP {cepLoading && <span className="co-hint">buscando…</span>}</label>
