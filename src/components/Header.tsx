@@ -102,7 +102,13 @@ export function Header() {
                   </Link>
                 )}
                 <div className="sep" />
-                <button onClick={() => signOut({ callbackUrl: "/" })}>
+                <button
+                  onClick={async () => {
+                    setAccOpen(false); // fecha o menu na hora
+                    await signOut({ redirect: false });
+                    window.location.assign("/"); // navegação limpa
+                  }}
+                >
                   <LogOut strokeWidth={1.8} /> Sair
                 </button>
               </div>

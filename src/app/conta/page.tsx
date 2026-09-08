@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogOut, User as UserIcon, Package, MapPin } from "lucide-react";
-import { auth, signOut, googleEnabled } from "@/auth";
+import { User as UserIcon, Package, MapPin } from "lucide-react";
+import { auth, googleEnabled } from "@/auth";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -65,16 +66,7 @@ export default async function ContaPage({
                 </Link>
               </div>
 
-              <form
-                action={async () => {
-                  "use server";
-                  await signOut({ redirectTo: "/" });
-                }}
-              >
-                <button className="account-logout" type="submit">
-                  <LogOut size={17} /> Sair da conta
-                </button>
-              </form>
+              <LogoutButton className="account-logout" />
             </div>
           ) : (
             <>
