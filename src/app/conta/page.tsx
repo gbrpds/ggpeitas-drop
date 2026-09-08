@@ -59,6 +59,11 @@ export default async function ContaPage({
                   <b>Meus pedidos</b>
                   <span>Acompanhe suas compras</span>
                 </Link>
+                <Link className="account-card" href="/conta/dados">
+                  <UserIcon strokeWidth={1.8} />
+                  <b>Meus dados</b>
+                  <span>Endereço, telefone e CPF</span>
+                </Link>
                 <Link className="account-card" href="/rastrear">
                   <MapPin strokeWidth={1.8} />
                   <b>Rastrear pedido</b>

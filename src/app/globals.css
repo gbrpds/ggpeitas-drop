@@ -1111,6 +1111,16 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .co-frete-box small { flex-basis:100%; color:var(--muted); font-size:.78rem; }
 .co-frete-box.ok b { color:var(--green-deep); }
 
+/* endereço salvo no checkout */
+.co-saved-addr { padding:14px 16px; border:1px solid var(--line); border-radius:12px; background:var(--card, #fff); }
+.co-saved-tag { display:inline-flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.04em; color:var(--green-deep); margin-bottom:8px; }
+.co-saved-tag svg { flex:none; }
+.co-saved-addr p { margin:0 0 12px; line-height:1.5; color:var(--ink); font-size:.95rem; }
+.co-addr-change { background:none; border:none; padding:0; color:var(--green-deep); font-weight:600; font-size:.88rem;
+  cursor:pointer; text-decoration:underline; }
+.co-addr-change:hover { opacity:.8; }
+
 /* cupom no checkout */
 .cs-coupon { margin:12px 0; padding:12px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
 .cs-coupon-row { display:flex; gap:8px; }

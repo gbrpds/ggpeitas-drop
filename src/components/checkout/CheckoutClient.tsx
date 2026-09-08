@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { User, Truck, CreditCard, QrCode, Check, ArrowRight, ArrowLeft, ShoppingBag, Barcode } from "lucide-react";
+import { User, Truck, CreditCard, QrCode, Check, ArrowRight, ArrowLeft, ShoppingBag, Barcode, MapPin } from "lucide-react";
 import { useCart } from "@/store/cart";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
@@ -31,18 +31,34 @@ const STEPS = [
   { n: 3, label: "Pagamento", Icon: CreditCard },
 ];
 
-export function CheckoutClient() {
+type SavedProfile = {
+  cpf: string | null;
+  phone: string | null;
+  address: { cep: string; rua: string; numero: string; bairro: string; cidade: string; uf: string } | null;
+};
+
+export function CheckoutClient({ savedProfile }: { savedProfile?: SavedProfile | null }) {
   const router = useRouter();
   const { data: session } = useSession();
   const items = useCart((s) => s.items);
   const clear = useCart((s) => s.clear);
+  const sa = savedProfile?.address ?? null;
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const [step, setStep] = useState(1);
-  const [customer, setCustomer] = useState<Customer>({ name: "", cpf: "", email: "", phone: "" });
-  const [shipping, setShipping] = useState<Shipping>({ cep: "", rua: "", numero: "", bairro: "", cidade: "", uf: "" });
+  const [customer, setCustomer] = useState<Customer>({
+    name: "",
+    cpf: savedProfile?.cpf ?? "",
+    email: "",
+    phone: savedProfile?.phone ?? "",
+  });
+  const [shipping, setShipping] = useState<Shipping>(
+    sa ? { cep: sa.cep, rua: sa.rua, numero: sa.numero, bairro: sa.bairro, cidade: sa.cidade, uf: sa.uf } : { cep: "", rua: "", numero: "", bairro: "", cidade: "", uf: "" },
+  );
+  // se há endereço salvo, mostra o resumo dele com opção de trocar
+  const [addrConfirmed, setAddrConfirmed] = useState<boolean>(!!sa);
   const [payMethod, setPayMethod] = useState<"pix" | "card" | "boleto" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -321,7 +337,48 @@ export function CheckoutClient() {
           </div>
         )}
 
-        {step === 2 && (
+        {step === 2 && addrConfirmed && sa && (
+          <div className="co-panel">
+            <h2>Endereço de entrega</h2>
+            <div className="co-saved-addr">
+              <div className="co-saved-tag"><MapPin size={15} /> Endereço salvo</div>
+              <p>
+                {shipping.rua}, {shipping.numero}<br />
+                {shipping.bairro} — {shipping.cidade}/{shipping.uf}<br />
+                CEP {shipping.cep}
+              </p>
+              <button
+                type="button"
+                className="co-addr-change"
+                onClick={() => {
+                  setShipping({ cep: "", rua: "", numero: "", bairro: "", cidade: "", uf: "" });
+                  setAddrConfirmed(false);
+                }}
+              >
+                Usar outro endereço
+              </button>
+            </div>
+            {uf && uf.length === 2 && (
+              freeShip ? (
+                <div className="co-frete-box ok">
+                  <Truck size={18} /> <b>Frete grátis!</b> Seu pedido ultrapassou {brl(299)}.
+                </div>
+              ) : freightValue != null ? (
+                <div className="co-frete-box">
+                  <Truck size={18} />
+                  <span>Frete para <b>{uf}</b>: <b>{brl(freightValue)}</b></span>
+                  <small>Faltam {brl(Math.max(0, 299 - total))} para o frete grátis</small>
+                </div>
+              ) : null
+            )}
+            <div className="co-nav">
+              <button className="co-back" onClick={() => setStep(1)}><ArrowLeft size={17} /> Voltar</button>
+              <button className="co-next" onClick={next}>Continuar <ArrowRight size={18} strokeWidth={2.4} /></button>
+            </div>
+          </div>
+        )}
+
+        {step === 2 && !(addrConfirmed && sa) && (
           <div className="co-panel">
             <h2>Endereço de entrega</h2>
             <div className="co-row">

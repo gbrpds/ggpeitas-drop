@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { resolveUserId } from "@/lib/order";
+import { getProfile } from "@/lib/account";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
@@ -12,14 +13,9 @@ export const metadata = { title: "Checkout — GG Peitas" };
 
 export default async function CheckoutPage() {
   // compra exige conta: visitante vai para login e volta pro checkout
-  let logged = false;
-  try {
-    const session = await auth();
-    logged = !!session?.user;
-  } catch {
-    logged = false;
-  }
-  if (!logged) redirect("/conta?next=/checkout");
+  const userId = await resolveUserId();
+  if (!userId) redirect("/conta?next=/checkout");
+  const profile = await getProfile(userId);
 
   return (
     <>
@@ -29,7 +25,13 @@ export default async function CheckoutPage() {
       <main>
         <div className="wrap checkout-wrap">
           <h1 className="page-title">Finalizar compra</h1>
-          <CheckoutClient />
+          <CheckoutClient
+            savedProfile={
+              profile
+                ? { cpf: profile.cpf, phone: profile.phone, address: profile.address }
+                : null
+            }
+          />
         </div>
       </main>
       <SiteFooter />

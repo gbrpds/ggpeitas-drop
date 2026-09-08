@@ -28,6 +28,14 @@ export const metadata: Metadata = {
   title: "GG Peitas — Camisas de Futebol",
   description:
     "Camisas de clubes e seleções do mundo todo. Frete grátis, até 12x sem juros e envio para todo o Brasil.",
+  icons: {
+    icon: [
+      { url: "/logo.ico", sizes: "any" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: "/logo.png",
+    shortcut: "/logo.ico",
+  },
 };
 
 // Viewport explícito — evita zoom estranho ao trocar de página no mobile.

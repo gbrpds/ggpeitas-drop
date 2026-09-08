@@ -9,6 +9,10 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash"),
   image: text("image"),
   provider: text("provider").default("credentials").notNull(),
+  // dados padrão do cliente (última compra) — pré-preenchem o checkout
+  cpf: text("cpf"),
+  phone: text("phone"),
+  address: jsonb("address"), // { cep, rua, numero, bairro, cidade, uf, complemento? }
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

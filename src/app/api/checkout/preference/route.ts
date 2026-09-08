@@ -7,6 +7,7 @@ import { validateCoupon } from "@/lib/coupons";
 import { freightCentsFor } from "@/lib/shipping";
 import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schema";
 import { resolveUserId, createOrder } from "@/lib/order";
+import { setDefaultFromOrder } from "@/lib/account";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -89,6 +90,7 @@ export async function POST(req: Request) {
     });
     number = created.number;
     orderId = created.id;
+    await setDefaultFromOrder(userId, customer, shipping); // endereço padrão = última compra
   } catch (e) {
     console.error("save preference order error", e);
   }
