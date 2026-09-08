@@ -102,6 +102,29 @@ export function verificationCodeEmail(name: string, code: string) {
   };
 }
 
+/** Redefinição de senha ("esqueci a senha"). */
+export function passwordResetEmail(name: string, resetUrl: string) {
+  const first = name?.split(" ")[0] || "torcedor";
+  return {
+    subject: "Redefinição de senha — GG Peitas",
+    html: layout(
+      "Redefinir sua senha",
+      `<p style="font-size:14px;line-height:1.6;color:#444;">
+        Olá, ${first}! Recebemos um pedido para redefinir a senha da sua conta.
+        Clique no botão abaixo para criar uma nova senha.
+      </p>
+      <p style="margin:22px 0 10px;">${button(resetUrl, "Trocar a senha")}</p>
+      <p style="font-size:12px;color:#8a8a80;line-height:1.6;">
+        Se o botão não funcionar, clique aqui ou copie e cole este link no navegador:<br/>
+        <a href="${resetUrl}" style="color:${GREEN};word-break:break-all;">${resetUrl}</a>
+      </p>
+      <p style="font-size:13px;color:#8a8a80;margin-top:14px;">
+        O link expira em 1 hora. Se você não pediu isso, pode ignorar este e-mail — sua senha continua a mesma.
+      </p>`,
+    ),
+  };
+}
+
 /** Boas-vindas ao criar conta. */
 export function welcomeEmail(name: string, siteUrl: string) {
   const first = name?.split(" ")[0] || "torcedor";

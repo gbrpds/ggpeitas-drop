@@ -184,6 +184,10 @@ export function AuthForm({ googleEnabled, next }: { googleEnabled: boolean; next
             placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Sua senha"} minLength={6} />
         </div>
 
+        {mode === "login" && (
+          <a href="/recuperar-senha" className="auth-forgot">Esqueci minha senha</a>
+        )}
+
         {error && <div className="auth-error">{error}</div>}
 
         <button className="auth-submit" type="submit" disabled={loading}>

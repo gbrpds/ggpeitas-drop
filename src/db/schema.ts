@@ -103,6 +103,14 @@ export const reviews = pgTable("reviews", {
 export type ReviewRow = typeof reviews.$inferSelect;
 export type NewReviewRow = typeof reviews.$inferInsert;
 
+/** Tokens de redefinição de senha ("esqueci a senha"). */
+export const passwordResets = pgTable("password_resets", {
+  tokenHash: text("token_hash").primaryKey(), // sha256 do token enviado por e-mail
+  email: text("email").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 /** Verificações de e-mail pendentes (código enviado ao criar conta). */
 export const emailVerifications = pgTable("email_verifications", {
   email: text("email").primaryKey(),
