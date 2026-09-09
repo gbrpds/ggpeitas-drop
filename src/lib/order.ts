@@ -9,8 +9,8 @@ import { baseUrl } from "@/lib/site-url";
 
 type Db = ReturnType<typeof getDb>;
 
-/** Tempo máximo "em aberto" antes de cancelar: PIX/cartão 10 min; boleto 4 dias. */
-export const ORDER_TTL_MS = 10 * 60 * 1000;
+/** Tempo máximo "em aberto" antes de cancelar: PIX/cartão 30 min; boleto 4 dias. */
+export const ORDER_TTL_MS = 30 * 60 * 1000;
 export const BOLETO_TTL_MS = 4 * 24 * 60 * 60 * 1000; // boleto não é instantâneo
 
 function ttlFor(o: { paymentMethod?: string }): number {

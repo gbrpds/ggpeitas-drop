@@ -70,7 +70,10 @@ export async function syncPaymentStatus(
         });
         await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
       }
-    } else if (status === "cancelled" || status === "rejected") {
+    } else if (status === "cancelled") {
+      // Cancelamento explícito do pagamento (não "rejected"): uma recusa de cartão
+      // NÃO cancela o pedido — o cliente pode tentar outro cartão/PIX/boleto.
+      // O abandono é tratado pelo prazo (expireStaleOrders).
       const cancelled = await db
         .update(orders)
         .set({ status: "cancelled" })
@@ -84,6 +87,7 @@ export async function syncPaymentStatus(
         await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
       }
     }
+    // status "rejected": não faz nada — pedido segue pendente para nova tentativa
   } catch (e) {
     console.error("sync order status error", e);
   }

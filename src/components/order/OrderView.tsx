@@ -185,7 +185,7 @@ export function OrderView({ order, token }: { order: Order; token?: string | nul
         <h2>Pedido cancelado</h2>
         {order.number && <div className="co-order-num">Pedido <b>#{order.number}</b></div>}
         <p>
-          Este pedido foi cancelado por falta de pagamento dentro do prazo (10 minutos).
+          Este pedido foi cancelado por falta de pagamento dentro do prazo.
           Para comprar, é só fazer um novo pedido.
         </p>
         <div className="ov-confirm-summary">{summary}</div>
