@@ -6,13 +6,10 @@ import { useRouter } from "next/navigation";
 import { UploadCloud, X, Loader2, Save } from "lucide-react";
 
 export const CATEGORIES = [
-  { value: "futebol", label: "Futebol" },
-  { value: "selecoes", label: "Seleções" },
-  { value: "feminina", label: "Feminina" },
-  { value: "infantil", label: "Conjuntos Esportivos" },
-  { value: "retro", label: "Retrô" },
   { value: "brasileirao", label: "Brasileirão" },
   { value: "europa", label: "Europa" },
+  { value: "selecoes", label: "Seleções" },
+  { value: "retro", label: "Retrô" },
 ];
 
 export type ProductInitial = {
@@ -36,7 +33,7 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
   const router = useRouter();
   const [name, setName] = useState(initial?.name ?? "");
   const [team, setTeam] = useState(initial?.team ?? "");
-  const [category, setCategory] = useState(initial?.category ?? "futebol");
+  const [category, setCategory] = useState(initial?.category ?? "brasileirao");
   const [price, setPrice] = useState(centsToStr(initial?.priceCents));
   const [compare, setCompare] = useState(centsToStr(initial?.compareCents));
   const version = "Torcedor"; // único modelo

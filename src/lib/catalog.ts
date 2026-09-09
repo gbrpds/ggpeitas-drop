@@ -54,13 +54,12 @@ const CATEGORY_META: Record<string, { title: string; emoji: string; href: string
   brasileirao: { title: "Gigantes do Brasileirão", emoji: "", href: "/categoria/brasileirao" },
   europa: { title: "Elite Europeia", emoji: "", href: "/categoria/europa" },
   selecoes: { title: "Seleções", emoji: "", href: "/categoria/selecoes" },
-  futebol: { title: "Futebol", emoji: "", href: "/categoria/futebol" },
   feminina: { title: "Feminina", emoji: "", href: "/categoria/feminina" },
   infantil: { title: "Conjuntos Esportivos", emoji: "", href: "/categoria/infantil" },
   retro: { title: "Retrô Lendárias", emoji: "", href: "/categoria/retro" },
 };
 
-const ORDER = ["brasileirao", "europa", "selecoes", "futebol", "feminina", "infantil", "retro"];
+const ORDER = ["brasileirao", "europa", "selecoes", "feminina", "infantil", "retro"];
 
 type Row = typeof products.$inferSelect;
 

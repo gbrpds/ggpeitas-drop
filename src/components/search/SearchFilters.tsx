@@ -6,7 +6,6 @@ const CAT_LABELS: Record<string, string> = {
   brasileirao: "Brasileirão",
   europa: "Europa",
   selecoes: "Seleções",
-  futebol: "Futebol",
   feminina: "Feminina",
   infantil: "Conjuntos Esportivos",
   retro: "Retrô",

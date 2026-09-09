@@ -65,7 +65,7 @@ export const products = pgTable("products", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   team: text("team"),
-  category: text("category").notNull(), // futebol | selecoes | feminina | infantil | player | retro | brasileirao | europa
+  category: text("category").notNull(), // coleção: brasileirao | europa | selecoes | retro (feminina/infantil são flags)
   priceCents: integer("price_cents").notNull(),
   compareCents: integer("compare_cents"), // preço "de" (riscado), opcional
   version: text("version"), // torcedor | jogador (opcional)
