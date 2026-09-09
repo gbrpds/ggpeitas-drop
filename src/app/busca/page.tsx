@@ -15,15 +15,34 @@ export const metadata = { title: "Busca — GG Peitas" };
 const norm = (s: string) =>
   s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
+/** Gênero deduzido do nome padronizado do produto. */
+function genderOf(name: string): "feminina" | "masculino" {
+  return /\(feminino\)|top cropped/i.test(name) ? "feminina" : "masculino";
+}
+/** Tipo/modelo deduzido do nome (para o filtro). */
+function tipoOf(name: string): string | null {
+  if (/manga longa/i.test(name)) return "Manga Longa";
+  if (/goleiro/i.test(name)) return "Goleiro";
+  if (/copa do mundo/i.test(name)) return "Copa do Mundo";
+  if (/top cropped/i.test(name)) return "Top Cropped";
+  if (/third/i.test(name)) return "Third";
+  if (/away/i.test(name)) return "Away";
+  if (/home/i.test(name)) return "Home";
+  return null;
+}
+const GENDER_LABEL: Record<string, string> = { masculino: "Masculino", feminina: "Feminina" };
+
 export default async function BuscaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; cat?: string; team?: string; sort?: string }>;
+  searchParams: Promise<{ q?: string; cat?: string; team?: string; gender?: string; tipo?: string; sort?: string }>;
 }) {
   const sp = await searchParams;
   const q = (sp.q ?? "").trim();
   const selected = (sp.cat ?? "").split(",").filter(Boolean);
   const selectedTeams = (sp.team ?? "").split(",").filter(Boolean);
+  const selectedGenders = (sp.gender ?? "").split(",").filter(Boolean);
+  const selectedTipos = (sp.tipo ?? "").split(",").filter(Boolean);
   const sort = sp.sort ?? "relevancia";
 
   const all = await getAllActive();
@@ -39,14 +58,26 @@ export default async function BuscaPage({
       })
     : all;
 
-  // facetas de categoria e de time (com contagem) sobre o conjunto encontrado
+  // facetas de categoria, time, gênero e tipo (com contagem) sobre o encontrado
   const counts = new Map<string, number>();
   const teamCounts = new Map<string, number>();
+  const genderCounts = new Map<string, number>();
+  const tipoCounts = new Map<string, number>();
   for (const p of matched) {
     counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
     if (p.team) teamCounts.set(p.team, (teamCounts.get(p.team) ?? 0) + 1);
+    const g = genderOf(p.name);
+    genderCounts.set(g, (genderCounts.get(g) ?? 0) + 1);
+    const tp = tipoOf(p.name);
+    if (tp) tipoCounts.set(tp, (tipoCounts.get(tp) ?? 0) + 1);
   }
   const facets = [...counts.entries()].map(([cat, count]) => ({ cat, count })).sort((a, b) => b.count - a.count);
+  const genderFacets = ["masculino", "feminina"]
+    .filter((g) => genderCounts.has(g))
+    .map((g) => ({ value: g, label: GENDER_LABEL[g], count: genderCounts.get(g) ?? 0 }));
+  const tipoFacets = [...tipoCounts.entries()]
+    .map(([tipo, count]) => ({ tipo, count }))
+    .sort((a, b) => b.count - a.count);
   // Todos os times cadastrados ficam selecionáveis (mesmo sem produtos ainda),
   // somados aos times que aparecem nos resultados.
   const teamNames = new Set<string>([...registeredTeams, ...teamCounts.keys()]);
@@ -60,6 +91,8 @@ export default async function BuscaPage({
     const wanted = new Set(selectedTeams.map(norm));
     results = results.filter((p) => p.team && wanted.has(norm(p.team)));
   }
+  if (selectedGenders.length) results = results.filter((p) => selectedGenders.includes(genderOf(p.name)));
+  if (selectedTipos.length) results = results.filter((p) => { const t = tipoOf(p.name); return !!t && selectedTipos.includes(t); });
   if (sort === "preco-asc") results = [...results].sort((a, b) => a.now - b.now);
   else if (sort === "preco-desc") results = [...results].sort((a, b) => b.now - a.now);
 
@@ -84,6 +117,10 @@ export default async function BuscaPage({
               selected={selected}
               teamFacets={teamFacets}
               selectedTeams={selectedTeams}
+              genderFacets={genderFacets}
+              selectedGenders={selectedGenders}
+              tipoFacets={tipoFacets}
+              selectedTipos={selectedTipos}
               sort={sort}
             />
 

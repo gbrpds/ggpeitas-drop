@@ -30,7 +30,10 @@ export function shouldSkipTitle(title: string): boolean {
     /\bplayers?\b/i.test(title) ||
     /\bshorts?\b/i.test(title) ||
     /\bjacket\b/i.test(title) ||
-    /\bwindbreaker\b/i.test(title)
+    /\bwindbreaker\b/i.test(title) ||
+    /\btraining\b/i.test(title) ||
+    /\btreino\b/i.test(title) ||
+    /\bsuit\b/i.test(title)
   );
 }
 
