@@ -24,10 +24,14 @@ const anton = Anton({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ggpeitas.com.br";
+const DESC =
+  "Camisas de clubes e seleções do mundo todo. Frete grátis, até 3x sem juros e envio para todo o Brasil.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "GG Peitas — Camisas de Futebol",
-  description:
-    "Camisas de clubes e seleções do mundo todo. Frete grátis, até 12x sem juros e envio para todo o Brasil.",
+  description: DESC,
   icons: {
     icon: [
       { url: "/logo.ico", sizes: "any" },
@@ -35,6 +39,20 @@ export const metadata: Metadata = {
     ],
     apple: "/logo.png",
     shortcut: "/logo.ico",
+  },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: SITE_URL,
+    siteName: "GG Peitas",
+    title: "GG Peitas — Camisas de Futebol",
+    description: DESC,
+    // a imagem (fundo preto + logo) vem de app/opengraph-image.tsx
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GG Peitas — Camisas de Futebol",
+    description: DESC,
   },
 };
 
