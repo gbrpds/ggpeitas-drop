@@ -5,7 +5,6 @@ import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
-import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { ProductCard } from "@/components/ProductCard";
 import { getPromoProducts } from "@/lib/catalog";
 
@@ -56,7 +55,6 @@ export default async function PromocaoPage() {
         </section>
       </main>
       <SiteFooter />
-      <WhatsAppFloat />
       <MobileDrawer />
     </>
   );

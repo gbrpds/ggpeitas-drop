@@ -7,7 +7,6 @@ import { ProductCarousel } from "@/components/ProductCarousel";
 import { PromoBanner } from "@/components/PromoBanner";
 import { FooterTrust } from "@/components/FooterTrust";
 import { SiteFooter } from "@/components/SiteFooter";
-import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { HomeTeamSection } from "@/components/HomeTeamSection";
 import { getHomeSections } from "@/lib/catalog";
@@ -38,7 +37,6 @@ export default async function Home() {
 
       <FooterTrust />
       <SiteFooter />
-      <WhatsAppFloat />
       <MobileDrawer />
     </>
   );

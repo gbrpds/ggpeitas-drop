@@ -6,7 +6,6 @@ import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
-import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { ProductCard } from "@/components/ProductCard";
 import { SearchFilters } from "@/components/search/SearchFilters";
 
@@ -102,7 +101,6 @@ export default async function BuscaPage({
         </div>
       </main>
       <SiteFooter />
-      <WhatsAppFloat />
       <MobileDrawer />
     </>
   );

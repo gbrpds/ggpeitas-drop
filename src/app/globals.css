@@ -303,15 +303,6 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .fbottom { border-top:1px solid rgba(255,255,255,.08); padding-block:16px; display:flex; justify-content:space-between;
   gap:12px; flex-wrap:wrap; color:#8a917b; font-size:.76rem; }
 
-/* whatsapp float */
-.wpp { position:fixed; right:18px; bottom:18px; z-index:80; background:#111; color:#f0f0f0;
-  font-weight:700; font-size:.82rem; padding:14px 22px; border-radius:50px; display:inline-flex; align-items:center; gap:8px;
-  box-shadow:0 10px 28px rgba(0,0,0,.35); overflow:hidden; transition:transform .25s; }
-.wpp b { color:var(--yellow); font-weight:800; }
-.wpp:hover { transform:scale(1.04); }
-.wpp::before { content:""; position:absolute; top:0; left:-100%; width:50%; height:100%;
-  background:linear-gradient(120deg,transparent,rgba(255,255,255,.35),transparent);
-  transform:skewX(-25deg); animation:sh 2.8s infinite; }
 @keyframes sh { 0% { left:-100%; } 100% { left:150%; } }
 
 /* botão flutuante do time (canto inferior esquerdo) */

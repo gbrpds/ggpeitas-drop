@@ -6,7 +6,6 @@ import { MainNav } from "@/components/MainNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { FooterTrust } from "@/components/FooterTrust";
 import { SiteFooter } from "@/components/SiteFooter";
-import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { Gallery } from "@/components/product/Gallery";
 import { BuyBox } from "@/components/product/BuyBox";
 import { ProductBanner } from "@/components/product/ProductBanner";
@@ -59,7 +58,6 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
       <FooterTrust />
       <SiteFooter />
-      <WhatsAppFloat />
       <MobileDrawer />
     </>
   );

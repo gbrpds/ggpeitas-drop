@@ -7,7 +7,6 @@ import { MainNav } from "@/components/MainNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { FooterTrust } from "@/components/FooterTrust";
 import { SiteFooter } from "@/components/SiteFooter";
-import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { ProductCard } from "@/components/ProductCard";
 
 export const dynamic = "force-dynamic";
@@ -51,7 +50,6 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
       </main>
       <FooterTrust />
       <SiteFooter />
-      <WhatsAppFloat />
       <MobileDrawer />
     </>
   );
