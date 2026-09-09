@@ -1,9 +1,10 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UploadCloud, X, Loader2, Save } from "lucide-react";
+import { detectFromTitle } from "@/lib/team-detect";
 
 export const CATEGORIES = [
   { value: "brasileirao", label: "Brasileirão" },
@@ -47,6 +48,22 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // últimos valores auto-detectados (só sobrescreve o que não foi editado à mão)
+  const autoRef = useRef({
+    team: initial?.team ?? "",
+    category: initial?.category ?? "brasileirao",
+    feminina: initial?.feminina ?? false,
+  });
+
+  function onName(v: string) {
+    setName(v);
+    const det = detectFromTitle(v);
+    const a = autoRef.current;
+    if (team === a.team) { setTeam(det.team); a.team = det.team; }
+    if (category === a.category) { setCategory(det.category); a.category = det.category; }
+    if (feminina === a.feminina) { setFeminina(det.feminina); a.feminina = det.feminina; }
+  }
 
   const reais = (v: string) => Math.round(parseFloat(v.replace(",", ".")) * 100);
   const isEdit = !!id;
@@ -140,7 +157,8 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
 
       <div className="co-field">
         <label>Nome do produto</label>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Camisa Flamengo 25/26 Home" />
+        <input value={name} onChange={(e) => onName(e.target.value)} placeholder="Ex: Camisa Cruzeiro 26/27 - Home (Masculino)" />
+        <span className="co-hint">Time, categoria e “Feminina” são preenchidos automaticamente pelo título (você pode ajustar).</span>
       </div>
 
       <div className="co-row">
