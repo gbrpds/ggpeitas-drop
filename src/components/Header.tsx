@@ -16,7 +16,7 @@ export function Header() {
   const items = useCart((s) => s.items);
   const { data: session } = useSession();
   const loggedIn = !!session?.user;
-  const firstName = session?.user?.name?.trim().split(" ")[0] ?? "torcedor";
+  const firstName = session?.user?.name?.trim().split(" ")[0] ?? "torcedor(a)";
   const isAdmin = !!(session?.user as { isAdmin?: boolean } | undefined)?.isAdmin;
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -87,7 +87,7 @@ export function Header() {
             {mounted && loggedIn && (
               <div className={`acc-drop${accOpen ? " open" : ""}`}>
                 <div className="greet">
-                  Bem vindo <b>{firstName}</b>!
+                  Bem-vindo(a) <b>{firstName}</b>!
                 </div>
                 <div className="sep" />
                 <Link href="/conta" onClick={() => setAccOpen(false)}>

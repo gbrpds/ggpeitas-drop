@@ -67,7 +67,7 @@ export function HomeTeamSection() {
         </div>
         <div className="team-hero-text">
           <span className="team-hero-eyebrow">Seu time do coração</span>
-          <h2>Bem-vindo, torcedor do {team.name}!</h2>
+          <h2>Bem-vindo(a), torcedor(a) do {team.name}!</h2>
           <p>A loja com a cara do seu time. Veja as camisas do {team.name}.</p>
         </div>
         <Link className="team-hero-cta" href={`/busca?team=${encodeURIComponent(team.name)}`}>

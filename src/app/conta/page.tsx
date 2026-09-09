@@ -48,7 +48,7 @@ export default async function ContaPage({
                   <UserIcon strokeWidth={1.8} />
                 </div>
                 <div>
-                  <h1>Olá, {user.name?.split(" ")[0] ?? "torcedor"}!</h1>
+                  <h1>Olá, {user.name?.split(" ")[0] ?? "torcedor(a)"}!</h1>
                   <span>{user.email}</span>
                 </div>
               </div>

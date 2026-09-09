@@ -83,7 +83,7 @@ function itemsTable(
 
 /** Código de verificação de e-mail (criação de conta). */
 export function verificationCodeEmail(name: string, code: string) {
-  const first = name?.split(" ")[0] || "torcedor";
+  const first = name?.split(" ")[0] || "torcedor(a)";
   return {
     subject: `Seu código de verificação: ${code}`,
     html: layout(
@@ -104,7 +104,7 @@ export function verificationCodeEmail(name: string, code: string) {
 
 /** Redefinição de senha ("esqueci a senha"). */
 export function passwordResetEmail(name: string, resetUrl: string) {
-  const first = name?.split(" ")[0] || "torcedor";
+  const first = name?.split(" ")[0] || "torcedor(a)";
   return {
     subject: "Redefinição de senha — GG Peitas",
     html: layout(
@@ -127,11 +127,11 @@ export function passwordResetEmail(name: string, resetUrl: string) {
 
 /** Boas-vindas ao criar conta. */
 export function welcomeEmail(name: string, siteUrl: string) {
-  const first = name?.split(" ")[0] || "torcedor";
+  const first = name?.split(" ")[0] || "torcedor(a)";
   return {
-    subject: "Bem-vindo à GG Peitas!",
+    subject: "Bem-vindo(a) à GG Peitas!",
     html: layout(
-      `Olá, ${first}! Seja bem-vindo`,
+      `Olá, ${first}! Seja bem-vindo(a)`,
       `<p style="font-size:14px;line-height:1.6;color:#444;">
         Sua conta foi criada com sucesso. Agora você pode acompanhar seus pedidos,
         salvar seu time do coração e finalizar suas compras mais rápido.
@@ -153,7 +153,7 @@ export function orderConfirmedEmail(order: {
   customerName?: string;
   orderUrl: string;
 }) {
-  const first = order.customerName?.split(" ")[0] || "torcedor";
+  const first = order.customerName?.split(" ")[0] || "torcedor(a)";
   return {
     subject: `Pagamento confirmado — Pedido #${order.number ?? ""}`,
     html: layout(
@@ -184,7 +184,7 @@ export function orderPendingEmail(order: {
   paymentMethod?: string;
   orderUrl: string;
 }) {
-  const first = order.customerName?.split(" ")[0] || "torcedor";
+  const first = order.customerName?.split(" ")[0] || "torcedor(a)";
   const metodo =
     order.paymentMethod === "pix"
       ? "via PIX"
@@ -217,7 +217,7 @@ export function orderCancelledEmail(order: {
   customerName?: string;
   siteUrl: string;
 }) {
-  const first = order.customerName?.split(" ")[0] || "torcedor";
+  const first = order.customerName?.split(" ")[0] || "torcedor(a)";
   return {
     subject: `Pedido #${order.number ?? ""} cancelado`,
     html: layout(
@@ -241,7 +241,7 @@ export function orderStageEmail(order: {
   stage: "preparando" | "entregue";
   orderUrl: string;
 }) {
-  const first = order.customerName?.split(" ")[0] || "torcedor";
+  const first = order.customerName?.split(" ")[0] || "torcedor(a)";
   const copy =
     order.stage === "preparando"
       ? {
@@ -260,6 +260,31 @@ export function orderStageEmail(order: {
       copy.title,
       `<p style="font-size:14px;line-height:1.6;color:#444;">${copy.text}</p>
       <p style="margin:20px 0 6px;">${button(order.orderUrl, "Acompanhar pedido")}</p>`,
+    ),
+  };
+}
+
+/** Pedido entregue — pede feedback ao cliente. */
+export function feedbackRequestEmail(order: {
+  number: string | null;
+  customerName?: string;
+  feedbackUrl: string;
+}) {
+  const first = order.customerName?.split(" ")[0] || "torcedor(a)";
+  return {
+    subject: `Seu pedido #${order.number ?? ""} chegou! Conte como foi`,
+    html: layout(
+      "Seu pedido foi entregue!",
+      `<p style="font-size:14px;line-height:1.6;color:#444;">
+        ${first}, que bom que seu pedido <b>#${order.number ?? ""}</b> chegou!
+        Sua opinião ajuda demais outros torcedores e a gente a melhorar sempre.
+        Leva menos de um minuto:
+      </p>
+      <p style="margin:22px 0 6px;">${button(order.feedbackUrl, "Deixar meu feedback")}</p>
+      <p style="font-size:12px;color:#8a8a80;line-height:1.6;">
+        Se o botão não funcionar, copie e cole este link no navegador:<br/>
+        <a href="${order.feedbackUrl}" style="color:${GREEN};word-break:break-all;">${order.feedbackUrl}</a>
+      </p>`,
     ),
   };
 }
@@ -287,7 +312,7 @@ export function orderShippedEmail(order: {
   trackingUrl: string;
   orderUrl: string;
 }) {
-  const first = order.customerName?.split(" ")[0] || "torcedor";
+  const first = order.customerName?.split(" ")[0] || "torcedor(a)";
   return {
     subject: `Seu pedido #${order.number ?? ""} foi enviado!`,
     html: layout(

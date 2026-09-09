@@ -5,7 +5,7 @@ import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 import { isAdmin } from "@/lib/admin";
 import { sendEmail } from "@/lib/email";
-import { orderShippedEmail, orderStageEmail } from "@/lib/email-templates";
+import { orderShippedEmail, orderStageEmail, feedbackRequestEmail } from "@/lib/email-templates";
 import { correiosLink } from "@/lib/correios";
 import { baseUrl } from "@/lib/site-url";
 
@@ -77,7 +77,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             trackingUrl: correiosLink(newCode),
             orderUrl,
           });
-        } else if (newStage === "preparando" || newStage === "entregue") {
+        } else if (newStage === "entregue") {
+          // pedido entregue → pede feedback ao cliente
+          const feedbackUrl = `${baseUrl()}/feedback/${id}${prev?.accessToken ? `?t=${prev.accessToken}` : ""}`;
+          tpl = feedbackRequestEmail({ number: prev?.number ?? null, customerName: c.name, feedbackUrl });
+        } else if (newStage === "preparando") {
           tpl = orderStageEmail({ number: prev?.number ?? null, customerName: c.name, stage: newStage, orderUrl });
         }
         if (tpl) await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });

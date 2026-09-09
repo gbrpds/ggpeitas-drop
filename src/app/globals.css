@@ -748,6 +748,8 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
   letter-spacing:.03em; color:var(--green-deep); white-space:nowrap; }
 .order-action:hover { color:var(--green); }
 .order-cancelled-note { font-size:.78rem; color:var(--muted); font-style:italic; }
+.fb-comment { margin:6px 0 10px; font-size:.92rem; line-height:1.5; color:var(--ink); }
+.fb-email { font-size:.78rem; color:var(--muted); }
 .order-track-hint { display:flex; align-items:center; gap:7px; margin-top:8px; font-size:.8rem; color:var(--green-deep); }
 .order-track-hint svg { flex:none; }
 .order-track-hint b { letter-spacing:.03em; }

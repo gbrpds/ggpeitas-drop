@@ -44,6 +44,22 @@ export const orders = pgTable("orders", {
 export type Order = typeof orders.$inferSelect;
 export type NewOrder = typeof orders.$inferInsert;
 
+/** Feedback do cliente sobre a compra (solicitado quando o pedido é entregue). */
+export const feedbacks = pgTable("feedbacks", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  orderId: uuid("order_id"), // pedido de origem (nulo = legado)
+  orderNumber: text("order_number"),
+  userId: uuid("user_id"), // nulo = compra como visitante
+  customerName: text("customer_name"),
+  customerEmail: text("customer_email"),
+  rating: integer("rating").notNull(), // 1..5
+  comment: text("comment"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type FeedbackRow = typeof feedbacks.$inferSelect;
+export type NewFeedbackRow = typeof feedbacks.$inferInsert;
+
 /** Catálogo de produtos cadastrados pelo admin. */
 export const products = pgTable("products", {
   id: uuid("id").defaultRandom().primaryKey(),

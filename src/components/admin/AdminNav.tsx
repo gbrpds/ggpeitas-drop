@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Package, ShoppingBag, Users, Shield, Ticket } from "lucide-react";
+import { Package, ShoppingBag, Users, Shield, Ticket, MessageSquare } from "lucide-react";
 
 const tabs = [
   { href: "/admin", label: "Produtos", Icon: Package },
   { href: "/admin/pedidos", label: "Pedidos", Icon: ShoppingBag },
+  { href: "/admin/feedbacks", label: "Feedbacks", Icon: MessageSquare },
   { href: "/admin/contas", label: "Contas", Icon: Users },
   { href: "/admin/cupons", label: "Cupons", Icon: Ticket },
   { href: "/admin/times", label: "Times", Icon: Shield },
