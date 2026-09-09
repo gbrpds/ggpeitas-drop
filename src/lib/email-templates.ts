@@ -1,5 +1,7 @@
 /** Templates de e-mail (HTML inline, compatível com clientes de e-mail). */
 
+import { baseUrl } from "@/lib/site-url";
+
 const GREEN = "#0f8a3d";
 const INK = "#1c1c18";
 
@@ -13,8 +15,9 @@ function layout(title: string, body: string): string {
   <div style="margin:0;padding:0;background:#f2f2ef;font-family:Arial,Helvetica,sans-serif;color:${INK};">
     <div style="max-width:560px;margin:0 auto;padding:24px 16px;">
       <div style="text-align:center;padding:8px 0 18px;">
-        <span style="display:inline-block;font-size:22px;font-weight:900;letter-spacing:.5px;color:${GREEN};">GG PEITAS</span>
-        <div style="font-size:11px;color:#8a8a80;letter-spacing:2px;">CAMISAS PREMIUM</div>
+        <img src="${baseUrl()}/logo.png" alt="GG Peitas" width="118"
+          style="display:inline-block;width:118px;max-width:118px;height:auto;border:0;outline:none;text-decoration:none;" />
+        <div style="font-size:11px;color:#8a8a80;letter-spacing:2px;margin-top:8px;">CAMISAS PREMIUM</div>
       </div>
       <div style="background:#fff;border:1px solid #e4e4de;border-radius:14px;padding:26px 24px;">
         <h1 style="margin:0 0 14px;font-size:19px;color:${INK};">${title}</h1>
