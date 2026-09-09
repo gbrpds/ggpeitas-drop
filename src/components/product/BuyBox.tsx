@@ -1,8 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowDown, ShoppingCart, Sparkles, Check, Shirt } from "lucide-react";
+import Link from "next/link";
+import { ArrowDown, ShoppingCart, Sparkles, Check, Shirt, User, Venus } from "lucide-react";
 import type { Product } from "@/data/products";
+import type { GenderInfo } from "@/lib/variant";
 import { brl, parcela, desconto } from "@/lib/format";
 import { SIZES } from "@/lib/product";
 import { useCart, CUSTOM_FEE, SPONSOR_FEE } from "@/store/cart";
@@ -14,7 +16,7 @@ import { PromoRibbon } from "./PromoRibbon";
 import { ProvadorModal } from "./ProvadorModal";
 import { StockNotify } from "./StockNotify";
 
-export function BuyBox({ product, summary }: { product: Product; summary?: ReviewSummary }) {
+export function BuyBox({ product, summary, gender }: { product: Product; summary?: ReviewSummary; gender?: GenderInfo }) {
   const addItem = useCart((s) => s.addItem);
   const addBtnRef = useRef<HTMLButtonElement>(null);
   const [size, setSize] = useState<string>("M");
@@ -85,6 +87,32 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
         Em até <b>3x de {parcela(product.now, 3)}</b> sem juros
       </div>
       {economia > 0 && <span className="economia">{brl(economia)} de desconto</span>}
+
+      {gender && (
+        <div className="gender-switch" role="group" aria-label="Versão da camisa">
+          {(["masculino", "feminina"] as const).map((g) => {
+            const Icon = g === "feminina" ? Venus : User;
+            const label = g === "feminina" ? "Feminina" : "Masculino";
+            if (g === gender.current) {
+              return (
+                <span key={g} className="gs-opt on" aria-current="true">
+                  <Icon size={15} strokeWidth={2} /> {label}
+                </span>
+              );
+            }
+            // gênero oposto: link se existir a versão; senão, "em breve"
+            return gender.otherHref ? (
+              <Link key={g} className="gs-opt" href={gender.otherHref}>
+                <Icon size={15} strokeWidth={2} /> {label}
+              </Link>
+            ) : (
+              <span key={g} className="gs-opt gs-off" title="Versão em breve">
+                <Icon size={15} strokeWidth={2} /> {label}
+              </span>
+            );
+          })}
+        </div>
+      )}
 
       {outOfStock ? (
         <StockNotify productId={product.id} />

@@ -16,6 +16,7 @@ import { getCatalogProduct } from "@/lib/catalog";
 import { metaFor } from "@/lib/catalog";
 import { getProductReviews } from "@/lib/reviews";
 import { resolveUserId } from "@/lib/order";
+import { getGenderInfo } from "@/lib/variant";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const cat = metaFor(product.category);
   const uid = await resolveUserId();
   const { list, summary } = await getProductReviews(id, uid);
+  const gender = await getGenderInfo(product);
 
   return (
     <>
@@ -46,7 +48,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
           <div className="pdp-grid">
             <Gallery product={product} />
-            <BuyBox product={product} summary={summary} />
+            <BuyBox product={product} summary={summary} gender={gender} />
           </div>
         </div>
 

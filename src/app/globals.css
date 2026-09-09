@@ -263,9 +263,20 @@ nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(
 .stock-out-done { display:flex; align-items:center; gap:7px; color:var(--green-deep); font-size:.9rem; margin:0; }
 .stock-out-err { display:block; margin-top:8px; color:#c62828; font-size:.8rem; }
 .card .body { padding:12px 12px 14px; display:flex; flex-direction:column; gap:6px; flex:1; }
-.card .pr { display:flex; align-items:baseline; gap:7px; }
+.card .pr { display:flex; align-items:baseline; gap:7px; flex-wrap:wrap; }
 .card .now { font-family:var(--disp); font-weight:900; font-size:1.15rem; color:var(--price); }
 .card .was { color:var(--muted); text-decoration:line-through; font-size:.78rem; }
+@media (max-width:480px){ .card .now { font-size:1.05rem; } .card .was { font-size:.72rem; } }
+
+/* seletor de versão masculina/feminina (página do produto) */
+.gender-switch { display:inline-flex; gap:6px; margin:16px 0 4px; background:var(--ground); border:1px solid var(--line);
+  border-radius:12px; padding:4px; }
+.gs-opt { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:9px; font-weight:700;
+  font-size:.86rem; color:var(--muted); text-decoration:none; cursor:pointer; transition:background .15s, color .15s; }
+.gs-opt:hover { color:var(--ink); }
+.gs-opt.on { background:var(--surface); color:var(--green-deep); box-shadow:0 1px 4px rgba(0,0,0,.1); cursor:default; }
+.gs-opt.gs-off { color:var(--muted); opacity:.55; cursor:not-allowed; }
+.gs-opt svg { flex:none; }
 .card .name { display:block; font-weight:600; font-size:.85rem; line-height:1.25; min-height:2.5em; }
 .card .name:hover { color:var(--green-deep); }
 .card .parc { font-size:.72rem; color:var(--muted); }
