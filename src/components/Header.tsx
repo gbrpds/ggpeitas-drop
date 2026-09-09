@@ -114,7 +114,7 @@ export function Header() {
               </div>
             )}
           </div>
-          <button className="act cartbtn" onClick={openCart}>
+          <button className="act cartbtn" onClick={openCart} data-cart-icon>
             <ShoppingCart strokeWidth={1.8} />
             <span className="lbl">
               <small>Carrinho</small>

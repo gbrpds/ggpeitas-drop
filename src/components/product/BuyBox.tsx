@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ArrowDown, ShoppingCart, Sparkles, Check, Shirt } from "lucide-react";
 import type { Product } from "@/data/products";
 import { brl, parcela, desconto } from "@/lib/format";
 import { SIZES } from "@/lib/product";
 import { useCart, CUSTOM_FEE } from "@/store/cart";
+import { flyToCart } from "@/lib/fly-to-cart";
 import { Stars } from "@/components/reviews/Stars";
 import type { ReviewSummary } from "@/lib/reviews";
 import { CorreiosBox } from "./CorreiosBox";
@@ -15,6 +16,7 @@ import { StockNotify } from "./StockNotify";
 
 export function BuyBox({ product, summary }: { product: Product; summary?: ReviewSummary }) {
   const addItem = useCart((s) => s.addItem);
+  const addBtnRef = useRef<HTMLButtonElement>(null);
   const [size, setSize] = useState<string>("M");
   const version = "Torcedor"; // único modelo
   const [qty, setQty] = useState(1);
@@ -43,6 +45,9 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
       customName: personalize ? customName : undefined,
       customNumber: personalize ? customNumber : undefined,
     });
+    // animação: a imagem do produto "voa" para o carrinho no header
+    const galleryImg = document.querySelector<HTMLImageElement>(".gallery .main img");
+    flyToCart(galleryImg ?? addBtnRef.current, galleryImg?.src ?? product.images?.[0]);
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
   };
@@ -154,7 +159,7 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
         <button className="btn-provador" onClick={() => setProvOpen(true)}>
           <Sparkles strokeWidth={2} /> Provador virtual
         </button>
-        <button className="btn-add-cart" onClick={add}>
+        <button className="btn-add-cart" ref={addBtnRef} onClick={add}>
           {added ? (
             <>
               <Check strokeWidth={2.5} /> Adicionado!

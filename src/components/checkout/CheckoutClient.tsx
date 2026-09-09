@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { User, Truck, CreditCard, QrCode, Check, ArrowRight, ArrowLeft, ShoppingBag, Barcode, MapPin } from "lucide-react";
+import { User, Truck, CreditCard, QrCode, Check, ArrowRight, ArrowLeft, ShoppingBag, Barcode, MapPin, Loader2 } from "lucide-react";
 import { useCart } from "@/store/cart";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
@@ -77,6 +77,7 @@ export function CheckoutClient({
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -126,6 +127,8 @@ export function CheckoutClient({
       setQuote(null);
       return;
     }
+    // enquanto busca com uma UF válida, mostra "Calculando frete…"
+    if (uf && uf.length === 2) setQuoteLoading(true);
     let ok = true;
     const t = setTimeout(async () => {
       try {
@@ -147,6 +150,8 @@ export function CheckoutClient({
         }
       } catch {
         /* mantém a cotação anterior */
+      } finally {
+        if (ok) setQuoteLoading(false);
       }
     }, 350);
     return () => {
@@ -165,6 +170,27 @@ export function CheckoutClient({
   const freightValue = quote ? (quote.freightCents == null ? null : quote.freightCents / 100) : null;
   const total = subtotal - discount; // pós Leve 3, Pague 2
   const finalTotal = quote ? quote.totalCents / 100 : clientSubtotal;
+
+  // caixa de frete no passo de Entrega (com estado "calculando…")
+  const freteBox =
+    uf && uf.length === 2 ? (
+      quoteLoading ? (
+        <div className="co-frete-box loading">
+          <Loader2 size={18} className="spin" />
+          <span>Calculando frete…</span>
+        </div>
+      ) : freeShip ? (
+        <div className="co-frete-box ok">
+          <Truck size={18} /> <b>Frete grátis!</b> Seu pedido ultrapassou {brl(299)}.
+        </div>
+      ) : freightValue != null ? (
+        <div className="co-frete-box">
+          <Truck size={18} />
+          <span>Frete para <b>{uf}</b>: <b>{brl(freightValue)}</b></span>
+          <small>Faltam {brl(Math.max(0, 299 - total))} para o frete grátis</small>
+        </div>
+      ) : null
+    ) : null;
 
   const orderPayload = () => ({
     items: itemsPayload, // o servidor recalcula o preço real
@@ -399,19 +425,7 @@ export function CheckoutClient({
                 Usar outro endereço
               </button>
             </div>
-            {uf && uf.length === 2 && (
-              freeShip ? (
-                <div className="co-frete-box ok">
-                  <Truck size={18} /> <b>Frete grátis!</b> Seu pedido ultrapassou {brl(299)}.
-                </div>
-              ) : freightValue != null ? (
-                <div className="co-frete-box">
-                  <Truck size={18} />
-                  <span>Frete para <b>{uf}</b>: <b>{brl(freightValue)}</b></span>
-                  <small>Faltam {brl(Math.max(0, 299 - total))} para o frete grátis</small>
-                </div>
-              ) : null
-            )}
+            {freteBox}
             <div className="co-nav">
               <button className="co-back" onClick={() => setStep(1)}><ArrowLeft size={17} /> Voltar</button>
               <button className="co-next" onClick={next}>Continuar <ArrowRight size={18} strokeWidth={2.4} /></button>
@@ -462,19 +476,7 @@ export function CheckoutClient({
                 <input value={shipping.uf} maxLength={2} onChange={(e) => setShipping({ ...shipping, uf: e.target.value.toUpperCase() })} />
               </div>
             </div>
-            {uf && uf.length === 2 && (
-              freeShip ? (
-                <div className="co-frete-box ok">
-                  <Truck size={18} /> <b>Frete grátis!</b> Seu pedido ultrapassou {brl(299)}.
-                </div>
-              ) : freightValue != null ? (
-                <div className="co-frete-box">
-                  <Truck size={18} />
-                  <span>Frete para <b>{uf}</b>: <b>{brl(freightValue)}</b></span>
-                  <small>Faltam {brl(Math.max(0, 299 - total))} para o frete grátis</small>
-                </div>
-              ) : null
-            )}
+            {freteBox}
 
             <div className="co-nav">
               <button className="co-back" onClick={() => setStep(1)}><ArrowLeft size={17} /> Voltar</button>
