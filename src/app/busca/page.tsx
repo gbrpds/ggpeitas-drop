@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Search as SearchIcon } from "lucide-react";
-import { getAllActive } from "@/lib/catalog";
+import { getAllActive, getTeamNames } from "@/lib/catalog";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
@@ -27,6 +27,7 @@ export default async function BuscaPage({
   const sort = sp.sort ?? "relevancia";
 
   const all = await getAllActive();
+  const registeredTeams = await getTeamNames();
   const nq = norm(q);
   const teamQuery = selectedTeams.length ? selectedTeams[0] : "";
   // termo efetivo: busca digitada OU time vindo do menu
@@ -46,7 +47,12 @@ export default async function BuscaPage({
     if (p.team) teamCounts.set(p.team, (teamCounts.get(p.team) ?? 0) + 1);
   }
   const facets = [...counts.entries()].map(([cat, count]) => ({ cat, count })).sort((a, b) => b.count - a.count);
-  const teamFacets = [...teamCounts.entries()].map(([team, count]) => ({ team, count })).sort((a, b) => b.count - a.count);
+  // Todos os times cadastrados ficam selecionáveis (mesmo sem produtos ainda),
+  // somados aos times que aparecem nos resultados.
+  const teamNames = new Set<string>([...registeredTeams, ...teamCounts.keys()]);
+  const teamFacets = [...teamNames]
+    .map((team) => ({ team, count: teamCounts.get(team) ?? 0 }))
+    .sort((a, b) => b.count - a.count || a.team.localeCompare(b.team, "pt-BR"));
 
   let results = matched;
   if (selected.length) results = results.filter((p) => selected.includes(p.category));

@@ -1,7 +1,7 @@
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, asc } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { getDb } from "@/db";
-import { products, reviews, orders } from "@/db/schema";
+import { products, reviews, orders, teams } from "@/db/schema";
 import { sections as mockSections, type Product, type ProductSection } from "@/data/products";
 import { getProduct as getMockProduct } from "@/lib/product";
 
@@ -94,6 +94,23 @@ export async function getPromoProducts(): Promise<Product[]> {
 /** Todos os produtos (ativos e inativos) — do cache. */
 async function allRows(): Promise<Row[]> {
   return getProductRows();
+}
+
+/** Nomes de todos os times cadastrados no admin (para filtros), em cache. */
+const getTeamRows = unstable_cache(
+  async () => {
+    const db = getDb();
+    return db.select({ name: teams.name }).from(teams).orderBy(asc(teams.sort), asc(teams.name));
+  },
+  ["catalog:team-names"],
+  { tags: ["teams"], revalidate: 300 },
+);
+export async function getTeamNames(): Promise<string[]> {
+  try {
+    return (await getTeamRows()).map((r) => r.name);
+  } catch {
+    return [];
+  }
 }
 
 /** Quantidade vendida por produto (pedidos pagos), em cache. */
