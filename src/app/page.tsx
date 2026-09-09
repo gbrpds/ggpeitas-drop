@@ -8,7 +8,7 @@ import { PromoBanner } from "@/components/PromoBanner";
 import { FooterTrust } from "@/components/FooterTrust";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MobileDrawer } from "@/components/MobileDrawer";
-import { HomeTeamSection } from "@/components/HomeTeamSection";
+import { HomeInitial } from "@/components/HomeInitial";
 import { getHomeSections } from "@/lib/catalog";
 
 export const dynamic = "force-dynamic";
@@ -24,11 +24,13 @@ export default async function Home() {
       <MainNav />
       <main>
         <Banner />
-        <HomeTeamSection />
+
+        {/* Abaixo do banner: produtos (ou o time do coração, se escolhido) */}
+        <HomeInitial firstSection={first ?? null} />
+
+        {/* A faixa de benefícios vem depois da primeira seção de produtos */}
         <TrustStrip />
 
-        {/* Primeira seção, depois a promo, depois o restante */}
-        {first && <ProductCarousel section={first} />}
         <PromoBanner />
         {rest.map((section) => (
           <ProductCarousel key={section.id} section={section} />

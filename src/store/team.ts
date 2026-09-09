@@ -24,13 +24,12 @@ export const useTeam = create<TeamState>((set, get) => ({
   hydrate: () => {
     if (get().hydrated || typeof window === "undefined") return;
     let team: TeamPick | null = null;
-    let firstVisit = false;
     try {
       const v = localStorage.getItem(KEY);
-      if (!v) firstVisit = true;
-      else if (v !== "skip") team = JSON.parse(v);
+      if (v && v !== "skip") team = JSON.parse(v);
     } catch {}
-    set({ team, hydrated: true, open: firstVisit });
+    // não abre sozinho: o cliente escolhe pelo botão "Selecione seu time"
+    set({ team, hydrated: true, open: false });
   },
   choose: (t) => {
     try {
