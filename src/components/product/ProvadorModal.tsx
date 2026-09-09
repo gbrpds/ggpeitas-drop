@@ -31,24 +31,50 @@ const BODIES: { id: Body; label: string }[] = [
   { id: "robusto", label: "Robusto" },
 ];
 
-/** Recomenda um tamanho a partir de peso, altura e tipo de corpo. */
+/**
+ * Recomenda um tamanho a partir de peso, altura e tipo de corpo,
+ * usando as faixas da tabela do fornecedor (versão Torcedor):
+ *   Peso (kg):   P <62 · M 62-78 · G 78-83 · GG 83-90 · XG 90-97 · 2XG 97+
+ *   Altura (cm): P <170 · M 170-176 · G 176-182 · GG 182-190 · XG 190-195 · 2XG 195+
+ * Para mulheres, usa a tabela feminina (altura): P <160 · M 160-165 · G 165-170 · GG 170+.
+ */
+function weightIndex(kg: number): number {
+  if (kg < 62) return 0;
+  if (kg < 78) return 1;
+  if (kg < 83) return 2;
+  if (kg < 90) return 3;
+  if (kg < 97) return 4;
+  return 5;
+}
+function heightIndexMen(cm: number): number {
+  if (cm < 170) return 0;
+  if (cm < 176) return 1;
+  if (cm < 182) return 2;
+  if (cm < 190) return 3;
+  if (cm < 195) return 4;
+  return 5;
+}
+function heightIndexWomen(cm: number): number {
+  if (cm < 160) return 0;
+  if (cm < 165) return 1;
+  if (cm < 170) return 2;
+  return 3; // GG (tabela feminina vai até GG)
+}
+
 function recomendar(gender: Gender, pesoKg: number, alturaCm: number, body: Body): string {
-  const h = alturaCm / 100;
-  const imc = pesoKg > 0 && h > 0 ? pesoKg / (h * h) : 0;
-  // índice base pela faixa de IMC
-  let idx = 1; // M
-  if (imc > 0) {
-    if (imc < 19) idx = 0; // P
-    else if (imc < 23) idx = 1; // M
-    else if (imc < 27) idx = 2; // G
-    else if (imc < 31) idx = 3; // GG
-    else idx = 4; // XGG
+  let idx: number;
+  if (gender === "mulher") {
+    // tabela feminina: baseada na altura (já reflete a modelagem feminina)
+    idx = heightIndexWomen(alturaCm);
+  } else {
+    // tabela masculina: mistura peso e altura (o peso pesa um pouco mais)
+    const wIdx = weightIndex(pesoKg);
+    const hIdx = heightIndexMen(alturaCm);
+    idx = Math.round((wIdx * 1.4 + hIdx) / 2.4);
   }
   // ajuste pelo tipo de corpo
   if (body === "robusto") idx += 1;
   if (body === "magro") idx -= 1;
-  // mulheres costumam vestir um número abaixo na modelagem masculina
-  if (gender === "mulher") idx -= 1;
   idx = Math.max(0, Math.min(SIZES.length - 1, idx));
   return SIZES[idx];
 }
