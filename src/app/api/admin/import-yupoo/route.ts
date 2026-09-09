@@ -11,6 +11,7 @@ import {
   parseAlbumPhotos,
   photoUrl,
   yupooTitleToProduct,
+  shouldSkipTitle,
 } from "@/lib/yupoo";
 
 export const runtime = "nodejs";
@@ -61,8 +62,18 @@ export async function POST(req: Request) {
     try {
       const res = await fetch(url, { headers: yupooHeaders(`${origin}/`), cache: "no-store" });
       const html = await res.text();
-      const albums = parseCategory(html);
-      return NextResponse.json({ ok: true, albums });
+      // ignora kits infantis ("Kids Kit") — não entram na importação
+      const albums = parseCategory(html).filter((a) => !shouldSkipTitle(a.title));
+      // ordena por TIME (e depois pelo nome) para importar time a time
+      const sorted = albums
+        .map((a) => ({ a, p: yupooTitleToProduct(a.title) }))
+        .sort(
+          (x, y) =>
+            (x.p.team ?? "zzz").localeCompare(y.p.team ?? "zzz", "pt-BR") ||
+            x.p.name.localeCompare(y.p.name, "pt-BR"),
+        )
+        .map((x) => x.a);
+      return NextResponse.json({ ok: true, albums: sorted });
     } catch {
       return NextResponse.json({ error: "Não foi possível ler a categoria." }, { status: 502 });
     }
@@ -74,6 +85,9 @@ export async function POST(req: Request) {
     const title = String(body.title ?? "");
     const active = !!body.active;
     if (!id) return NextResponse.json({ error: "Álbum inválido." }, { status: 400 });
+    if (shouldSkipTitle(title)) {
+      return NextResponse.json({ ok: false, skipped: true, reason: "kit infantil (ignorado)", title });
+    }
 
     try {
       const db = getDb();

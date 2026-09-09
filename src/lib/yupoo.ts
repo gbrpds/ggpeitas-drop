@@ -16,6 +16,11 @@ function decodeEntities(s: string): string {
     .trim();
 }
 
+/** Produtos que NÃO devem ser importados (ex.: kits infantis "Kids Kit"). */
+export function shouldSkipTitle(title: string): boolean {
+  return /\bkids?\b/i.test(title);
+}
+
 export type YupooAlbum = { id: string; title: string };
 
 /** Extrai os álbuns (id + título) da página de uma categoria. */
@@ -114,7 +119,7 @@ export function yupooTitleToProduct(rawTitle: string): ImportedProduct {
   else if (/\bbrazil\s*edition\b|\bworld\s*cup\b|\bcopa do mundo\b/i.test(clean)) tipo = "Copa do Mundo";
   else if (/\bpre-?match\b/i.test(clean)) tipo = "Pré-Jogo";
   else if (/\btraining\b|\btreino\b/i.test(clean)) tipo = "Treino";
-  else if (/\bthird\b|\b3rd\b/i.test(clean)) tipo = "Third";
+  else if (/\bthird\b|\b3rd\b/i.test(clean)) tipo = /\bhome\b/i.test(clean) ? "Third Home" : "Third Away";
   else if (/\baway\b/i.test(clean)) tipo = "Away";
   else if (/\bhome\b/i.test(clean)) tipo = "Home";
   else if (/\bspecial\b/i.test(clean)) tipo = "Edição Especial";
