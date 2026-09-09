@@ -153,7 +153,7 @@ export async function POST(req: Request) {
           images,
           active,
           inStock: true,
-          promo3x2: false,
+          promo3x2: p.promo3x2,
           feminina: p.feminina,
           infantil: p.infantil,
           sourceId: id,

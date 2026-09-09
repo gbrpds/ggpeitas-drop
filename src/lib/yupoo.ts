@@ -101,6 +101,7 @@ export type ImportedProduct = {
   infantil: boolean;
   priceCents: number;
   compareCents: number;
+  promo3x2: boolean;
 };
 
 const reais = (v: number) => Math.round(v * 100);
@@ -177,9 +178,12 @@ export function yupooTitleToProduct(rawTitle: string): ImportedProduct {
   }
   name = (name + gender).replace(/\s{2,}/g, " ").trim();
 
+  // Pré-Jogo: 129,90 e já entra na promo "Leve 3, Pague 2"
+  const preJogo = tipo === "Pré-Jogo";
   const special = category === "retro" || mangaLonga;
-  const priceCents = special ? reais(229.9) : reais(189.9);
-  const compareCents = special ? reais(299.9) : reais(269.9);
+  const priceCents = preJogo ? reais(129.9) : special ? reais(229.9) : reais(189.9);
+  const compareCents = preJogo ? reais(189.9) : special ? reais(299.9) : reais(269.9);
+  const promo3x2 = preJogo;
 
-  return { name, team, category, feminina, infantil, priceCents, compareCents };
+  return { name, team, category, feminina, infantil, priceCents, compareCents, promo3x2 };
 }
