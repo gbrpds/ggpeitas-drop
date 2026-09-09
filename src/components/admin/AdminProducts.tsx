@@ -3,8 +3,32 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Trash2, Pencil, Search, ExternalLink } from "lucide-react";
+import { Trash2, Pencil, Search, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { brl } from "@/lib/format";
+
+/** Miniatura do card com setas para ver todas as fotos do produto. */
+function CardMedia({ images }: { images: string[] }) {
+  const [i, setI] = useState(0);
+  if (!images?.length) return <span className="adm-noimg">sem foto</span>;
+  const go = (d: number) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setI((x) => (x + d + images.length) % images.length);
+  };
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={images[i]} alt="" />
+      {images.length > 1 && (
+        <>
+          <button className="apc-nav prev" onClick={go(-1)} aria-label="Foto anterior"><ChevronLeft size={18} /></button>
+          <button className="apc-nav next" onClick={go(1)} aria-label="Próxima foto"><ChevronRight size={18} /></button>
+          <span className="apc-count">{i + 1}/{images.length}</span>
+        </>
+      )}
+    </>
+  );
+}
 
 type Row = {
   id: string;
@@ -127,7 +151,7 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
           {filtered.map((p) => (
             <div className={`apc${p.active ? "" : " off"}`} key={p.id}>
               <div className="apc-media">
-                {p.images?.[0] ? <img src={p.images[0]} alt="" /> : <span className="adm-noimg">sem foto</span>}
+                <CardMedia images={p.images} />
                 <div className="apc-icons">
                   <a className="apc-icon" href={`/produto/${p.id}`} target="_blank" rel="noopener noreferrer" aria-label="Ver na loja" title="Ver na loja"><ExternalLink size={15} /></a>
                   <Link className="apc-icon" href={`/admin/produto/${p.id}`} aria-label="Editar" title="Editar"><Pencil size={15} /></Link>
