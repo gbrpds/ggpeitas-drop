@@ -125,7 +125,7 @@ function expandRetroYear(year: string): string {
  *  - "... Long Sleeve ..."                       → (Manga Longa)
  * O tamanho no fim (S-4XL, Size 16-28) é ignorado.
  */
-export function yupooTitleToProduct(rawTitle: string): ImportedProduct {
+export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): ImportedProduct {
   const clean = rawTitle
     .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "") // bandeiras/emoji
     .replace(/\s{2,}/g, " ")
@@ -148,8 +148,10 @@ export function yupooTitleToProduct(rawTitle: string): ImportedProduct {
     : clean.split(/\b(jersey|home|away|third|goalkeeper|gk|kit|retro|edition)\b/i)[0].trim();
   teamRaw = teamRaw.replace(/\bretro\b/i, "").replace(/\s{2,}/g, " ").trim();
 
-  const hit = classifyTeam(teamRaw);
-  const team = hit?.name ?? (teamRaw || null);
+  // time: prioriza o nome informado no admin (força tag/categoria e o filtro)
+  const teamName = teamOverride?.trim() || teamRaw;
+  const hit = classifyTeam(teamName);
+  const team = teamName || null;
   const category = isRetro ? "retro" : hit?.category ?? "brasileirao";
 
   // TIPO — na ordem de prioridade dos padrões do fornecedor

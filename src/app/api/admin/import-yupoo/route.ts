@@ -12,7 +12,6 @@ import {
   photoUrl,
   yupooTitleToProduct,
   shouldSkipTitle,
-  matchesBrasileirao,
 } from "@/lib/yupoo";
 
 export const runtime = "nodejs";
@@ -83,12 +82,8 @@ export async function POST(req: Request) {
           collected.push(a);
         }
       }
-      // remove os que não devem entrar (kids/kit/player/shorts/jacket/...)
-      // e, por padrão, mantém só os times do Brasileirão
-      const onlyBrasileirao = body.onlyBrasileirao !== false;
-      const albums = collected.filter(
-        (a) => !shouldSkipTitle(a.title) && (!onlyBrasileirao || matchesBrasileirao(a.title)),
-      );
+      // remove o que não deve entrar (kids/kit/player/shorts/jacket/treino/...)
+      const albums = collected.filter((a) => !shouldSkipTitle(a.title));
       // ordena por TIME (e depois pelo nome) para importar time a time
       const sorted = albums
         .map((a) => ({ a, p: yupooTitleToProduct(a.title) }))
@@ -108,6 +103,7 @@ export async function POST(req: Request) {
   if (action === "one") {
     const id = String(body.id ?? "");
     const title = String(body.title ?? "");
+    const teamName = String(body.team ?? "").trim();
     const active = !!body.active;
     if (!id) return NextResponse.json({ error: "Álbum inválido." }, { status: 400 });
     if (shouldSkipTitle(title)) {
@@ -116,7 +112,7 @@ export async function POST(req: Request) {
 
     try {
       const db = getDb();
-      const p = yupooTitleToProduct(title);
+      const p = yupooTitleToProduct(title, teamName || undefined);
 
       // NÃO DUPLICAR: pula se já existe por id do álbum (source_id) ou pelo nome
       const dup = await db

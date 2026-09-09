@@ -9,34 +9,36 @@ type Result = { title: string; ok: boolean; skipped?: boolean; name?: string; ca
 export function YupooImport() {
   const router = useRouter();
   const [url, setUrl] = useState("");
-  const [limit, setLimit] = useState(10);
+  const [teamName, setTeamName] = useState("");
+  const [qtd, setQtd] = useState(50);
   const [active, setActive] = useState(true);
-  const [onlyBra, setOnlyBra] = useState(true);
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [results, setResults] = useState<Result[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  async function importar() {
+  async function importar(limit: number) {
     setError(null);
+    if (!url.trim()) return setError("Cole a URL da página do time no Yupoo.");
+    if (!teamName.trim()) return setError("Digite o nome do time (ex.: Atlético-MG).");
     setResults([]);
     setProgress(null);
     setRunning(true);
     try {
-      // 1) lista os álbuns da categoria
+      // 1) lista os álbuns da página do time
       const listRes = await fetch("/api/admin/import-yupoo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "list", url, onlyBrasileirao: onlyBra }),
+        body: JSON.stringify({ action: "list", url }),
       });
       const listData = await listRes.json();
       if (!listRes.ok || !listData.ok) {
-        setError(listData.error ?? "Não foi possível ler a categoria.");
+        setError(listData.error ?? "Não foi possível ler a página.");
         return;
       }
       const albums = (listData.albums as { id: string; title: string }[]).slice(0, limit);
       if (albums.length === 0) {
-        setError("Nenhum álbum encontrado nessa URL.");
+        setError("Nenhuma camisa encontrada nessa URL.");
         return;
       }
       setProgress({ done: 0, total: albums.length });
@@ -48,7 +50,7 @@ export function YupooImport() {
           const res = await fetch("/api/admin/import-yupoo", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "one", url, id: a.id, title: a.title, active }),
+            body: JSON.stringify({ action: "one", url, id: a.id, title: a.title, team: teamName.trim(), active }),
           });
           const d = await res.json();
           setResults((prev) => [
@@ -77,41 +79,51 @@ export function YupooImport() {
       {error && <div className="auth-error" style={{ marginBottom: 16 }}>{error}</div>}
 
       <div className="co-field">
-        <label>URL da categoria no Yupoo</label>
+        <label>URL da página do time no Yupoo</label>
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://kickersz.x.yupoo.com/categories/5308750"
+          placeholder="https://kickersz.x.yupoo.com/categories/973290?isSubCate=true"
         />
-        <span className="co-hint">Cole o link de uma categoria (ou de um álbum específico).</span>
       </div>
 
-      <div className="co-row">
-        <div className="co-field">
-          <label>Quantos importar</label>
-          <input type="number" min={1} max={5000} value={limit} onChange={(e) => setLimit(Math.max(1, Number(e.target.value) || 1))} inputMode="numeric" />
-          <span className="co-hint">Varre todas as páginas da categoria. Para tudo, use um número alto (ex.: 5000).</span>
-        </div>
-        <div className="co-field adm-active">
-          <label>Publicar</label>
-          <label className="adm-switch">
-            <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
-            <span>{active ? "Ativos na loja" : "Como rascunho (inativos)"}</span>
-          </label>
-        </div>
+      <div className="co-field">
+        <label>Nome do time</label>
+        <input
+          value={teamName}
+          onChange={(e) => setTeamName(e.target.value)}
+          placeholder="Ex.: Atlético-MG"
+        />
+        <span className="co-hint">Define o time, a categoria/tag e faz o filtro funcionar. Use o nome como no site.</span>
       </div>
 
       <div className="co-field adm-active">
-        <label>Filtrar times</label>
+        <label>Publicar</label>
         <label className="adm-switch">
-          <input type="checkbox" checked={onlyBra} onChange={(e) => setOnlyBra(e.target.checked)} />
-          <span>{onlyBra ? "Somente times do Brasileirão" : "Todos os times da categoria"}</span>
+          <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
+          <span>{active ? "Ativos na loja" : "Como rascunho (inativos)"}</span>
         </label>
       </div>
 
-      <button className="co-next" onClick={importar} disabled={running || !url.trim()}>
-        {running ? <><Loader2 size={18} className="spin" /> Importando…</> : <><Download size={18} /> Importar do Yupoo</>}
-      </button>
+      <div className="yi-actions">
+        <button className="co-next" onClick={() => importar(Number.POSITIVE_INFINITY)} disabled={running}>
+          {running ? <><Loader2 size={18} className="spin" /> Importando…</> : <><Download size={18} /> Importar todas</>}
+        </button>
+        <div className="yi-qtd">
+          <input
+            type="number"
+            min={1}
+            max={5000}
+            value={qtd}
+            onChange={(e) => setQtd(Math.max(1, Number(e.target.value) || 1))}
+            inputMode="numeric"
+            disabled={running}
+          />
+          <button className="co-next alt" onClick={() => importar(qtd)} disabled={running}>
+            Importar {qtd}
+          </button>
+        </div>
+      </div>
 
       {progress && (
         <div className="yi-progress">

@@ -778,6 +778,11 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .fb-email { font-size:.78rem; color:var(--muted); }
 
 /* importação do Yupoo (admin) */
+.yi-actions { display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; margin-top:4px; }
+.yi-actions .co-next { flex:1; min-width:180px; }
+.yi-actions .co-next.alt { background:var(--ink); }
+.yi-qtd { display:flex; gap:8px; }
+.yi-qtd input { width:90px; border:1px solid var(--line); border-radius:10px; padding:0 12px; font-size:1rem; text-align:center; background:var(--surface); color:var(--ink); }
 .yi-progress { margin-top:14px; font-weight:700; color:var(--green-deep); }
 .yi-results { margin-top:12px; display:flex; flex-direction:column; gap:6px; }
 .yi-row { display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--line); border-radius:9px; font-size:.9rem; }

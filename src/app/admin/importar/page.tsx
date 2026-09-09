@@ -28,8 +28,8 @@ export default async function ImportarPage() {
               <AdminNav />
               <h1 className="page-title">Importar do Yupoo</h1>
               <p className="auth-lead">
-                Cole a URL de uma categoria do fornecedor. As fotos (frente e verso) são baixadas para a
-                nossa loja e o título é convertido automaticamente para o padrão PT.
+                Cole a URL da página do time no Yupoo e digite o nome do time. As fotos (frente e verso)
+                são baixadas para a nossa loja e o título é convertido para o padrão PT, já na categoria certa.
               </p>
               <YupooImport />
             </>
