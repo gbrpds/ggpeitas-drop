@@ -16,9 +16,13 @@ function decodeEntities(s: string): string {
     .trim();
 }
 
-/** Produtos que NÃO devem ser importados (ex.: kits infantis "Kids Kit"). */
+/**
+ * Produtos que NÃO devem ser importados:
+ *  - kits infantis ("Kids Kit")
+ *  - versão jogador ("Player"/"Players") — vendemos só a Torcedor (Fan).
+ */
 export function shouldSkipTitle(title: string): boolean {
-  return /\bkids?\b/i.test(title);
+  return /\bkids?\b/i.test(title) || /\bplayers?\b/i.test(title);
 }
 
 export type YupooAlbum = { id: string; title: string };
