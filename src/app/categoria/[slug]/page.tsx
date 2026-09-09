@@ -76,7 +76,7 @@ export default async function CategoriaPage({
   else if (sort === "preco-desc") results = [...results].sort((a, b) => b.now - a.now);
 
   // paginação
-  const PAGE_SIZE = 16;
+  const PAGE_SIZE = 15;
   const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const page = Math.min(pageNum, totalPages);
   const pageItems = results.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

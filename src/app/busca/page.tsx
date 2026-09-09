@@ -85,7 +85,7 @@ export default async function BuscaPage({
   const heading = q ? `Resultados para “${q}”` : selectedTeams.length ? selectedTeams[0] : "Todos os produtos";
 
   // paginação
-  const PAGE_SIZE = 16;
+  const PAGE_SIZE = 15;
   const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const page = Math.min(pageNum, totalPages);
   const pageItems = results.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
