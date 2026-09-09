@@ -66,6 +66,7 @@ export default async function PedidoPage({
             </div>
           ) : (
             <OrderView
+              token={token ?? null}
               order={{
                 id: order.id,
                 number: order.number,

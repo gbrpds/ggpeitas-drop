@@ -9,6 +9,9 @@ import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schem
 import { resolveUserId, createOrder } from "@/lib/order";
 import { setDefaultFromOrder } from "@/lib/account";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
+import { sendEmail } from "@/lib/email";
+import { orderPendingEmail } from "@/lib/email-templates";
+import { baseUrl } from "@/lib/site-url";
 
 export const runtime = "nodejs";
 
@@ -108,6 +111,27 @@ export async function POST(req: Request) {
     await setDefaultFromOrder(userId, customer, shipping); // endereço padrão = última compra
   } catch (e) {
     console.error("save pix order error", e);
+  }
+
+  // e-mail "pedido gerado / aguardando pagamento" (todos os clientes)
+  if (orderId && number) {
+    try {
+      const tpl = orderPendingEmail({
+        number,
+        items,
+        totalCents: finalCents,
+        discountCents,
+        couponCents,
+        couponCode,
+        freightCents,
+        customerName: customer.name,
+        paymentMethod: "pix",
+        orderUrl: `${baseUrl()}/pedido/${orderId}${accessToken ? `?t=${accessToken}` : ""}`,
+      });
+      await sendEmail({ to: customer.email, subject: tpl.subject, html: tpl.html });
+    } catch (e) {
+      console.error("pix pending email error", e);
+    }
   }
 
   const td = mp.data.point_of_interaction?.transaction_data ?? {};

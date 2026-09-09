@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, QrCode, CreditCard, Clock, XCircle, ArrowRight, Package, Truck, MapPin, ExternalLink } from "lucide-react";
+import { Check, QrCode, CreditCard, Barcode, Clock, XCircle, ArrowRight, Package, Truck, MapPin, ExternalLink } from "lucide-react";
 import { brl } from "@/lib/format";
 import { PixDisplay } from "@/components/checkout/PixDisplay";
 import { correiosLink, SHIPPING_STAGES } from "@/lib/correios";
@@ -23,9 +23,10 @@ type Order = {
   shippingStatus?: string | null;
 };
 
-export function OrderView({ order }: { order: Order }) {
+export function OrderView({ order, token }: { order: Order; token?: string | null }) {
   const [status, setStatus] = useState(order.status);
-  const [payMethod, setPayMethod] = useState<"pix" | "card" | null>(null);
+  const [payMethod, setPayMethod] = useState<"pix" | "card" | "boleto" | null>(null);
+  const tq = token ? `?t=${token}` : "";
   const [pix, setPix] = useState<{ qrCode?: string; qrCodeBase64?: string; paymentId?: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +54,7 @@ export function OrderView({ order }: { order: Order }) {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(`/api/orders/${order.id}/pix`, { method: "POST" });
+      const res = await fetch(`/api/orders/${order.id}/pix${tq}`, { method: "POST" });
       const data = await res.json();
       if (!res.ok) setError(data.error ?? "Não foi possível gerar o PIX.");
       else if (data.status === "approved") setStatus("approved");
@@ -65,11 +66,12 @@ export function OrderView({ order }: { order: Order }) {
     }
   }
 
-  async function pagarCartao() {
+  async function pagarMercadoPago(method: "card" | "boleto") {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(`/api/orders/${order.id}/preference`, { method: "POST" });
+      const sep = tq ? "&" : "?";
+      const res = await fetch(`/api/orders/${order.id}/preference${tq}${sep}method=${method}`, { method: "POST" });
       const data = await res.json();
       if (data.status === "approved") {
         setStatus("approved");
@@ -216,6 +218,9 @@ export function OrderView({ order }: { order: Order }) {
               <button className={`pay-method${payMethod === "card" ? " on" : ""}`} onClick={() => setPayMethod("card")}>
                 <CreditCard strokeWidth={1.8} /> <b>Cartão de crédito</b> <span>Em até 12x · via Mercado Pago</span>
               </button>
+              <button className={`pay-method${payMethod === "boleto" ? " on" : ""}`} onClick={() => setPayMethod("boleto")}>
+                <Barcode strokeWidth={1.8} /> <b>Boleto bancário</b> <span>Compensa em 1 a 3 dias úteis</span>
+              </button>
             </div>
 
             {payMethod === "pix" && (
@@ -229,8 +234,20 @@ export function OrderView({ order }: { order: Order }) {
                   <CreditCard size={16} strokeWidth={1.8} />
                   Você será levado ao <b>ambiente seguro do Mercado Pago</b> para pagar com cartão, em até 12x.
                 </div>
-                <button className="co-next" onClick={pagarCartao} disabled={loading}>
+                <button className="co-next" onClick={() => pagarMercadoPago("card")} disabled={loading}>
                   {loading ? "Abrindo checkout…" : "Pagar com Mercado Pago"} <ArrowRight size={18} strokeWidth={2.4} />
+                </button>
+              </>
+            )}
+            {payMethod === "boleto" && (
+              <>
+                <div className="mp-note">
+                  <Barcode size={16} strokeWidth={1.8} />
+                  Geramos o <b>boleto</b> no ambiente do Mercado Pago. A confirmação leva de
+                  <b> 1 a 3 dias úteis</b> — seu pedido fica reservado até lá.
+                </div>
+                <button className="co-next" onClick={() => pagarMercadoPago("boleto")} disabled={loading}>
+                  {loading ? "Gerando boleto…" : "Gerar boleto"} <ArrowRight size={18} strokeWidth={2.4} />
                 </button>
               </>
             )}

@@ -3,6 +3,9 @@ import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { users, orders } from "@/db/schema";
 import type { NewOrder } from "@/db/schema";
+import { sendEmail } from "@/lib/email";
+import { orderCancelledEmail } from "@/lib/email-templates";
+import { baseUrl } from "@/lib/site-url";
 
 type Db = ReturnType<typeof getDb>;
 
@@ -38,7 +41,7 @@ export async function expireStaleOrders(db: Db): Promise<void> {
   const cutoff = new Date(now - ORDER_TTL_MS);
   const boletoCutoff = new Date(now - BOLETO_TTL_MS);
   try {
-    await db
+    const cancelled = await db
       .update(orders)
       .set({ status: "cancelled" })
       .where(
@@ -49,7 +52,19 @@ export async function expireStaleOrders(db: Db): Promise<void> {
             and(eq(orders.paymentMethod, "boleto"), lt(orders.createdAt, boletoCutoff)),
           ),
         ),
-      );
+      )
+      .returning({ number: orders.number, customer: orders.customer });
+    // avisa cada cliente cujo pedido expirou (com ou sem conta)
+    for (const o of cancelled) {
+      const c = (o.customer as { name?: string; email?: string }) ?? {};
+      if (!c.email) continue;
+      try {
+        const tpl = orderCancelledEmail({ number: o.number, customerName: c.name, siteUrl: baseUrl() });
+        await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
+      } catch (e) {
+        console.error("expire cancel email error", e);
+      }
+    }
   } catch (e) {
     console.error("expireStaleOrders error", e);
   }

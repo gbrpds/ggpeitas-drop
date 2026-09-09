@@ -3,14 +3,16 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 import { mpCreatePayment } from "@/lib/mp";
-import { getOwnedOrder, effectiveStatus } from "@/lib/order";
+import { getOwnedOrder, getOrderByToken, effectiveStatus } from "@/lib/order";
 
 export const runtime = "nodejs";
 
 /** Retoma o pagamento PIX de um pedido: gera um novo PIX e reinicia a janela. */
-export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const order = await getOwnedOrder(id);
+  const token = new URL(req.url).searchParams.get("t");
+  // dono logado, ou visitante com o token de acesso do pedido
+  const order = (await getOwnedOrder(id)) ?? (token ? await getOrderByToken(id, token) : null);
   if (!order) return NextResponse.json({ error: "Pedido não encontrado." }, { status: 404 });
   if (order.status === "approved") return NextResponse.json({ status: "approved" });
   if (effectiveStatus(order) === "cancelled") {

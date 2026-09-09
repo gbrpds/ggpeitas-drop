@@ -5,7 +5,7 @@ import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 import { isAdmin } from "@/lib/admin";
 import { sendEmail } from "@/lib/email";
-import { orderShippedEmail } from "@/lib/email-templates";
+import { orderShippedEmail, orderStageEmail } from "@/lib/email-templates";
 import { correiosLink } from "@/lib/correios";
 import { baseUrl } from "@/lib/site-url";
 
@@ -61,19 +61,26 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     // valores após o patch
     const newStage = "shippingStatus" in patch ? (patch.shippingStatus as string | null) : prev?.shippingStatus ?? null;
     const newCode = "trackingCode" in patch ? (patch.trackingCode as string | null) : prev?.trackingCode ?? null;
-    const becameShipped = newStage === "enviado" && prev?.shippingStatus !== "enviado";
+    const stageChanged = "shippingStatus" in patch && newStage !== (prev?.shippingStatus ?? null) && !!newStage;
 
-    if (becameShipped && newCode) {
+    // e-mail a cada nova etapa de envio (preparando / enviado / entregue)
+    if (stageChanged) {
       const c = (prev?.customer as Customer) ?? {};
+      const orderUrl = `${baseUrl()}/pedido/${id}${prev?.accessToken ? `?t=${prev.accessToken}` : ""}`;
       if (c.email) {
-        const tpl = orderShippedEmail({
-          number: prev?.number ?? null,
-          customerName: c.name,
-          trackingCode: newCode,
-          trackingUrl: correiosLink(newCode),
-          orderUrl: `${baseUrl()}/pedido/${id}${prev?.accessToken ? `?t=${prev.accessToken}` : ""}`,
-        });
-        await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
+        let tpl: { subject: string; html: string } | null = null;
+        if (newStage === "enviado" && newCode) {
+          tpl = orderShippedEmail({
+            number: prev?.number ?? null,
+            customerName: c.name,
+            trackingCode: newCode,
+            trackingUrl: correiosLink(newCode),
+            orderUrl,
+          });
+        } else if (newStage === "preparando" || newStage === "entregue") {
+          tpl = orderStageEmail({ number: prev?.number ?? null, customerName: c.name, stage: newStage, orderUrl });
+        }
+        if (tpl) await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
       }
     }
   } catch (e) {

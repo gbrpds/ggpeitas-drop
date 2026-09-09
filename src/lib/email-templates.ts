@@ -171,6 +171,99 @@ export function orderConfirmedEmail(order: {
   };
 }
 
+/** Pedido gerado — aguardando pagamento. */
+export function orderPendingEmail(order: {
+  number: string | null;
+  items: OrderItem[];
+  totalCents: number;
+  discountCents?: number;
+  couponCents?: number;
+  couponCode?: string | null;
+  freightCents?: number;
+  customerName?: string;
+  paymentMethod?: string;
+  orderUrl: string;
+}) {
+  const first = order.customerName?.split(" ")[0] || "torcedor";
+  const metodo =
+    order.paymentMethod === "pix"
+      ? "via PIX"
+      : order.paymentMethod === "boleto"
+        ? "via boleto"
+        : order.paymentMethod === "card"
+          ? "no cartão"
+          : "";
+  return {
+    subject: `Pedido #${order.number ?? ""} gerado — aguardando pagamento`,
+    html: layout(
+      "Recebemos seu pedido!",
+      `<p style="font-size:14px;line-height:1.6;color:#444;">
+        Olá, ${first}! Seu pedido <b>#${order.number ?? ""}</b> foi gerado e está
+        <b>pendente de pagamento</b> ${metodo}. Assim que o pagamento for confirmado,
+        avisamos você por e-mail e começamos a preparar o envio.
+      </p>
+      ${itemsTable(order.items, order.totalCents, order.discountCents ?? 0, order.couponCents ?? 0, order.couponCode, order.freightCents ?? 0)}
+      <p style="margin:20px 0 6px;">${button(order.orderUrl, "Finalizar pagamento")}</p>
+      <p style="font-size:13px;color:#8a8a80;margin-top:14px;">
+        Se você já pagou, pode ignorar este aviso — a confirmação chega em instantes.
+      </p>`,
+    ),
+  };
+}
+
+/** Pedido cancelado (pagamento não confirmado no prazo, ou recusado). */
+export function orderCancelledEmail(order: {
+  number: string | null;
+  customerName?: string;
+  siteUrl: string;
+}) {
+  const first = order.customerName?.split(" ")[0] || "torcedor";
+  return {
+    subject: `Pedido #${order.number ?? ""} cancelado`,
+    html: layout(
+      "Seu pedido foi cancelado",
+      `<p style="font-size:14px;line-height:1.6;color:#444;">
+        ${first}, o pedido <b>#${order.number ?? ""}</b> foi cancelado porque o pagamento
+        não foi confirmado dentro do prazo. Não se preocupe — nenhum valor foi cobrado.
+      </p>
+      <p style="font-size:14px;line-height:1.6;color:#444;">
+        Se ainda quiser a sua camisa, é só fazer um novo pedido.
+      </p>
+      <p style="margin:20px 0 6px;">${button(order.siteUrl, "Fazer novo pedido")}</p>`,
+    ),
+  };
+}
+
+/** Atualização de etapa do envio (preparando / entregue). */
+export function orderStageEmail(order: {
+  number: string | null;
+  customerName?: string;
+  stage: "preparando" | "entregue";
+  orderUrl: string;
+}) {
+  const first = order.customerName?.split(" ")[0] || "torcedor";
+  const copy =
+    order.stage === "preparando"
+      ? {
+          subject: `Pedido #${order.number ?? ""} em preparação`,
+          title: "Estamos preparando seu pedido",
+          text: `${first}, seu pedido <b>#${order.number ?? ""}</b> entrou em preparação. Em breve ele será despachado e você recebe o código de rastreio por aqui.`,
+        }
+      : {
+          subject: `Pedido #${order.number ?? ""} entregue`,
+          title: "Seu pedido foi entregue!",
+          text: `${first}, seu pedido <b>#${order.number ?? ""}</b> consta como <b>entregue</b>. Esperamos que você aproveite muito a sua camisa! Qualquer coisa, é só responder este e-mail.`,
+        };
+  return {
+    subject: copy.subject,
+    html: layout(
+      copy.title,
+      `<p style="font-size:14px;line-height:1.6;color:#444;">${copy.text}</p>
+      <p style="margin:20px 0 6px;">${button(order.orderUrl, "Acompanhar pedido")}</p>`,
+    ),
+  };
+}
+
 /** Aviso de "voltou ao estoque". */
 export function backInStockEmail(opts: { productName: string; productUrl: string }) {
   return {

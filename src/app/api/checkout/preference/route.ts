@@ -9,6 +9,8 @@ import { itemSchema, customerSchema, shippingSchema } from "@/lib/checkout-schem
 import { resolveUserId, createOrder } from "@/lib/order";
 import { setDefaultFromOrder } from "@/lib/account";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
+import { sendEmail } from "@/lib/email";
+import { orderPendingEmail } from "@/lib/email-templates";
 
 export const runtime = "nodejs";
 
@@ -105,6 +107,27 @@ export async function POST(req: Request) {
   const origin = new URL(req.url).origin;
   // token no retorno para o visitante conseguir ver o pedido mesmo sem conta
   const backUrl = `${origin}/pedido/${orderId}${accessToken ? `?t=${accessToken}` : ""}`;
+
+  // e-mail "pedido gerado / aguardando pagamento" (todos os clientes)
+  if (number) {
+    try {
+      const tpl = orderPendingEmail({
+        number,
+        items,
+        totalCents: finalCents,
+        discountCents,
+        couponCents,
+        couponCode,
+        freightCents,
+        customerName: customer.name,
+        paymentMethod: method,
+        orderUrl: backUrl,
+      });
+      await sendEmail({ to: customer.email, subject: tpl.subject, html: tpl.html });
+    } catch (e) {
+      console.error("preference pending email error", e);
+    }
+  }
 
   // Mercadorias: itens detalhados, ou 1 item consolidado quando há desconto
   // (o Checkout Pro soma os itens e não aceita linha de desconto negativa).

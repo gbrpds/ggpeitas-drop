@@ -2,7 +2,7 @@ import { and, eq, ne, or } from "drizzle-orm";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 import { sendEmail } from "@/lib/email";
-import { orderConfirmedEmail } from "@/lib/email-templates";
+import { orderConfirmedEmail, orderCancelledEmail } from "@/lib/email-templates";
 import { baseUrl } from "@/lib/site-url";
 
 const MP_BASE = "https://api.mercadopago.com";
@@ -71,10 +71,18 @@ export async function syncPaymentStatus(
         await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
       }
     } else if (status === "cancelled" || status === "rejected") {
-      await db
+      const cancelled = await db
         .update(orders)
         .set({ status: "cancelled" })
-        .where(and(match, eq(orders.status, "pending")));
+        .where(and(match, eq(orders.status, "pending")))
+        .returning({ number: orders.number, customer: orders.customer });
+      // avisa o cliente na transição para cancelado
+      for (const o of cancelled) {
+        const c = (o.customer as Customer) ?? {};
+        if (!c.email) continue;
+        const tpl = orderCancelledEmail({ number: o.number, customerName: c.name, siteUrl: baseUrl() });
+        await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
+      }
     }
   } catch (e) {
     console.error("sync order status error", e);
