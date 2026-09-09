@@ -10,6 +10,7 @@ import { FooterTrust } from "@/components/FooterTrust";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
 import { SearchFilters } from "@/components/search/SearchFilters";
+import { Pagination } from "@/components/Pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +26,11 @@ export default async function CategoriaPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ team?: string; gender?: string; tipo?: string; sort?: string }>;
+  searchParams: Promise<{ team?: string; gender?: string; tipo?: string; sort?: string; page?: string }>;
 }) {
   const { slug } = await params;
   const sp = await searchParams;
+  const pageNum = Math.max(1, Number(sp.page) || 1);
   const m = metaFor(slug);
   const all = await getCategoryProducts(slug);
   const registeredTeams = await getTeamNames();
@@ -72,6 +74,22 @@ export default async function CategoriaPage({
   if (selectedTipos.length) results = results.filter((p) => { const t = modeloOf(p.name); return !!t && selectedTipos.includes(t); });
   if (sort === "preco-asc") results = [...results].sort((a, b) => a.now - b.now);
   else if (sort === "preco-desc") results = [...results].sort((a, b) => b.now - a.now);
+
+  // paginação
+  const PAGE_SIZE = 16;
+  const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
+  const page = Math.min(pageNum, totalPages);
+  const pageItems = results.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageHref = (p: number) => {
+    const params = new URLSearchParams();
+    if (selectedTeams.length) params.set("team", selectedTeams.join(","));
+    if (selectedGenders.length) params.set("gender", selectedGenders.join(","));
+    if (selectedTipos.length) params.set("tipo", selectedTipos.join(","));
+    if (sort !== "relevancia") params.set("sort", sort);
+    if (p > 1) params.set("page", String(p));
+    const qs = params.toString();
+    return qs ? `/categoria/${slug}?${qs}` : `/categoria/${slug}`;
+  };
 
   return (
     <>
@@ -117,11 +135,14 @@ export default async function CategoriaPage({
                     <Link className="btn btn-g" href={`/categoria/${slug}`}>Limpar filtros</Link>
                   </div>
                 ) : (
-                  <div className="cat-grid">
-                    {results.map((p) => (
-                      <ProductCard key={p.id} product={p} />
-                    ))}
-                  </div>
+                  <>
+                    <div className="cat-grid">
+                      {pageItems.map((p) => (
+                        <ProductCard key={p.id} product={p} />
+                      ))}
+                    </div>
+                    <Pagination page={page} totalPages={totalPages} hrefFor={pageHref} />
+                  </>
                 )}
               </div>
             </div>

@@ -8,6 +8,7 @@ import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
 import { SearchFilters } from "@/components/search/SearchFilters";
+import { Pagination } from "@/components/Pagination";
 import { genderOf, modeloOf as tipoOf, GENDER_LABEL } from "@/lib/facets";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +20,7 @@ const norm = (s: string) =>
 export default async function BuscaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; cat?: string; team?: string; gender?: string; tipo?: string; sort?: string }>;
+  searchParams: Promise<{ q?: string; cat?: string; team?: string; gender?: string; tipo?: string; sort?: string; page?: string }>;
 }) {
   const sp = await searchParams;
   const q = (sp.q ?? "").trim();
@@ -28,6 +29,7 @@ export default async function BuscaPage({
   const selectedGenders = (sp.gender ?? "").split(",").filter(Boolean);
   const selectedTipos = (sp.tipo ?? "").split(",").filter(Boolean);
   const sort = sp.sort ?? "relevancia";
+  const pageNum = Math.max(1, Number(sp.page) || 1);
 
   const all = await getAllActive();
   const registeredTeams = await getTeamNames();
@@ -82,6 +84,24 @@ export default async function BuscaPage({
 
   const heading = q ? `Resultados para “${q}”` : selectedTeams.length ? selectedTeams[0] : "Todos os produtos";
 
+  // paginação
+  const PAGE_SIZE = 16;
+  const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
+  const page = Math.min(pageNum, totalPages);
+  const pageItems = results.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageHref = (p: number) => {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (selected.length) params.set("cat", selected.join(","));
+    if (selectedTeams.length) params.set("team", selectedTeams.join(","));
+    if (selectedGenders.length) params.set("gender", selectedGenders.join(","));
+    if (selectedTipos.length) params.set("tipo", selectedTipos.join(","));
+    if (sort !== "relevancia") params.set("sort", sort);
+    if (p > 1) params.set("page", String(p));
+    const qs = params.toString();
+    return qs ? `/busca?${qs}` : "/busca";
+  };
+
   return (
     <>
       <Announce />
@@ -117,11 +137,14 @@ export default async function BuscaPage({
                   <Link className="btn btn-g" href="/">Voltar à loja</Link>
                 </div>
               ) : (
-                <div className="cat-grid">
-                  {results.map((p) => (
-                    <ProductCard key={p.id} product={p} />
-                  ))}
-                </div>
+                <>
+                  <div className="cat-grid">
+                    {pageItems.map((p) => (
+                      <ProductCard key={p.id} product={p} />
+                    ))}
+                  </div>
+                  <Pagination page={page} totalPages={totalPages} hrefFor={pageHref} />
+                </>
               )}
             </div>
           </div>
