@@ -16,6 +16,9 @@ import { PromoRibbon } from "./PromoRibbon";
 import { ProvadorModal } from "./ProvadorModal";
 import { StockNotify } from "./StockNotify";
 
+// Opção de patrocínios em stand by (desativada no site). Trocar para true reativa.
+const SPONSORS_ENABLED = false;
+
 export function BuyBox({ product, summary, gender }: { product: Product; summary?: ReviewSummary; gender?: GenderInfo }) {
   const addItem = useCart((s) => s.addItem);
   const addBtnRef = useRef<HTMLButtonElement>(null);
@@ -165,8 +168,8 @@ export function BuyBox({ product, summary, gender }: { product: Product; summary
         )}
       </div>
 
-      {/* Patrocínios — retrôs já vêm com patrocínio, não mostra a opção */}
-      {product.category !== "retro" && (
+      {/* Patrocínios — em stand by (desativado); retrôs também não têm a opção */}
+      {SPONSORS_ENABLED && product.category !== "retro" && (
         <div className="perso">
           <label className="perso-toggle">
             <input type="checkbox" checked={sponsors} onChange={(e) => setSponsors(e.target.checked)} />
