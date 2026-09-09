@@ -1,7 +1,7 @@
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { getDb } from "@/db";
-import { products, reviews } from "@/db/schema";
+import { products, reviews, orders } from "@/db/schema";
 import { sections as mockSections, type Product, type ProductSection } from "@/data/products";
 import { getProduct as getMockProduct } from "@/lib/product";
 
@@ -94,6 +94,54 @@ export async function getPromoProducts(): Promise<Product[]> {
 /** Todos os produtos (ativos e inativos) — do cache. */
 async function allRows(): Promise<Row[]> {
   return getProductRows();
+}
+
+/** Quantidade vendida por produto (pedidos pagos), em cache. */
+const getSoldCounts = unstable_cache(
+  async (): Promise<Record<string, number>> => {
+    const db = getDb();
+    const rows = await db
+      .select({ items: orders.items })
+      .from(orders)
+      .where(eq(orders.status, "approved"));
+    const acc: Record<string, number> = {};
+    for (const o of rows) {
+      const items = (o.items as { productId?: string; qty?: number }[]) ?? [];
+      for (const it of items) {
+        if (!it.productId) continue;
+        acc[it.productId] = (acc[it.productId] ?? 0) + (it.qty ?? 1);
+      }
+    }
+    return acc;
+  },
+  ["catalog:sold-counts"],
+  { tags: ["orders"], revalidate: 600 },
+);
+
+/**
+ * "Mais vendidas": produtos ativos ordenados pela quantidade vendida
+ * (pedidos pagos). Enquanto há poucas vendas, completa com os lançamentos
+ * mais recentes para a vitrine nunca ficar vazia.
+ */
+export async function getBestSellers(limit = 12): Promise<Product[]> {
+  try {
+    const rows = (await allRows()).filter((r) => r.active);
+    if (!rows.length) return [];
+    let sold: Record<string, number> = {};
+    try {
+      sold = await getSoldCounts();
+    } catch {
+      /* sem vendas ainda */
+    }
+    const ordered = [...rows].sort((a, b) => {
+      const d = (sold[b.id] ?? 0) - (sold[a.id] ?? 0);
+      if (d !== 0) return d; // mais vendidos primeiro
+      return +new Date(b.createdAt) - +new Date(a.createdAt); // empate → mais recentes
+    });
+    return withRatings(ordered.slice(0, limit).map(mapRow));
+  } catch {
+    return [];
+  }
 }
 
 export function metaFor(cat: string) {

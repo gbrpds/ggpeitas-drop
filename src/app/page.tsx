@@ -10,13 +10,20 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { HomeInitial } from "@/components/HomeInitial";
 import { CollectionsCarousel } from "@/components/CollectionsCarousel";
-import { getHomeSections } from "@/lib/catalog";
+import { getHomeSections, getBestSellers } from "@/lib/catalog";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const sections = await getHomeSections();
-  const [first, ...rest] = sections;
+  const first = sections[0];
+
+  // vitrine "Mais vendidas" (topo). Se vazia (loja sem produtos), usa a 1ª seção.
+  const best = await getBestSellers();
+  const topSection =
+    best.length > 0
+      ? { id: "mais-vendidas", title: "Mais vendidas", emoji: "", href: "/busca", products: best }
+      : (first ?? null);
 
   return (
     <>
@@ -26,8 +33,8 @@ export default async function Home() {
       <main>
         <Banner />
 
-        {/* Abaixo do banner: produtos (ou o time do coração, se escolhido) */}
-        <HomeInitial firstSection={first ?? null} />
+        {/* Abaixo do banner: "Mais vendidas" (ou o time do coração, se escolhido) */}
+        <HomeInitial firstSection={topSection} />
 
         {/* Coleções por time (carrossel) logo abaixo da primeira seção */}
         <CollectionsCarousel />
@@ -36,7 +43,7 @@ export default async function Home() {
         <TrustStrip />
 
         <PromoBanner />
-        {rest.map((section) => (
+        {sections.map((section) => (
           <ProductCarousel key={section.id} section={section} />
         ))}
       </main>
