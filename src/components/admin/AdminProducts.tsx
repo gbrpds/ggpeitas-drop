@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Trash2, Pencil, Search } from "lucide-react";
+import { Trash2, Pencil, Search, ExternalLink } from "lucide-react";
 import { brl } from "@/lib/format";
 
 type Row = {
@@ -129,8 +129,9 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
               <div className="apc-media">
                 {p.images?.[0] ? <img src={p.images[0]} alt="" /> : <span className="adm-noimg">sem foto</span>}
                 <div className="apc-icons">
-                  <Link className="apc-icon" href={`/admin/produto/${p.id}`} aria-label="Editar"><Pencil size={15} /></Link>
-                  <button className="apc-icon danger" onClick={() => del(p.id, p.name)} disabled={busy === p.id} aria-label="Excluir"><Trash2 size={15} /></button>
+                  <a className="apc-icon" href={`/produto/${p.id}`} target="_blank" rel="noopener noreferrer" aria-label="Ver na loja" title="Ver na loja"><ExternalLink size={15} /></a>
+                  <Link className="apc-icon" href={`/admin/produto/${p.id}`} aria-label="Editar" title="Editar"><Pencil size={15} /></Link>
+                  <button className="apc-icon danger" onClick={() => del(p.id, p.name)} disabled={busy === p.id} aria-label="Excluir" title="Excluir"><Trash2 size={15} /></button>
                 </div>
               </div>
 
