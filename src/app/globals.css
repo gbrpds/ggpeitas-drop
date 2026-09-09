@@ -316,7 +316,8 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .team-float:not(.has-team) .team-float-badge { background:rgba(255,255,255,.12); color:#ff6b81; }
 .team-float:not(.has-team) .team-float-badge svg { width:22px; height:22px; }
 .team-float-label { max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-@media (max-width:560px){ .team-float-label { display:none; } .team-float { padding:8px; } }
+/* no celular o botão flutuante atrapalha — some (usa o link no menu) */
+@media (max-width:560px){ .team-float { display:none; } }
 
 /* seção "seu time do coração" */
 .team-sec { margin:22px auto 30px; }
@@ -365,6 +366,12 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .macc.open .sub { display:flex; }
 .macc .sub a { padding:8px 10px; color:var(--muted); font-size:.9rem; border-radius:7px; }
 .macc .sub a:hover { background:var(--ground); color:var(--green-deep); }
+/* link "Selecione seu time" no rodapé do menu mobile */
+.drawer-team { width:100%; display:flex; align-items:center; gap:9px; background:none; border:0; border-top:1px solid var(--line);
+  padding:14px 4px; font-family:var(--disp); font-weight:700; text-transform:uppercase; letter-spacing:.03em; font-size:.9rem;
+  color:var(--green-deep); text-align:left; cursor:pointer; }
+.drawer-team svg { color:#ff6b81; flex:none; }
+.drawer-team:hover { color:var(--ink); }
 
 /* ===================== PÁGINA DE PRODUTO ===================== */
 .pdp { padding-block:22px 8px; }

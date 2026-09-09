@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { X, Heart } from "lucide-react";
 import { navItems } from "@/data/nav";
 import { useUI } from "@/store/ui";
+import { useTeam } from "@/store/team";
 
 function Chevron() {
   return (
@@ -17,6 +18,8 @@ function Chevron() {
 export function MobileDrawer() {
   const open = useUI((s) => s.drawerOpen);
   const close = useUI((s) => s.closeDrawer);
+  const team = useTeam((s) => s.team);
+  const openTeamModal = useTeam((s) => s.openModal);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const toggle = (label: string) =>
@@ -68,6 +71,17 @@ export function MobileDrawer() {
             </div>
           );
         })}
+
+        <button
+          className="drawer-team"
+          onClick={() => {
+            close();
+            openTeamModal();
+          }}
+        >
+          <Heart size={17} strokeWidth={2} />
+          {team ? `Seu time: ${team.name}` : "Selecione seu time do coração"}
+        </button>
       </aside>
     </>
   );
