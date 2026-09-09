@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { PartyPopper, X } from "lucide-react";
-import { useCart } from "@/store/cart";
+import { useCart, itemBasePrice } from "@/store/cart";
 import { promoDiscountFromItems, PROMO_TITLE } from "@/lib/promo";
 
 /** Avisa (toast) quando a promoção "Leve 3, Pague 2" é ativada no carrinho. */
@@ -13,7 +13,7 @@ export function PromoToast() {
 
   useEffect(() => {
     const disc = promoDiscountFromItems(
-      items.map((i) => ({ priceCents: Math.round(i.price * 100), qty: i.qty, promo: !!i.promo })),
+      items.map((i) => ({ priceCents: Math.round(itemBasePrice(i) * 100), qty: i.qty, promo: !!i.promo })),
     );
     if (disc > 0 && prev.current === 0) setShow(true); // acabou de ativar
     prev.current = disc;

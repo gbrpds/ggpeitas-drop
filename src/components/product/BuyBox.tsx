@@ -5,7 +5,7 @@ import { ArrowDown, ShoppingCart, Sparkles, Check, Shirt } from "lucide-react";
 import type { Product } from "@/data/products";
 import { brl, parcela, desconto } from "@/lib/format";
 import { SIZES } from "@/lib/product";
-import { useCart, CUSTOM_FEE } from "@/store/cart";
+import { useCart, CUSTOM_FEE, SPONSOR_FEE } from "@/store/cart";
 import { flyToCart } from "@/lib/fly-to-cart";
 import { Stars } from "@/components/reviews/Stars";
 import type { ReviewSummary } from "@/lib/reviews";
@@ -26,6 +26,7 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
   const [customName, setCustomName] = useState("");
   const [customNumber, setCustomNumber] = useState("");
   const [persoErr, setPersoErr] = useState<string | null>(null);
+  const [sponsors, setSponsors] = useState(false);
 
   const off = desconto(product.now, product.was);
   const economia = product.was ? product.was - product.now : 0;
@@ -44,6 +45,7 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
       qty,
       customName: personalize ? customName : undefined,
       customNumber: personalize ? customNumber : undefined,
+      sponsors,
     });
     // animação: a imagem do produto "voa" para o carrinho no header
     const galleryImg = document.querySelector<HTMLImageElement>(".gallery .main img");
@@ -133,6 +135,15 @@ export function BuyBox({ product, summary }: { product: Product; summary?: Revie
             {persoErr && <span className="perso-err">{persoErr}</span>}
           </>
         )}
+      </div>
+
+      {/* Patrocínios */}
+      <div className="perso">
+        <label className="perso-toggle">
+          <input type="checkbox" checked={sponsors} onChange={(e) => setSponsors(e.target.checked)} />
+          <span><Shirt size={16} /> Incluir patrocínios na camisa</span>
+          <b className="perso-fee">+ {brl(SPONSOR_FEE)}</b>
+        </label>
       </div>
 
       {/* Quantidade */}

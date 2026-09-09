@@ -6,6 +6,19 @@ import type { Product } from "@/data/products";
 
 /** Valor adicional da personalização (nome + número), por camisa — espelha o servidor. */
 export const CUSTOM_FEE = 20;
+/** Valor adicional para incluir patrocínios, por camisa — espelha o servidor. */
+export const SPONSOR_FEE = 10;
+
+/** Preço base da camisa (sem personalização/patrocínios) — para o cálculo da promo. */
+export function itemBasePrice(i: {
+  price: number;
+  customName?: string;
+  customNumber?: string;
+  sponsors?: boolean;
+}): number {
+  const pers = !!(i.customName?.trim() || i.customNumber?.trim());
+  return i.price - (pers ? CUSTOM_FEE : 0) - (i.sponsors ? SPONSOR_FEE : 0);
+}
 
 export type CartItem = {
   id: string;
@@ -20,6 +33,7 @@ export type CartItem = {
   version?: string;
   customName?: string; // personalização (nome)
   customNumber?: string; // personalização (número)
+  sponsors?: boolean; // incluir patrocínios (+R$10)
 };
 
 export type AddOptions = {
@@ -28,6 +42,7 @@ export type AddOptions = {
   qty?: number;
   customName?: string;
   customNumber?: string;
+  sponsors?: boolean;
 };
 
 type CartState = {
@@ -46,10 +61,10 @@ export const useCart = create<CartState>()(
       items: [],
       addItem: (p, opts = {}) =>
         set((state) => {
-          const { size, version, qty = 1, customName, customNumber } = opts;
+          const { size, version, qty = 1, customName, customNumber, sponsors } = opts;
           const persLabel = [customName?.trim(), customNumber?.trim()].filter(Boolean).join(" ");
-          // id único por variação (produto + tamanho + versão + personalização)
-          const id = [p.id, size, version, persLabel].filter(Boolean).join("-");
+          // id único por variação (produto + tamanho + versão + personalização + patrocínios)
+          const id = [p.id, size, version, persLabel, sponsors ? "patroc" : ""].filter(Boolean).join("-");
           const found = state.items.find((i) => i.id === id);
           if (found) {
             return {
@@ -61,6 +76,7 @@ export const useCart = create<CartState>()(
           const suffix = [size, version].filter(Boolean).join(" · ");
           let name = suffix ? `${p.name} (${suffix})` : p.name;
           if (persLabel) name += ` — ${persLabel}`;
+          if (sponsors) name += " + Patrocínios";
           return {
             items: [
               ...state.items,
@@ -68,7 +84,8 @@ export const useCart = create<CartState>()(
                 id,
                 productId: p.id,
                 name,
-                price: p.now + (persLabel ? CUSTOM_FEE : 0), // +R$20 se personalizada
+                // +R$20 se personalizada, +R$10 com patrocínios
+                price: p.now + (persLabel ? CUSTOM_FEE : 0) + (sponsors ? SPONSOR_FEE : 0),
                 qty,
                 colors: p.colors,
                 image: p.images?.[0],
@@ -77,6 +94,7 @@ export const useCart = create<CartState>()(
                 version,
                 customName: customName?.trim() || undefined,
                 customNumber: customNumber?.trim() || undefined,
+                sponsors: sponsors || undefined,
               },
             ],
           };

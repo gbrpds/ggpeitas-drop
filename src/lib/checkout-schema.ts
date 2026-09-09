@@ -8,6 +8,7 @@ export const itemSchema = z.object({
   version: z.string().max(40).optional(),
   customName: z.string().trim().max(20).optional(),
   customNumber: z.string().trim().max(3).optional(),
+  sponsors: z.boolean().optional(),
 });
 
 export const customerSchema = z.object({

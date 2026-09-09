@@ -116,6 +116,7 @@ export function CheckoutClient({
         version: i.version,
         customName: i.customName,
         customNumber: i.customNumber,
+        sponsors: i.sponsors,
       })),
     [items],
   );

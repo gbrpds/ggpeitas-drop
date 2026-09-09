@@ -5,6 +5,8 @@ import { promoDiscountFromItems } from "@/lib/promo";
 
 /** Valor adicional da personalização (nome + número), por camisa. */
 export const CUSTOM_FEE_CENTS = 2000;
+/** Valor adicional para incluir patrocínios, por camisa. */
+export const SPONSOR_FEE_CENTS = 1000;
 
 export type ClientItem = {
   productId: string;
@@ -13,18 +15,20 @@ export type ClientItem = {
   version?: string;
   customName?: string;
   customNumber?: string;
+  sponsors?: boolean;
 };
 
 /** Item já resolvido com o PREÇO REAL do banco (nunca o do cliente). */
 export type PricedItem = {
   productId: string;
   name: string;
-  price: number; // reais (para exibição/e-mails) — já inclui a personalização
+  price: number; // reais (para exibição/e-mails) — já inclui personalização/patrocínios
   qty: number;
   size?: string;
   version?: string;
   customName?: string;
   customNumber?: string;
+  sponsors?: boolean;
 };
 
 export class PricingError extends Error {}
@@ -61,13 +65,18 @@ export async function priceOrder(items: ClientItem[]): Promise<{
       throw new PricingError("Quantidade inválida.");
     }
     const persLabel = personalizationLabel(i.customName, i.customNumber);
-    const unitCents = p.priceCents + (persLabel ? CUSTOM_FEE_CENTS : 0); // +R$20 se personalizado
+    const withSponsors = !!i.sponsors;
+    // +R$20 se personalizado, +R$10 com patrocínios
+    const unitCents = p.priceCents + (persLabel ? CUSTOM_FEE_CENTS : 0) + (withSponsors ? SPONSOR_FEE_CENTS : 0);
     grossCents += unitCents * i.qty; // inteiro, em centavos — sem float
-    promoItems.push({ priceCents: unitCents, qty: i.qty, promo: p.promo3x2 });
+    // A promo "Leve 3, Pague 2" incide só sobre o PREÇO BASE da camisa:
+    // a mais barata (base) sai grátis; personalização/patrocínios são sempre cobrados.
+    promoItems.push({ priceCents: p.priceCents, qty: i.qty, promo: p.promo3x2 });
 
     const suffix = [i.size, i.version].filter(Boolean).join(" · ");
     let name = suffix ? `${p.name} (${suffix})` : p.name;
     if (persLabel) name += ` — Personalizada: ${persLabel}`;
+    if (withSponsors) name += persLabel ? " + Patrocínios" : " — Com patrocínios";
 
     return {
       productId: p.id,
@@ -78,6 +87,7 @@ export async function priceOrder(items: ClientItem[]): Promise<{
       version: i.version,
       customName: i.customName?.trim() || undefined,
       customNumber: i.customNumber?.trim() || undefined,
+      sponsors: withSponsors || undefined,
     };
   });
 

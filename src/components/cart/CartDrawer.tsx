@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trash2, Minus, Plus, ShoppingBag, X, ArrowRight, Truck } from "lucide-react";
-import { useCart } from "@/store/cart";
+import { useCart, itemBasePrice } from "@/store/cart";
 import { useUI } from "@/store/ui";
 import { brl } from "@/lib/format";
 import { Jersey } from "@/components/Jersey";
@@ -37,7 +37,7 @@ export function CartDrawer() {
   // estimativa client (fallback) + cotação do servidor (fonte da verdade)
   const clientDiscount =
     promoDiscountFromItems(
-      list.map((i) => ({ priceCents: Math.round(i.price * 100), qty: i.qty, promo: !!i.promo })),
+      list.map((i) => ({ priceCents: Math.round(itemBasePrice(i) * 100), qty: i.qty, promo: !!i.promo })),
     ) / 100;
   const [srvDiscount, setSrvDiscount] = useState<number | null>(null);
   useEffect(() => {
@@ -59,6 +59,7 @@ export function CartDrawer() {
               version: i.version,
               customName: i.customName,
               customNumber: i.customNumber,
+              sponsors: i.sponsors,
             })),
           }),
         });
