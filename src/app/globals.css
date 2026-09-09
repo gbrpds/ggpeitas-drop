@@ -773,6 +773,8 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .yi-row.ok svg { color:var(--green-deep); flex:none; }
 .yi-row.fail { border-color:rgba(200,16,46,.3); background:rgba(200,16,46,.05); color:var(--muted); }
 .yi-row.fail svg { color:#c8102e; flex:none; }
+.yi-row.skip { border-color:var(--line); background:var(--ground); color:var(--muted); }
+.yi-row.skip svg { color:var(--muted); flex:none; }
 .yi-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .yi-tag { font-size:.75rem; color:var(--muted); background:var(--ground); border:1px solid var(--line); padding:2px 8px; border-radius:6px; white-space:nowrap; }
 .order-track-hint { display:flex; align-items:center; gap:7px; margin-top:8px; font-size:.8rem; color:var(--green-deep); }

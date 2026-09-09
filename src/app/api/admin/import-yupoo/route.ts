@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { revalidateTag } from "next/cache";
+import { eq, or, ilike } from "drizzle-orm";
 import { getDb } from "@/db";
 import { products } from "@/db/schema";
 import { isAdmin } from "@/lib/admin";
@@ -75,6 +76,19 @@ export async function POST(req: Request) {
     if (!id) return NextResponse.json({ error: "Álbum inválido." }, { status: 400 });
 
     try {
+      const db = getDb();
+      const p = yupooTitleToProduct(title);
+
+      // NÃO DUPLICAR: pula se já existe por id do álbum (source_id) ou pelo nome
+      const dup = await db
+        .select({ id: products.id })
+        .from(products)
+        .where(or(eq(products.sourceId, id), ilike(products.name, p.name)))
+        .limit(1);
+      if (dup.length) {
+        return NextResponse.json({ ok: false, skipped: true, reason: "já existe", name: p.name, title });
+      }
+
       const albumUrl = `${origin}/albums/${id}?uid=1`;
       const res = await fetch(albumUrl, { headers: yupooHeaders(`${origin}/`), cache: "no-store" });
       const html = await res.text();
@@ -88,8 +102,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ ok: false, skipped: true, reason: "sem fotos", title });
       }
 
-      const p = yupooTitleToProduct(title);
-      const [row] = await getDb()
+      const [row] = await db
         .insert(products)
         .values({
           name: p.name,
@@ -104,6 +117,7 @@ export async function POST(req: Request) {
           promo3x2: false,
           feminina: p.feminina,
           infantil: p.infantil,
+          sourceId: id,
         })
         .returning({ id: products.id });
 

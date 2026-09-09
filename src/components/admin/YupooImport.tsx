@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Download, Loader2, Check, X } from "lucide-react";
+import { Download, Loader2, Check, X, SkipForward } from "lucide-react";
 
-type Result = { title: string; ok: boolean; name?: string; category?: string; reason?: string };
+type Result = { title: string; ok: boolean; skipped?: boolean; name?: string; category?: string; reason?: string };
 
 export function YupooImport() {
   const router = useRouter();
@@ -54,7 +54,7 @@ export function YupooImport() {
             ...prev,
             d.ok
               ? { title: a.title, ok: true, name: d.name, category: d.category }
-              : { title: a.title, ok: false, reason: d.reason ?? d.error ?? "falhou" },
+              : { title: a.title, ok: false, skipped: !!d.skipped, name: d.name, reason: d.reason ?? d.error ?? "falhou" },
           ]);
         } catch {
           setResults((prev) => [...prev, { title: a.title, ok: false, reason: "conexão" }]);
@@ -112,9 +112,9 @@ export function YupooImport() {
       {results.length > 0 && (
         <div className="yi-results">
           {results.map((r, i) => (
-            <div key={i} className={`yi-row${r.ok ? " ok" : " fail"}`}>
-              {r.ok ? <Check size={15} /> : <X size={15} />}
-              <span className="yi-name">{r.ok ? r.name : r.title}</span>
+            <div key={i} className={`yi-row${r.ok ? " ok" : r.skipped ? " skip" : " fail"}`}>
+              {r.ok ? <Check size={15} /> : r.skipped ? <SkipForward size={15} /> : <X size={15} />}
+              <span className="yi-name">{r.ok ? r.name : r.name ?? r.title}</span>
               <span className="yi-tag">{r.ok ? r.category : r.reason}</span>
             </div>
           ))}

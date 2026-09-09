@@ -76,6 +76,7 @@ export const products = pgTable("products", {
   // público/modelagem — convivem com a coleção (ex.: Brasileirão + Feminina)
   feminina: boolean("feminina").notNull().default(false),
   infantil: boolean("infantil").notNull().default(false),
+  sourceId: text("source_id"), // id do álbum do fornecedor (Yupoo) — evita duplicar na importação
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
