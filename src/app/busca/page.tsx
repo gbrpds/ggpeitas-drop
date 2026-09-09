@@ -31,14 +31,14 @@ export default async function BuscaPage({
 
   const all = await getAllActive();
   const registeredTeams = await getTeamNames();
-  const nq = norm(q);
-  const teamQuery = selectedTeams.length ? selectedTeams[0] : "";
-  // termo efetivo: busca digitada OU time vindo do menu
-  const matched = (q || teamQuery)
+  // busca por PALAVRAS: cada palavra digitada precisa aparecer (em qualquer ordem)
+  // no nome/time/categoria. Ex.: "flamengo copa do mundo" acha
+  // "Camisa Flamengo 26/27 - Copa do Mundo Zico".
+  const tokens = norm(q).split(/\s+/).filter(Boolean);
+  const matched = tokens.length
     ? all.filter((p) => {
-        const hay = `${p.name} ${p.team ?? ""} ${p.category}`;
-        const okQ = q ? norm(hay).includes(nq) : true;
-        return okQ;
+        const hay = norm(`${p.name} ${p.team ?? ""} ${p.category}`);
+        return tokens.every((t) => hay.includes(t));
       })
     : all;
 

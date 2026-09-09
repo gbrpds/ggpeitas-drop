@@ -21,6 +21,14 @@ export function Header() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  // mantém o texto buscado no campo (lê o ?q= da URL ao carregar a página)
+  const [query, setQuery] = useState("");
+  useEffect(() => {
+    try {
+      setQuery(new URLSearchParams(window.location.search).get("q") ?? "");
+    } catch {}
+  }, []);
+
   // dropdown da conta controlado por clique (essencial no mobile, sem hover)
   const [accOpen, setAccOpen] = useState(false);
   useEffect(() => {
@@ -50,6 +58,8 @@ export function Header() {
           <input
             type="text"
             name="q"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="O que você está procurando? Ex: Flamengo, Brasil, Retrô…"
             aria-label="Buscar"
           />
