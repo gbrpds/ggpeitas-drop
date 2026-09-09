@@ -1,0 +1,126 @@
+import { NextResponse } from "next/server";
+import { put } from "@vercel/blob";
+import { revalidateTag } from "next/cache";
+import { getDb } from "@/db";
+import { products } from "@/db/schema";
+import { isAdmin } from "@/lib/admin";
+import {
+  yupooHeaders,
+  parseCategory,
+  parseAlbumPhotos,
+  photoUrl,
+  yupooTitleToProduct,
+} from "@/lib/yupoo";
+
+export const runtime = "nodejs";
+export const maxDuration = 60;
+
+function originOf(url: string): string {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return "https://x.yupoo.com";
+  }
+}
+
+/** Baixa uma foto do Yupoo (com referer) e re-hospeda no Vercel Blob. */
+async function reupload(base: string, referer: string): Promise<string | null> {
+  try {
+    const r = await fetch(photoUrl(base), { headers: yupooHeaders(referer), cache: "no-store" });
+    if (!r.ok) return null;
+    const ct = r.headers.get("content-type") ?? "image/jpeg";
+    if (!ct.startsWith("image/")) return null;
+    const buf = Buffer.from(await r.arrayBuffer());
+    if (buf.length < 1024) return null;
+    const hash = base.split("/").pop() ?? String(Date.now());
+    const blob = await put(`produtos/yupoo-${hash}.jpg`, buf, {
+      access: "public",
+      addRandomSuffix: true,
+      contentType: ct,
+    });
+    return blob.url;
+  } catch {
+    return null;
+  }
+}
+
+export async function POST(req: Request) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Acesso restrito." }, { status: 401 });
+
+  const body = await req.json().catch(() => ({}));
+  const action = body.action as string;
+  const url = String(body.url ?? "");
+  const origin = originOf(url);
+
+  // 1) LISTAR: devolve os álbuns (id + título) da categoria
+  if (action === "list") {
+    if (!/\/categories\/\d+/.test(url) && !/\/albums\//.test(url)) {
+      return NextResponse.json({ error: "Cole a URL de uma categoria do Yupoo." }, { status: 400 });
+    }
+    try {
+      const res = await fetch(url, { headers: yupooHeaders(`${origin}/`), cache: "no-store" });
+      const html = await res.text();
+      const albums = parseCategory(html);
+      return NextResponse.json({ ok: true, albums });
+    } catch {
+      return NextResponse.json({ error: "Não foi possível ler a categoria." }, { status: 502 });
+    }
+  }
+
+  // 2) IMPORTAR UM ÁLBUM: baixa 2 fotos, converte o título e cria o produto
+  if (action === "one") {
+    const id = String(body.id ?? "");
+    const title = String(body.title ?? "");
+    const active = !!body.active;
+    if (!id) return NextResponse.json({ error: "Álbum inválido." }, { status: 400 });
+
+    try {
+      const albumUrl = `${origin}/albums/${id}?uid=1`;
+      const res = await fetch(albumUrl, { headers: yupooHeaders(`${origin}/`), cache: "no-store" });
+      const html = await res.text();
+      const bases = parseAlbumPhotos(html).slice(0, 2); // frente + verso
+      const images: string[] = [];
+      for (const b of bases) {
+        const u = await reupload(b, `${origin}/`);
+        if (u) images.push(u);
+      }
+      if (images.length === 0) {
+        return NextResponse.json({ ok: false, skipped: true, reason: "sem fotos", title });
+      }
+
+      const p = yupooTitleToProduct(title);
+      const [row] = await getDb()
+        .insert(products)
+        .values({
+          name: p.name,
+          team: p.team,
+          category: p.category,
+          priceCents: p.priceCents,
+          compareCents: p.compareCents,
+          version: "Torcedor",
+          images,
+          active,
+          inStock: true,
+          promo3x2: false,
+          feminina: p.feminina,
+          infantil: p.infantil,
+        })
+        .returning({ id: products.id });
+
+      revalidateTag("products", "max");
+      return NextResponse.json({
+        ok: true,
+        id: row?.id,
+        name: p.name,
+        team: p.team,
+        category: p.category,
+        images: images.length,
+      });
+    } catch (e) {
+      console.error("import one error", e);
+      return NextResponse.json({ ok: false, skipped: true, reason: "erro", title });
+    }
+  }
+
+  return NextResponse.json({ error: "Ação inválida." }, { status: 400 });
+}

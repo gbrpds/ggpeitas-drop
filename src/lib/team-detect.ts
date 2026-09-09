@@ -17,6 +17,11 @@ function teamMap(): Record<string, { name: string; category: string }> {
   return map;
 }
 
+/** Classifica um nome de time em { nome canônico, categoria } (ou null se desconhecido). */
+export function classifyTeam(name: string): { name: string; category: string } | null {
+  return teamMap()[norm(name)] ?? null;
+}
+
 export type TitleDetect = { team: string; category: string; feminina: boolean; mangaLonga: boolean };
 
 /**
