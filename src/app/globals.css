@@ -880,6 +880,29 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .adm-upload-btn:hover { border-color:var(--green); color:var(--green-deep); }
 .adm-switch { display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:.9rem; cursor:pointer; }
 .adm-switch input { width:18px; height:18px; accent-color:var(--green); }
+/* seção Coleções (carrossel de times) */
+.col-sec { margin:36px auto; }
+.col-arrows { display:inline-flex; gap:8px; }
+.col-arrows button { width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--card,#fff);
+  color:var(--ink); display:grid; place-items:center; cursor:pointer; transition:background .15s, border-color .15s; }
+.col-arrows button:hover { border-color:var(--green); color:var(--green-deep); }
+.col-track { display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding:4px 2px 10px;
+  scrollbar-width:none; -ms-overflow-style:none; }
+.col-track::-webkit-scrollbar { display:none; }
+.col-card { position:relative; flex:0 0 auto; width:214px; height:290px; border-radius:16px; overflow:hidden;
+  display:flex; flex-direction:column; justify-content:flex-end; scroll-snap-align:start; text-decoration:none;
+  box-shadow:0 10px 26px -14px rgba(0,0,0,.45); transition:transform .2s, box-shadow .2s; }
+.col-card:hover { transform:translateY(-5px); box-shadow:0 20px 38px -16px rgba(0,0,0,.5); }
+.col-card-crest { position:absolute; inset:0; display:grid; place-items:center; padding:22px 22px 92px; }
+.col-card-crest img { max-width:66%; max-height:60%; width:auto; height:auto; object-fit:contain;
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+.col-card-crest svg.jersey { width:58%; }
+.col-card-foot { position:relative; z-index:1; padding:16px; color:#fff; display:flex; flex-direction:column; gap:8px; }
+.col-card-foot b { font-family:var(--disp); font-weight:900; font-size:1.15rem; line-height:1.1; text-shadow:0 2px 8px rgba(0,0,0,.4); }
+.col-card-btn { align-self:flex-start; display:inline-flex; align-items:center; gap:5px; background:#fff; color:#111;
+  font-weight:700; font-size:.76rem; padding:6px 12px; border-radius:20px; }
+@media (max-width:560px){ .col-card { width:170px; height:240px; } }
+
 /* filtros da lista de produtos (admin) */
 .adm-filters { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:0 0 16px; }
 .adm-search { display:flex; align-items:center; gap:8px; flex:1; min-width:200px; background:var(--card,#fff);

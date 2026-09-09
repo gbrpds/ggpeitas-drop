@@ -9,6 +9,7 @@ import { FooterTrust } from "@/components/FooterTrust";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { HomeInitial } from "@/components/HomeInitial";
+import { CollectionsCarousel } from "@/components/CollectionsCarousel";
 import { getHomeSections } from "@/lib/catalog";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,9 @@ export default async function Home() {
 
         {/* Abaixo do banner: produtos (ou o time do coração, se escolhido) */}
         <HomeInitial firstSection={first ?? null} />
+
+        {/* Coleções por time (carrossel) logo abaixo da primeira seção */}
+        <CollectionsCarousel />
 
         {/* A faixa de benefícios vem depois da primeira seção de produtos */}
         <TrustStrip />
