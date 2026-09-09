@@ -34,8 +34,9 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
   const [name, setName] = useState(initial?.name ?? "");
   const [team, setTeam] = useState(initial?.team ?? "");
   const [category, setCategory] = useState(initial?.category ?? "brasileirao");
-  const [price, setPrice] = useState(centsToStr(initial?.priceCents));
-  const [compare, setCompare] = useState(centsToStr(initial?.compareCents));
+  // preços padrão pré-preenchidos ao CRIAR (na edição usa os valores do produto)
+  const [price, setPrice] = useState(initial ? centsToStr(initial.priceCents) : "189,90");
+  const [compare, setCompare] = useState(initial ? centsToStr(initial.compareCents) : "269,90");
   const version = "Torcedor"; // único modelo
   const [images, setImages] = useState<string[]>(initial?.images ?? []);
   const [active, setActive] = useState(initial?.active ?? true);
