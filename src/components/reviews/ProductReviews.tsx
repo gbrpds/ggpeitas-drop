@@ -35,6 +35,20 @@ export function ProductReviews({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState(false);
+
+  // form aberto: sem avaliação → ao clicar "Avaliar"; com avaliação → ao "Editar"
+  const formOpen = mine ? editing : showForm;
+
+  function cancelForm() {
+    setShowForm(false);
+    setEditing(false);
+    setError(null);
+    setHover(0);
+    // restaura os valores originais da avaliação (se houver)
+    setRating(mine?.rating ?? 0);
+    setComment(mine?.comment ?? "");
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,6 +66,7 @@ export function ProductReviews({
         setError(data.error ?? "Não foi possível salvar.");
       } else {
         setShowForm(false);
+        setEditing(false);
         router.refresh();
       }
     } catch {
@@ -106,10 +121,19 @@ export function ProductReviews({
 
       {/* Área de escrever avaliação */}
       {loggedIn ? (
-        !showForm && !mine ? (
-          <button className="rv-write-btn" onClick={() => setShowForm(true)}>
-            <Star size={16} /> Avaliar este produto
-          </button>
+        !formOpen ? (
+          mine ? (
+            <div className="rv-mine-bar">
+              <span><BadgeCheck size={15} /> Você já avaliou este produto.</span>
+              <button className="rv-write-btn" onClick={() => setEditing(true)}>
+                <Star size={16} /> Editar avaliação
+              </button>
+            </div>
+          ) : (
+            <button className="rv-write-btn" onClick={() => setShowForm(true)}>
+              <Star size={16} /> Avaliar este produto
+            </button>
+          )
         ) : (
           <form className="rv-form" onSubmit={submit}>
             <div className="rv-form-title">{mine ? "Editar sua avaliação" : `Avaliar ${productName}`}</div>
@@ -139,9 +163,7 @@ export function ProductReviews({
               <button className="rv-submit" type="submit" disabled={saving}>
                 {saving ? "Enviando…" : mine ? "Salvar alterações" : "Enviar avaliação"}
               </button>
-              {(showForm || mine) && (
-                <button type="button" className="rv-cancel" onClick={() => setShowForm(false)}>Cancelar</button>
-              )}
+              <button type="button" className="rv-cancel" onClick={cancelForm}>Cancelar</button>
             </div>
           </form>
         )
