@@ -50,6 +50,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         customer: orders.customer,
         trackingCode: orders.trackingCode,
         shippingStatus: orders.shippingStatus,
+        accessToken: orders.accessToken,
       })
       .from(orders)
       .where(eq(orders.id, id))
@@ -70,7 +71,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
           customerName: c.name,
           trackingCode: newCode,
           trackingUrl: correiosLink(newCode),
-          orderUrl: `${baseUrl()}/pedido/${id}`,
+          orderUrl: `${baseUrl()}/pedido/${id}${prev?.accessToken ? `?t=${prev.accessToken}` : ""}`,
         });
         await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
       }

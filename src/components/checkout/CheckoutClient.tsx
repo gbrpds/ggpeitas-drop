@@ -37,7 +37,13 @@ type SavedProfile = {
   address: { cep: string; rua: string; numero: string; bairro: string; cidade: string; uf: string } | null;
 };
 
-export function CheckoutClient({ savedProfile }: { savedProfile?: SavedProfile | null }) {
+export function CheckoutClient({
+  isLoggedIn = true,
+  savedProfile,
+}: {
+  isLoggedIn?: boolean;
+  savedProfile?: SavedProfile | null;
+}) {
   const router = useRouter();
   const { data: session } = useSession();
   const items = useCart((s) => s.items);
@@ -46,6 +52,9 @@ export function CheckoutClient({ savedProfile }: { savedProfile?: SavedProfile |
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  // visitante que optou por comprar sem conta
+  const [guest, setGuest] = useState(false);
 
   const [step, setStep] = useState(1);
   const [customer, setCustomer] = useState<Customer>({
@@ -63,7 +72,7 @@ export function CheckoutClient({ savedProfile }: { savedProfile?: SavedProfile |
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
-  const [pix, setPix] = useState<{ qrCodeBase64?: string; qrCode?: string; number?: string; paymentId?: string; orderId?: string } | null>(null);
+  const [pix, setPix] = useState<{ qrCodeBase64?: string; qrCode?: string; number?: string; paymentId?: string; orderId?: string; accessToken?: string } | null>(null);
   const [couponInput, setCouponInput] = useState("");
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
@@ -87,7 +96,8 @@ export function CheckoutClient({ savedProfile }: { savedProfile?: SavedProfile |
         const s = await fetch(`/api/checkout/status?paymentId=${pix.paymentId}`).then((r) => r.json());
         if (s.status === "approved" && pix.orderId) {
           clearInterval(poll);
-          router.push(`/pedido/${pix.orderId}`);
+          const t = pix.accessToken ? `?t=${pix.accessToken}` : "";
+          router.push(`/pedido/${pix.orderId}${t}`);
         }
       } catch {
         /* ignora */
@@ -241,6 +251,7 @@ export function CheckoutClient({ savedProfile }: { savedProfile?: SavedProfile |
           number: data.number,
           paymentId: String(data.paymentId),
           orderId: data.orderId,
+          accessToken: data.accessToken,
         });
       }
     } catch {
@@ -282,7 +293,13 @@ export function CheckoutClient({ savedProfile }: { savedProfile?: SavedProfile |
         {pix.number && <div className="pix-order">Pedido <b>#{pix.number}</b></div>}
         <PixDisplay qrCode={pix.qrCode} qrCodeBase64={pix.qrCodeBase64} />
         <div className="co-result-actions" style={{ marginTop: 18 }}>
-          <Link className="cs-continue" href="/pedidos">Ver em Meus pedidos</Link>
+          {isLoggedIn ? (
+            <Link className="cs-continue" href="/pedidos">Ver em Meus pedidos</Link>
+          ) : pix.orderId ? (
+            <Link className="cs-continue" href={`/pedido/${pix.orderId}${pix.accessToken ? `?t=${pix.accessToken}` : ""}`}>
+              Acompanhar meu pedido
+            </Link>
+          ) : null}
         </div>
       </div>
     );
@@ -294,6 +311,30 @@ export function CheckoutClient({ savedProfile }: { savedProfile?: SavedProfile |
         <ShoppingBag strokeWidth={1.5} />
         <h2>Seu carrinho está vazio</h2>
         <Link className="btn btn-g" href="/">Ver produtos</Link>
+      </div>
+    );
+  }
+
+  // Visitante: escolhe entrar/criar conta OU comprar sem conta
+  if (!isLoggedIn && !guest) {
+    return (
+      <div className="co-gate">
+        <h2>Como você quer continuar?</h2>
+        <div className="co-gate-opts">
+          <Link className="co-gate-card" href="/conta?next=/checkout">
+            <User strokeWidth={1.7} />
+            <b>Entrar ou criar conta</b>
+            <span>Acompanhe seus pedidos e agilize as próximas compras</span>
+          </Link>
+          <button type="button" className="co-gate-card" onClick={() => setGuest(true)}>
+            <ShoppingBag strokeWidth={1.7} />
+            <b>Continuar sem conta</b>
+            <span>Compre agora informando seus dados de entrega</span>
+          </button>
+        </div>
+        <p className="co-gate-note">
+          Em qualquer opção você recebe a confirmação e todas as atualizações do pedido por e-mail.
+        </p>
       </div>
     );
   }

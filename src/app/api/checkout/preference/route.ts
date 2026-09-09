@@ -74,6 +74,7 @@ export async function POST(req: Request) {
   const userId = await resolveUserId();
   let number: string | null = null;
   let orderId: string | null = null;
+  let accessToken: string | null = null;
   try {
     const created = await createOrder(getDb(), {
       userId,
@@ -90,6 +91,7 @@ export async function POST(req: Request) {
     });
     number = created.number;
     orderId = created.id;
+    accessToken = created.accessToken;
     await setDefaultFromOrder(userId, customer, shipping); // endereço padrão = última compra
   } catch (e) {
     console.error("save preference order error", e);
@@ -101,7 +103,8 @@ export async function POST(req: Request) {
 
   // 2) monta as URLs de retorno/notificação a partir da origem da requisição
   const origin = new URL(req.url).origin;
-  const backUrl = `${origin}/pedido/${orderId}`;
+  // token no retorno para o visitante conseguir ver o pedido mesmo sem conta
+  const backUrl = `${origin}/pedido/${orderId}${accessToken ? `?t=${accessToken}` : ""}`;
 
   // Mercadorias: itens detalhados, ou 1 item consolidado quando há desconto
   // (o Checkout Pro soma os itens e não aceita linha de desconto negativa).

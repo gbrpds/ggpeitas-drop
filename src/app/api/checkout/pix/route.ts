@@ -86,6 +86,7 @@ export async function POST(req: Request) {
   const userId = await resolveUserId();
   let number: string | null = null;
   let orderId: string | null = null;
+  let accessToken: string | null = null;
   try {
     const created = await createOrder(getDb(), {
       userId,
@@ -103,6 +104,7 @@ export async function POST(req: Request) {
     });
     number = created.number;
     orderId = created.id;
+    accessToken = created.accessToken;
     await setDefaultFromOrder(userId, customer, shipping); // endereço padrão = última compra
   } catch (e) {
     console.error("save pix order error", e);
@@ -113,6 +115,7 @@ export async function POST(req: Request) {
     ok: true,
     number,
     orderId,
+    accessToken,
     paymentId: mp.data.id,
     amount,
     qrCode: td.qr_code,

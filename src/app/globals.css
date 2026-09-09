@@ -1117,6 +1117,20 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .co-addr-restore:hover { background:rgba(15,138,61,.12); }
 .co-addr-restore svg { flex:none; }
 
+/* escolha visitante: entrar/criar conta ou comprar sem conta */
+.co-gate { max-width:640px; margin:8px auto 0; }
+.co-gate > h2 { font-size:1.15rem; margin:0 0 16px; text-align:center; }
+.co-gate-opts { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.co-gate-card { display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left;
+  padding:20px 18px; border:1px solid var(--line); border-radius:14px; background:var(--card,#fff);
+  cursor:pointer; transition:border-color .18s, transform .18s, box-shadow .18s; }
+.co-gate-card:hover { border-color:var(--green-deep); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.08); }
+.co-gate-card svg { width:26px; height:26px; color:var(--green-deep); margin-bottom:4px; }
+.co-gate-card b { font-size:1rem; }
+.co-gate-card span { font-size:.85rem; color:var(--muted); line-height:1.4; }
+.co-gate-note { margin:16px 0 0; text-align:center; font-size:.82rem; color:var(--muted); }
+@media (max-width:560px) { .co-gate-opts { grid-template-columns:1fr; } }
+
 /* cupom no checkout */
 .cs-coupon { margin:12px 0; padding:12px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
 .cs-coupon-row { display:flex; gap:8px; }

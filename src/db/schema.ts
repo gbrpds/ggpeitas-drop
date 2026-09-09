@@ -35,6 +35,7 @@ export const orders = pgTable("orders", {
   customer: jsonb("customer").notNull(), // { name, cpf, email, phone }
   shipping: jsonb("shipping").notNull(), // { cep, rua, numero, bairro, cidade, uf }
   mpPaymentId: text("mp_payment_id"),
+  accessToken: text("access_token"), // acesso ao pedido sem conta (link no e-mail/pós-compra)
   trackingCode: text("tracking_code"), // código de rastreio dos Correios
   shippingStatus: text("shipping_status"), // preparando | enviado | entregue
   createdAt: timestamp("created_at").defaultNow().notNull(),

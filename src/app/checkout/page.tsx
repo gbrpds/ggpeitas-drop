@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { resolveUserId } from "@/lib/order";
 import { getProfile } from "@/lib/account";
 import { Announce } from "@/components/Announce";
@@ -12,10 +11,9 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Checkout — GG Peitas" };
 
 export default async function CheckoutPage() {
-  // compra exige conta: visitante vai para login e volta pro checkout
+  // compra permitida com conta OU como visitante (dados informados no checkout)
   const userId = await resolveUserId();
-  if (!userId) redirect("/conta?next=/checkout");
-  const profile = await getProfile(userId);
+  const profile = userId ? await getProfile(userId) : null;
 
   return (
     <>
@@ -26,6 +24,7 @@ export default async function CheckoutPage() {
         <div className="wrap checkout-wrap">
           <h1 className="page-title">Finalizar compra</h1>
           <CheckoutClient
+            isLoggedIn={!!userId}
             savedProfile={
               profile
                 ? { cpf: profile.cpf, phone: profile.phone, address: profile.address }

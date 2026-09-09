@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Package } from "lucide-react";
 import { getDb } from "@/db";
-import { getOwnedOrder, getOrderById, expireStaleOrders, effectiveStatus } from "@/lib/order";
+import { getOwnedOrder, getOrderById, getOrderByToken, expireStaleOrders, effectiveStatus } from "@/lib/order";
 import { syncPaymentStatus } from "@/lib/mp";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
@@ -20,10 +20,10 @@ export default async function PedidoPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ payment_id?: string; status?: string }>;
+  searchParams: Promise<{ payment_id?: string; status?: string; t?: string }>;
 }) {
   const { id } = await params;
-  const { payment_id: paymentId } = await searchParams;
+  const { payment_id: paymentId, t: token } = await searchParams;
 
   // Retorno do Checkout Pro do Mercado Pago: sincroniza o status na hora,
   // sem esperar o webhook (que confirma em definitivo em segundo plano).
@@ -43,9 +43,12 @@ export default async function PedidoPage({
   } catch {
     /* segue */
   }
-  // Dono logado vê sempre; quem pagou como visitante volta do MP com payment_id
-  // válido, então liberamos a visualização desse pedido específico.
-  const order = (await getOwnedOrder(id)) ?? (paidHere ? await getOrderById(id) : null);
+  // Dono logado vê sempre; visitante vê pelo token do e-mail/pós-compra (?t=),
+  // ou ao voltar do Mercado Pago com um payment_id válido deste pedido.
+  const order =
+    (await getOwnedOrder(id)) ??
+    (token ? await getOrderByToken(id, token) : null) ??
+    (paidHere ? await getOrderById(id) : null);
 
   return (
     <>

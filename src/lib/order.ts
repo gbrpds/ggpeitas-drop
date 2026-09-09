@@ -84,21 +84,39 @@ function isUniqueViolation(e: unknown): boolean {
 export async function createOrder(
   db: Db,
   base: Omit<NewOrder, "number">,
-): Promise<{ id: string; number: string }> {
+): Promise<{ id: string; number: string; accessToken: string }> {
+  // token de acesso ao pedido sem conta (link no e-mail / retorno pós-compra)
+  const accessToken = base.accessToken ?? crypto.randomUUID().replace(/-/g, "");
   for (let attempt = 0; attempt < 6; attempt++) {
     const number = await genOrderNumber(db);
     try {
       const [row] = await db
         .insert(orders)
-        .values({ ...base, number })
+        .values({ ...base, number, accessToken })
         .returning({ id: orders.id });
-      return { id: row.id, number };
+      return { id: row.id, number, accessToken };
     } catch (e) {
       if (isUniqueViolation(e) && attempt < 5) continue; // colisão → tenta o próximo número
       throw e;
     }
   }
   throw new Error("Não foi possível gerar o número do pedido.");
+}
+
+/** Carrega um pedido pelo id + token de acesso (visitante sem conta). */
+export async function getOrderByToken(id: string, token: string) {
+  try {
+    if (!token) return null;
+    const db = getDb();
+    const [o] = await db
+      .select()
+      .from(orders)
+      .where(and(eq(orders.id, id), eq(orders.accessToken, token)))
+      .limit(1);
+    return o ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /** Carrega um pedido que pertence ao usuário logado (ou null). */

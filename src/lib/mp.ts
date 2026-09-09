@@ -51,6 +51,7 @@ export async function syncPaymentStatus(
           couponCode: orders.couponCode,
           freightCents: orders.freightCents,
           customer: orders.customer,
+          accessToken: orders.accessToken,
         });
       // envia a confirmação SÓ na transição (evita duplicar no polling/webhook)
       for (const o of changed) {
@@ -65,7 +66,7 @@ export async function syncPaymentStatus(
           couponCode: o.couponCode,
           freightCents: o.freightCents,
           customerName: c.name,
-          orderUrl: `${baseUrl()}/pedido/${o.id}`,
+          orderUrl: `${baseUrl()}/pedido/${o.id}${o.accessToken ? `?t=${o.accessToken}` : ""}`,
         });
         await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
       }
