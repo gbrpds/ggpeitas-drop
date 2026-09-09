@@ -1,15 +1,16 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2, Pencil, Search } from "lucide-react";
 import { brl } from "@/lib/format";
 
 type Row = {
   id: string;
   name: string;
+  team: string | null;
   category: string;
   priceCents: number;
   active: boolean;
@@ -18,9 +19,29 @@ type Row = {
   images: string[];
 };
 
+const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
 export function AdminProducts({ rows }: { rows: Row[] }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
+  const [team, setTeam] = useState("");
+  const [q, setQ] = useState("");
+
+  // times distintos (ordenados) para o filtro
+  const teams = useMemo(() => {
+    const set = new Set<string>();
+    for (const r of rows) if (r.team?.trim()) set.add(r.team.trim());
+    return [...set].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [rows]);
+
+  const filtered = useMemo(() => {
+    const nq = norm(q.trim());
+    return rows.filter((r) => {
+      if (team && (r.team ?? "") !== team) return false;
+      if (nq && !norm(r.name).includes(nq) && !norm(r.team ?? "").includes(nq)) return false;
+      return true;
+    });
+  }, [rows, team, q]);
 
   async function del(id: string, name: string) {
     if (!confirm(`Excluir "${name}"?`)) return;
@@ -81,15 +102,36 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
   }
 
   return (
+    <>
+      <div className="adm-filters">
+        <div className="adm-search">
+          <Search size={16} />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nome ou time…" />
+        </div>
+        <select value={team} onChange={(e) => setTeam(e.target.value)} className="adm-select">
+          <option value="">Todos os times ({rows.length})</option>
+          {teams.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
+        {(team || q) && (
+          <button className="adm-filter-clear" onClick={() => { setTeam(""); setQ(""); }}>Limpar</button>
+        )}
+        <span className="adm-filter-count">{filtered.length} {filtered.length === 1 ? "produto" : "produtos"}</span>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="cart-empty"><h2>Nenhum produto para esse filtro</h2></div>
+      ) : (
     <div className="adm-list">
-      {rows.map((p) => (
+      {filtered.map((p) => (
         <div className="adm-row" key={p.id}>
           <div className="adm-row-media">
             {p.images?.[0] ? <img src={p.images[0]} alt="" /> : <span className="adm-noimg">sem foto</span>}
           </div>
           <div className="adm-row-info">
             <b>{p.name}</b>
-            <span className="adm-row-cat">{p.category}</span>
+            <span className="adm-row-cat">{[p.team, p.category].filter(Boolean).join(" · ")}</span>
           </div>
           <b className="adm-row-price">{brl(p.priceCents / 100)}</b>
           <label className="adm-toggle" title={p.active ? "Ativo na loja" : "Oculto da loja"}>
@@ -114,5 +156,7 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
         </div>
       ))}
     </div>
+      )}
+    </>
   );
 }

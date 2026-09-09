@@ -879,6 +879,17 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .adm-upload-btn:hover { border-color:var(--green); color:var(--green-deep); }
 .adm-switch { display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:.9rem; cursor:pointer; }
 .adm-switch input { width:18px; height:18px; accent-color:var(--green); }
+/* filtros da lista de produtos (admin) */
+.adm-filters { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:0 0 16px; }
+.adm-search { display:flex; align-items:center; gap:8px; flex:1; min-width:200px; background:var(--card,#fff);
+  border:1px solid var(--line); border-radius:10px; padding:0 12px; }
+.adm-search svg { color:var(--muted); flex:none; }
+.adm-search input { flex:1; border:0; background:none; padding:11px 0; font-size:.95rem; color:var(--ink); outline:none; }
+.adm-filters .adm-select { min-width:200px; }
+.adm-filter-clear { background:none; border:1px solid var(--line); border-radius:9px; padding:9px 14px; color:var(--muted);
+  font-weight:600; font-size:.85rem; cursor:pointer; }
+.adm-filter-clear:hover { color:var(--ink); border-color:var(--muted); }
+.adm-filter-count { color:var(--muted); font-size:.85rem; margin-left:auto; }
 .adm-crosslist { display:flex; gap:18px; flex-wrap:wrap; margin:2px 0 4px; }
 .adm-check { display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:.9rem; cursor:pointer; }
 .adm-check input { width:18px; height:18px; accent-color:var(--green); }
