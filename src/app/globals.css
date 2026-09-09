@@ -232,9 +232,20 @@ nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(
 .sf-clear:hover { border-color:var(--green); color:var(--green-deep); }
 .search-results .cat-grid { justify-content:flex-start; }
 
+/* botão "Filtros" (só no mobile) */
+.sf-toggle { display:none; }
 @media (max-width:860px) {
   .search-layout { grid-template-columns:1fr; }
-  .sf { position:static; }
+  .sf { position:static; padding:0; border:0; background:none; }
+  .sf-toggle { display:flex; align-items:center; justify-content:space-between; width:100%;
+    background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:13px 16px;
+    font-weight:800; font-size:.9rem; color:var(--ink); cursor:pointer; }
+  .sf-toggle span { display:inline-flex; align-items:center; gap:8px; }
+  .sf-toggle-chev { transition:transform .2s; }
+  .sf.open .sf-toggle-chev { transform:rotate(180deg); }
+  .sf-body { display:none; margin-top:12px; background:var(--surface); border:1px solid var(--line);
+    border-radius:14px; padding:18px; }
+  .sf.open .sf-body { display:block; }
 }
 .card .off { position:absolute; top:10px; left:10px; background:var(--price); color:#fff;
   font-family:var(--disp); font-weight:800; font-size:.72rem; padding:3px 8px; border-radius:6px;

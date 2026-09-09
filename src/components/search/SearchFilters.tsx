@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { SlidersHorizontal, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const CAT_LABELS: Record<string, string> = {
@@ -47,6 +49,10 @@ export function SearchFilters({
   hideCategory?: boolean;
 }) {
   const router = useRouter();
+  const [open, setOpen] = useState(false); // expandir/recolher no mobile
+
+  const activeCount =
+    selected.length + selectedTeams.length + selectedGenders.length + selectedTipos.length + (sort !== "relevancia" ? 1 : 0);
 
   const push = (s: Sel) => {
     const p = new URLSearchParams();
@@ -78,7 +84,12 @@ export function SearchFilters({
     sort !== "relevancia";
 
   return (
-    <aside className="sf">
+    <aside className={`sf${open ? " open" : ""}`}>
+      <button type="button" className="sf-toggle" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
+        <span><SlidersHorizontal size={16} /> Filtros{activeCount > 0 ? ` (${activeCount})` : ""}</span>
+        <ChevronDown size={18} className="sf-toggle-chev" />
+      </button>
+      <div className="sf-body">
       {genderFacets.length > 0 && (
         <div className="sf-block">
           <h3>Gênero</h3>
@@ -170,6 +181,7 @@ export function SearchFilters({
           Limpar filtros
         </button>
       )}
+      </div>
     </aside>
   );
 }
