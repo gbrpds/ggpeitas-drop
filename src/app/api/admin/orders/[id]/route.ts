@@ -69,12 +69,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       const orderUrl = `${baseUrl()}/pedido/${id}${prev?.accessToken ? `?t=${prev.accessToken}` : ""}`;
       if (c.email) {
         let tpl: { subject: string; html: string } | null = null;
-        if (newStage === "enviado" && newCode) {
+        if (newStage === "enviado") {
           tpl = orderShippedEmail({
             number: prev?.number ?? null,
             customerName: c.name,
             trackingCode: newCode,
-            trackingUrl: correiosLink(newCode),
+            trackingUrl: newCode ? correiosLink(newCode) : null,
             orderUrl,
           });
         } else if (newStage === "entregue") {
@@ -84,7 +84,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         } else if (newStage === "preparando") {
           tpl = orderStageEmail({ number: prev?.number ?? null, customerName: c.name, stage: newStage, orderUrl });
         }
-        if (tpl) await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
+        if (tpl) {
+          try {
+            await sendEmail({ to: c.email, subject: tpl.subject, html: tpl.html });
+          } catch (mailErr) {
+            // falha de e-mail não deve derrubar o salvamento do rastreio/etapa
+            console.error("order stage email error", mailErr);
+          }
+        }
       }
     }
   } catch (e) {

@@ -309,15 +309,29 @@ export function backInStockEmail(opts: { productName: string; productUrl: string
   };
 }
 
-/** Aviso de envio com código de rastreio. */
+/** Aviso de envio (com código de rastreio, quando houver). */
 export function orderShippedEmail(order: {
   number: string | null;
   customerName?: string;
-  trackingCode: string;
-  trackingUrl: string;
+  trackingCode?: string | null;
+  trackingUrl?: string | null;
   orderUrl: string;
 }) {
   const first = order.customerName?.split(" ")[0] || "torcedor(a)";
+  const trackingBlock =
+    order.trackingCode
+      ? `<div style="background:#f6f6f3;border:1px solid #e4e4de;border-radius:10px;padding:14px 16px;margin:14px 0;">
+        <div style="font-size:12px;color:#8a8a80;">Código de rastreio</div>
+        <div style="font-size:17px;font-weight:800;letter-spacing:1px;">${order.trackingCode}</div>
+      </div>
+      ${order.trackingUrl ? `<p style="margin:8px 0 6px;">${button(order.trackingUrl, "Rastrear nos Correios")}</p>` : ""}
+      <p style="font-size:13px;color:#8a8a80;margin-top:14px;">
+        Você também pode acompanhar em <a href="${order.orderUrl}" style="color:${GREEN};">seu pedido</a>.
+      </p>`
+      : `<p style="font-size:14px;line-height:1.6;color:#444;">
+        Assim que o código de rastreio estiver disponível, você recebe por aqui.
+      </p>
+      <p style="margin:16px 0 6px;">${button(order.orderUrl, "Acompanhar pedido")}</p>`;
   return {
     subject: `Seu pedido #${order.number ?? ""} foi enviado!`,
     html: layout(
@@ -325,14 +339,7 @@ export function orderShippedEmail(order: {
       `<p style="font-size:14px;line-height:1.6;color:#444;">
         ${first}, boa notícia! O pedido <b>#${order.number ?? ""}</b> foi despachado.
       </p>
-      <div style="background:#f6f6f3;border:1px solid #e4e4de;border-radius:10px;padding:14px 16px;margin:14px 0;">
-        <div style="font-size:12px;color:#8a8a80;">Código de rastreio</div>
-        <div style="font-size:17px;font-weight:800;letter-spacing:1px;">${order.trackingCode}</div>
-      </div>
-      <p style="margin:8px 0 6px;">${button(order.trackingUrl, "Rastrear nos Correios")}</p>
-      <p style="font-size:13px;color:#8a8a80;margin-top:14px;">
-        Você também pode acompanhar em <a href="${order.orderUrl}" style="color:${GREEN};">seu pedido</a>.
-      </p>`,
+      ${trackingBlock}`,
     ),
   };
 }
