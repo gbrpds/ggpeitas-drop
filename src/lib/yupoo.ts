@@ -178,12 +178,12 @@ export function yupooTitleToProduct(rawTitle: string): ImportedProduct {
   }
   name = (name + gender).replace(/\s{2,}/g, " ").trim();
 
-  // Pré-Jogo: 129,90 e já entra na promo "Leve 3, Pague 2"
+  // Pré-Jogo: 129,90. Regra da promo: tudo até 189,90 entra no "Leve 3, Pague 2".
   const preJogo = tipo === "Pré-Jogo";
   const special = category === "retro" || mangaLonga;
   const priceCents = preJogo ? reais(129.9) : special ? reais(229.9) : reais(189.9);
   const compareCents = preJogo ? reais(189.9) : special ? reais(299.9) : reais(269.9);
-  const promo3x2 = preJogo;
+  const promo3x2 = priceCents <= reais(189.9);
 
   return { name, team, category, feminina, infantil, priceCents, compareCents, promo3x2 };
 }
