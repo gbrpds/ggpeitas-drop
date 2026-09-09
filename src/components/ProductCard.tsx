@@ -55,7 +55,11 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="parc">
           <b>3x</b> de <b>{parcela(product.now, 3)}</b> sem juros
         </div>
-        <span className="frete">FRETE GRÁTIS</span>
+        {product.promo3x2 ? (
+          <span className="frete promo3x2">LEVE 3, PAGUE 2</span>
+        ) : (
+          <span className="frete">FRETE GRÁTIS</span>
+        )}
         <Link className={`btn add${product.inStock === false ? " add-out" : ""}`} href={`/produto/${product.id}`}>
           {product.inStock === false ? "Avise-me quando voltar" : "Comprar agora"}
         </Link>

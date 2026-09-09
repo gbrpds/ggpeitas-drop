@@ -258,6 +258,7 @@ nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(
 .card .parc b { color:var(--ink); }
 .card .frete { align-self:flex-start; margin-top:auto; background:var(--barra); color:var(--barra-ink);
   font-size:.64rem; font-weight:700; padding:2px 8px; border-radius:4px; letter-spacing:.03em; }
+.card .frete.promo3x2 { background:var(--yellow); color:#1c1c18; }
 .card .add { margin-top:8px; justify-content:center; width:100%; background:var(--green); color:#fff; padding:10px; font-size:.76rem; }
 .card .add:hover { background:var(--green-deep); }
 
