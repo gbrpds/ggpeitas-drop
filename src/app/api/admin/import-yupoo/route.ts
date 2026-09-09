@@ -12,6 +12,7 @@ import {
   photoUrl,
   yupooTitleToProduct,
   shouldSkipTitle,
+  matchesBrasileirao,
 } from "@/lib/yupoo";
 
 export const runtime = "nodejs";
@@ -54,16 +55,40 @@ export async function POST(req: Request) {
   const url = String(body.url ?? "");
   const origin = originOf(url);
 
-  // 1) LISTAR: devolve os álbuns (id + título) da categoria
+  // 1) LISTAR: devolve os álbuns (id + título) da categoria — TODAS as páginas
   if (action === "list") {
     if (!/\/categories\/\d+/.test(url) && !/\/albums\//.test(url)) {
       return NextResponse.json({ error: "Cole a URL de uma categoria do Yupoo." }, { status: 400 });
     }
     try {
-      const res = await fetch(url, { headers: yupooHeaders(`${origin}/`), cache: "no-store" });
-      const html = await res.text();
-      // ignora kits infantis ("Kids Kit") — não entram na importação
-      const albums = parseCategory(html).filter((a) => !shouldSkipTitle(a.title));
+      const seen = new Set<string>();
+      const collected: { id: string; title: string }[] = [];
+      for (let page = 1; page <= 60; page++) {
+        const pageUrl = (() => {
+          try {
+            const u = new URL(url);
+            u.searchParams.set("page", String(page));
+            return u.toString();
+          } catch {
+            return `${url}${url.includes("?") ? "&" : "?"}page=${page}`;
+          }
+        })();
+        const res = await fetch(pageUrl, { headers: yupooHeaders(`${origin}/`), cache: "no-store" });
+        const html = await res.text();
+        const pageAlbums = parseCategory(html);
+        const fresh = pageAlbums.filter((a) => !seen.has(a.id));
+        if (fresh.length === 0) break; // acabou (ou repetiu a última página)
+        for (const a of fresh) {
+          seen.add(a.id);
+          collected.push(a);
+        }
+      }
+      // remove os que não devem entrar (kids/kit/player/shorts/jacket/...)
+      // e, por padrão, mantém só os times do Brasileirão
+      const onlyBrasileirao = body.onlyBrasileirao !== false;
+      const albums = collected.filter(
+        (a) => !shouldSkipTitle(a.title) && (!onlyBrasileirao || matchesBrasileirao(a.title)),
+      );
       // ordena por TIME (e depois pelo nome) para importar time a time
       const sorted = albums
         .map((a) => ({ a, p: yupooTitleToProduct(a.title) }))

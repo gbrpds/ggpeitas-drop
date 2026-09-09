@@ -34,6 +34,27 @@ export function shouldSkipTitle(title: string): boolean {
   );
 }
 
+const normLower = (s: string) =>
+  s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/\s{2,}/g, " ").trim();
+
+/** Times da Série A (do menu do fornecedor), com apelidos, para filtrar só o Brasileirão. */
+export const BRASILEIRAO_TEAMS = [
+  "flamengo", "palmeiras", "sao paulo", "corinthians", "santos", "gremio",
+  "botafogo", "atletico mineiro", "atletico-mg", "atletico mg", "fluminense",
+  "athletico paranaense", "atletico paranaense", "athletico-pr", "atletico-pr",
+  "internacional", "inter de porto alegre", "fortaleza", "cruzeiro",
+  "vasco da gama", "vasco", "bahia", "sport recife", "sport", "paysandu",
+  "vitoria", "remo", "santa cruz", "confianca", "nautico", "recife",
+  "ceara sporting", "ceara", "chapecoense", "coritiba",
+  "red bull bragantino", "bragantino", "atletico juventus", "cuiaba",
+];
+
+/** O título pertence a um time do Brasileirão? (começa com o nome do time). */
+export function matchesBrasileirao(title: string): boolean {
+  const t = normLower(title.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, ""));
+  return BRASILEIRAO_TEAMS.some((team) => t === team || t.startsWith(team + " "));
+}
+
 export type YupooAlbum = { id: string; title: string };
 
 /** Extrai os álbuns (id + título) da página de uma categoria. */

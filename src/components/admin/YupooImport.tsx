@@ -11,6 +11,7 @@ export function YupooImport() {
   const [url, setUrl] = useState("");
   const [limit, setLimit] = useState(10);
   const [active, setActive] = useState(true);
+  const [onlyBra, setOnlyBra] = useState(true);
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [results, setResults] = useState<Result[]>([]);
@@ -26,7 +27,7 @@ export function YupooImport() {
       const listRes = await fetch("/api/admin/import-yupoo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "list", url }),
+        body: JSON.stringify({ action: "list", url, onlyBrasileirao: onlyBra }),
       });
       const listData = await listRes.json();
       if (!listRes.ok || !listData.ok) {
@@ -88,7 +89,8 @@ export function YupooImport() {
       <div className="co-row">
         <div className="co-field">
           <label>Quantos importar</label>
-          <input type="number" min={1} max={200} value={limit} onChange={(e) => setLimit(Math.max(1, Number(e.target.value) || 1))} inputMode="numeric" />
+          <input type="number" min={1} max={5000} value={limit} onChange={(e) => setLimit(Math.max(1, Number(e.target.value) || 1))} inputMode="numeric" />
+          <span className="co-hint">Varre todas as páginas da categoria. Para tudo, use um número alto (ex.: 5000).</span>
         </div>
         <div className="co-field adm-active">
           <label>Publicar</label>
@@ -97,6 +99,14 @@ export function YupooImport() {
             <span>{active ? "Ativos na loja" : "Como rascunho (inativos)"}</span>
           </label>
         </div>
+      </div>
+
+      <div className="co-field adm-active">
+        <label>Filtrar times</label>
+        <label className="adm-switch">
+          <input type="checkbox" checked={onlyBra} onChange={(e) => setOnlyBra(e.target.checked)} />
+          <span>{onlyBra ? "Somente times do Brasileirão" : "Todos os times da categoria"}</span>
+        </label>
       </div>
 
       <button className="co-next" onClick={importar} disabled={running || !url.trim()}>
