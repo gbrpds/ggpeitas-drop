@@ -30,6 +30,8 @@ export function SearchFilters({
   tipoFacets,
   selectedTipos,
   sort,
+  basePath = "/busca",
+  hideCategory = false,
 }: {
   q: string;
   facets: { cat: string; count: number }[];
@@ -41,18 +43,21 @@ export function SearchFilters({
   tipoFacets: { tipo: string; count: number }[];
   selectedTipos: string[];
   sort: string;
+  basePath?: string;
+  hideCategory?: boolean;
 }) {
   const router = useRouter();
 
   const push = (s: Sel) => {
     const p = new URLSearchParams();
     if (q) p.set("q", q);
-    if (s.cats.length) p.set("cat", s.cats.join(","));
+    if (!hideCategory && s.cats.length) p.set("cat", s.cats.join(","));
     if (s.teams.length) p.set("team", s.teams.join(","));
     if (s.genders.length) p.set("gender", s.genders.join(","));
     if (s.tipos.length) p.set("tipo", s.tipos.join(","));
     if (s.sort && s.sort !== "relevancia") p.set("sort", s.sort);
-    router.push(`/busca?${p.toString()}`);
+    const qs = p.toString();
+    router.push(qs ? `${basePath}?${qs}` : basePath);
   };
 
   const current: Sel = {
@@ -91,24 +96,26 @@ export function SearchFilters({
         </div>
       )}
 
-      <div className="sf-block">
-        <h3>Categoria</h3>
-        {facets.length === 0 ? (
-          <p className="sf-empty">—</p>
-        ) : (
-          facets.map((f) => (
-            <label key={f.cat} className="sf-check">
-              <input
-                type="checkbox"
-                checked={selected.includes(f.cat)}
-                onChange={() => push({ ...current, cats: toggle(selected, f.cat) })}
-              />
-              <span>{CAT_LABELS[f.cat] ?? f.cat}</span>
-              <em>{f.count}</em>
-            </label>
-          ))
-        )}
-      </div>
+      {!hideCategory && (
+        <div className="sf-block">
+          <h3>Categoria</h3>
+          {facets.length === 0 ? (
+            <p className="sf-empty">—</p>
+          ) : (
+            facets.map((f) => (
+              <label key={f.cat} className="sf-check">
+                <input
+                  type="checkbox"
+                  checked={selected.includes(f.cat)}
+                  onChange={() => push({ ...current, cats: toggle(selected, f.cat) })}
+                />
+                <span>{CAT_LABELS[f.cat] ?? f.cat}</span>
+                <em>{f.count}</em>
+              </label>
+            ))
+          )}
+        </div>
+      )}
 
       {tipoFacets.length > 0 && (
         <div className="sf-block">

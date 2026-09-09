@@ -8,29 +8,13 @@ import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
 import { SearchFilters } from "@/components/search/SearchFilters";
+import { genderOf, modeloOf as tipoOf, GENDER_LABEL } from "@/lib/facets";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Busca — GG Peitas" };
 
 const norm = (s: string) =>
   s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
-
-/** Gênero deduzido do nome padronizado do produto. */
-function genderOf(name: string): "feminina" | "masculino" {
-  return /\(feminino\)|top cropped/i.test(name) ? "feminina" : "masculino";
-}
-/** Tipo/modelo deduzido do nome (para o filtro). */
-function tipoOf(name: string): string | null {
-  if (/manga longa/i.test(name)) return "Manga Longa";
-  if (/goleiro/i.test(name)) return "Goleiro";
-  if (/copa do mundo/i.test(name)) return "Copa do Mundo";
-  if (/top cropped/i.test(name)) return "Top Cropped";
-  if (/third/i.test(name)) return "Third";
-  if (/away/i.test(name)) return "Away";
-  if (/home/i.test(name)) return "Home";
-  return null;
-}
-const GENDER_LABEL: Record<string, string> = { masculino: "Masculino", feminina: "Feminina" };
 
 export default async function BuscaPage({
   searchParams,
