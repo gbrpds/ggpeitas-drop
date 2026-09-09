@@ -18,11 +18,20 @@ function decodeEntities(s: string): string {
 
 /**
  * Produtos que NÃO devem ser importados:
- *  - kits infantis ("Kids Kit")
- *  - versão jogador ("Player"/"Players") — vendemos só a Torcedor (Fan).
+ *  - kits infantis / kit / baby ("Kids", "Kit", "Baby Jersey")
+ *  - versão jogador ("Player"/"Players") — vendemos só a Torcedor (Fan)
+ *  - shorts/bermudas, jaquetas/corta-vento (Jacket/Windbreaker)
  */
 export function shouldSkipTitle(title: string): boolean {
-  return /\bkids?\b/i.test(title) || /\bplayers?\b/i.test(title);
+  return (
+    /\bkids?\b/i.test(title) ||
+    /\bkit\b/i.test(title) ||
+    /\bbaby\b/i.test(title) ||
+    /\bplayers?\b/i.test(title) ||
+    /\bshorts?\b/i.test(title) ||
+    /\bjacket\b/i.test(title) ||
+    /\bwindbreaker\b/i.test(title)
+  );
 }
 
 export type YupooAlbum = { id: string; title: string };
@@ -97,7 +106,8 @@ export function yupooTitleToProduct(rawTitle: string): ImportedProduct {
     .replace(/\s{2,}/g, " ")
     .trim();
 
-  const feminina = /\b(women|woman|female|feminin[oa]?|lady|girls?)\b/i.test(clean);
+  const cropTop = /\bcrop\s*top\b/i.test(clean);
+  const feminina = cropTop || /\b(women|woman|female|feminin[oa]?|lady|girls?)\b/i.test(clean);
   const infantil = /\b(kids?|infantil|youth|crian[çc]a)\b/i.test(clean);
   const mangaLonga = /\b(long\s*sleeve|manga\s*longa)\b/i.test(clean);
   const isRetro = /\bretro\b|\bretr[ôo]\b/i.test(clean);
@@ -119,7 +129,8 @@ export function yupooTitleToProduct(rawTitle: string): ImportedProduct {
 
   // TIPO — na ordem de prioridade dos padrões do fornecedor
   let tipo = "";
-  if (/\bgoalkeeper\b|\bgk\b/i.test(clean)) tipo = "Goleiro"; // ignora cor (GK-Purple etc.)
+  if (cropTop) tipo = "Top Cropped"; // cropped feminino (substitui Home/Away)
+  else if (/\bgoalkeeper\b|\bgk\b/i.test(clean)) tipo = "Goleiro"; // ignora cor (GK-Purple etc.)
   else if (/\bbrazil\s*edition\b|\bworld\s*cup\b|\bcopa do mundo\b/i.test(clean)) tipo = "Copa do Mundo";
   else if (/\bpre-?match\b/i.test(clean)) tipo = "Pré-Jogo";
   else if (/\btraining\b|\btreino\b/i.test(clean)) tipo = "Treino";
@@ -129,7 +140,8 @@ export function yupooTitleToProduct(rawTitle: string): ImportedProduct {
   else if (/\bspecial\b/i.test(clean)) tipo = "Edição Especial";
 
   const teamLabel = team ?? "Camisa";
-  const gender = infantil ? "" : feminina ? " (Feminino)" : " (Masculino)";
+  // Crop top e infantil não levam sufixo de gênero
+  const gender = infantil || cropTop ? "" : feminina ? " (Feminino)" : " (Masculino)";
   let name: string;
   if (isRetro) {
     name = `Camisa ${teamLabel} Retrô${year ? ` ${year}` : ""}`;
