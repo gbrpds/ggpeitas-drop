@@ -56,6 +56,8 @@ export default async function EditarProdutoPage({ params }: { params: Promise<{ 
                   active: row.active,
                   inStock: row.inStock,
                   promo3x2: row.promo3x2,
+                  feminina: row.feminina,
+                  infantil: row.infantil,
                 }}
               />
             </>

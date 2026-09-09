@@ -26,6 +26,8 @@ export type ProductInitial = {
   active: boolean;
   inStock: boolean;
   promo3x2: boolean;
+  feminina: boolean;
+  infantil: boolean;
 };
 
 const centsToStr = (c?: number | null) => (c ? (c / 100).toFixed(2).replace(".", ",") : "");
@@ -42,6 +44,8 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
   const [active, setActive] = useState(initial?.active ?? true);
   const [inStock, setInStock] = useState(initial?.inStock ?? true);
   const [promo3x2, setPromo3x2] = useState(initial?.promo3x2 ?? false);
+  const [feminina, setFeminina] = useState(initial?.feminina ?? false);
+  const [infantil, setInfantil] = useState(initial?.infantil ?? false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,6 +101,8 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
           active,
           inStock,
           promo3x2,
+          feminina,
+          infantil,
         }),
       });
       const data = await res.json();
@@ -145,11 +151,26 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
           <input value={team} onChange={(e) => setTeam(e.target.value)} placeholder="Ex: Flamengo" />
         </div>
         <div className="co-field">
-          <label>Categoria (tag)</label>
+          <label>Categoria / coleção</label>
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="adm-select">
             {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
         </div>
+      </div>
+
+      <div className="co-field">
+        <label>Aparecer também em</label>
+        <div className="adm-crosslist">
+          <label className="adm-check">
+            <input type="checkbox" checked={feminina} onChange={(e) => setFeminina(e.target.checked)} />
+            <span>Feminina</span>
+          </label>
+          <label className="adm-check">
+            <input type="checkbox" checked={infantil} onChange={(e) => setInfantil(e.target.checked)} />
+            <span>Conjunto Infantil</span>
+          </label>
+        </div>
+        <span className="co-hint">Ex.: uma camisa Feminina do Flamengo fica no Brasileirão e também em Feminina.</span>
       </div>
 
       <div className="co-row">

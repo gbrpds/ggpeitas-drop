@@ -107,11 +107,18 @@ export async function getHomeSections(): Promise<ProductSection[]> {
     if (!rows.length) return mockSections; // nenhum produto cadastrado → demo
 
     const byCat = new Map<string, Product[]>();
+    const pushTo = (cat: string, p: Product) => {
+      const arr = byCat.get(cat) ?? [];
+      arr.push(p);
+      byCat.set(cat, arr);
+    };
     for (const r of rows) {
       if (!r.active) continue; // só produtos ativos aparecem na loja
-      const arr = byCat.get(r.category) ?? [];
-      arr.push(mapRow(r));
-      byCat.set(r.category, arr);
+      const p = mapRow(r);
+      pushTo(r.category, p);
+      // flags de público convivem com a coleção (aparece também em Feminina/Infantil)
+      if (r.feminina && r.category !== "feminina") pushTo("feminina", p);
+      if (r.infantil && r.category !== "infantil") pushTo("infantil", p);
     }
 
     const cats = [...byCat.keys()].sort((a, b) => {
@@ -136,7 +143,13 @@ export async function getCategoryProducts(cat: string): Promise<Product[]> {
   try {
     const rows = await allRows();
     if (rows.length) {
-      return withRatings(rows.filter((r) => r.active && r.category === cat).map(mapRow));
+      const match = (r: Row) => {
+        if (!r.active) return false;
+        if (cat === "feminina") return r.category === "feminina" || r.feminina;
+        if (cat === "infantil") return r.category === "infantil" || r.infantil;
+        return r.category === cat;
+      };
+      return withRatings(rows.filter(match).map(mapRow));
     }
   } catch {
     /* cai no mock */

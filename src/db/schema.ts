@@ -73,6 +73,9 @@ export const products = pgTable("products", {
   active: boolean("active").notNull().default(true), // aparece na loja
   inStock: boolean("in_stock").notNull().default(true), // dropshipping: disponível p/ compra
   promo3x2: boolean("promo3x2").notNull().default(false), // participa do "Leve 3, Pague 2"
+  // público/modelagem — convivem com a coleção (ex.: Brasileirão + Feminina)
+  feminina: boolean("feminina").notNull().default(false),
+  infantil: boolean("infantil").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

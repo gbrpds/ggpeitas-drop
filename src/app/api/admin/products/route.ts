@@ -18,6 +18,8 @@ const schema = z.object({
   active: z.boolean().default(true),
   inStock: z.boolean().default(true),
   promo3x2: z.boolean().default(false),
+  feminina: z.boolean().default(false),
+  infantil: z.boolean().default(false),
 });
 
 export async function POST(req: Request) {

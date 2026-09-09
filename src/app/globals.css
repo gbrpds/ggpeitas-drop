@@ -879,6 +879,9 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .adm-upload-btn:hover { border-color:var(--green); color:var(--green-deep); }
 .adm-switch { display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:.9rem; cursor:pointer; }
 .adm-switch input { width:18px; height:18px; accent-color:var(--green); }
+.adm-crosslist { display:flex; gap:18px; flex-wrap:wrap; margin:2px 0 4px; }
+.adm-check { display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:.9rem; cursor:pointer; }
+.adm-check input { width:18px; height:18px; accent-color:var(--green); }
 
 /* escudos dos times (admin) */
 .adm-hint { color:var(--muted); font-size:.86rem; margin:0 0 16px; }
