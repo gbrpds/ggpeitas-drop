@@ -9,7 +9,7 @@ export const CATEGORIES = [
   { value: "futebol", label: "Futebol" },
   { value: "selecoes", label: "Seleções" },
   { value: "feminina", label: "Feminina" },
-  { value: "infantil", label: "Conjunto Infantil" },
+  { value: "infantil", label: "Conjuntos Esportivos" },
   { value: "retro", label: "Retrô" },
   { value: "brasileirao", label: "Brasileirão" },
   { value: "europa", label: "Europa" },
@@ -167,7 +167,7 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
           </label>
           <label className="adm-check">
             <input type="checkbox" checked={infantil} onChange={(e) => setInfantil(e.target.checked)} />
-            <span>Conjunto Infantil</span>
+            <span>Conjuntos Esportivos</span>
           </label>
         </div>
         <span className="co-hint">Ex.: uma camisa Feminina do Flamengo fica no Brasileirão e também em Feminina.</span>

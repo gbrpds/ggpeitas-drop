@@ -107,7 +107,7 @@ export const categories: Category[] = [
   { name: "Futebol", href: "/categoria/futebol", colors: ["#0f8a3d", "#ffc400", "#fff"] },
   { name: "Seleções", href: "/categoria/selecoes", colors: ["#ffc400", "#0f8a3d", "#0f8a3d"] },
   { name: "Feminina", href: "/categoria/feminina", colors: ["#c8102e", "#fff", "#fff"] },
-  { name: "Infantil", href: "/categoria/infantil", colors: ["#0d1b4b", "#c8102e", "#fff"] },
+  { name: "Conjuntos Esportivos", href: "/categoria/infantil", colors: ["#0d1b4b", "#c8102e", "#fff"] },
   { name: "Retrô", href: "/categoria/retro", colors: ["#a50044", "#004d98", "#ffc400"] },
   { name: "Brasileirão", href: "/categoria/brasileirao", colors: ["#c8102e", "#111", "#fff"] },
   { name: "Europa", href: "/categoria/europa", colors: ["#6caee0", "#0a1a4f", "#fff"] },

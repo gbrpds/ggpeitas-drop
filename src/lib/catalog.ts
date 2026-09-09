@@ -56,7 +56,7 @@ const CATEGORY_META: Record<string, { title: string; emoji: string; href: string
   selecoes: { title: "Seleções", emoji: "", href: "/categoria/selecoes" },
   futebol: { title: "Futebol", emoji: "", href: "/categoria/futebol" },
   feminina: { title: "Feminina", emoji: "", href: "/categoria/feminina" },
-  infantil: { title: "Conjunto Infantil", emoji: "", href: "/categoria/infantil" },
+  infantil: { title: "Conjuntos Esportivos", emoji: "", href: "/categoria/infantil" },
   retro: { title: "Retrô Lendárias", emoji: "", href: "/categoria/retro" },
 };
 

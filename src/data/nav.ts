@@ -70,6 +70,6 @@ export const navItems: NavItem[] = [
     ],
   },
   { label: "Feminina", href: "/categoria/feminina" },
-  { label: "Conjunto Infantil", href: "/categoria/infantil" },
+  { label: "Conjuntos Esportivos", href: "/categoria/infantil" },
   { label: "Retrô", href: "/categoria/retro" },
 ];
