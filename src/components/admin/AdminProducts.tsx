@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Trash2, Pencil, Search } from "lucide-react";
 import { brl } from "@/lib/format";
@@ -26,6 +26,28 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [team, setTeam] = useState("");
   const [q, setQ] = useState("");
+
+  // mantém o filtro ao editar uma camisa e voltar (persiste entre navegações)
+  const firstSave = useRef(true);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("gg-admin-filter");
+      if (raw) {
+        const f = JSON.parse(raw);
+        if (f.team) setTeam(f.team);
+        if (f.q) setQ(f.q);
+      }
+    } catch {}
+  }, []);
+  useEffect(() => {
+    if (firstSave.current) {
+      firstSave.current = false;
+      return;
+    }
+    try {
+      localStorage.setItem("gg-admin-filter", JSON.stringify({ team, q }));
+    } catch {}
+  }, [team, q]);
 
   const teams = useMemo(() => {
     const set = new Set<string>();
