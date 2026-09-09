@@ -21,8 +21,8 @@ function CardMedia({ images }: { images: string[] }) {
       <img src={images[i]} alt="" />
       {images.length > 1 && (
         <>
-          <button className="apc-nav prev" onClick={go(-1)} aria-label="Foto anterior"><ChevronLeft size={18} /></button>
-          <button className="apc-nav next" onClick={go(1)} aria-label="Próxima foto"><ChevronRight size={18} /></button>
+          <button type="button" className="apc-nav prev" onClick={go(-1)} aria-label="Foto anterior"><ChevronLeft size={18} /></button>
+          <button type="button" className="apc-nav next" onClick={go(1)} aria-label="Próxima foto"><ChevronRight size={18} /></button>
           <span className="apc-count">{i + 1}/{images.length}</span>
         </>
       )}
@@ -43,6 +43,48 @@ type Row = {
 };
 
 const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
+/** Seletor de time com busca por digitação (combobox). */
+function TeamCombo({ teams, value, total, onChange }: { teams: string[]; value: string; total: number; onChange: (t: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  const list = teams.filter((t) => norm(t).includes(norm(query)));
+
+  return (
+    <div className="adm-combo" ref={ref}>
+      <input
+        className="adm-select adm-combo-input"
+        value={open ? query : value}
+        placeholder={value ? value : `Todos os times (${total})`}
+        onFocus={() => { setOpen(true); setQuery(""); }}
+        onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+      />
+      {open && (
+        <div className="adm-combo-list">
+          <button type="button" className="adm-combo-opt" onClick={() => { onChange(""); setOpen(false); }}>
+            Todos os times ({total})
+          </button>
+          {list.map((t) => (
+            <button type="button" key={t} className={`adm-combo-opt${t === value ? " on" : ""}`} onClick={() => { onChange(t); setOpen(false); }}>
+              {t}
+            </button>
+          ))}
+          {list.length === 0 && <div className="adm-combo-empty">Nenhum time</div>}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function AdminProducts({ rows }: { rows: Row[] }) {
   const [items, setItems] = useState<Row[]>(rows);
@@ -132,12 +174,7 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
           <Search size={16} />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nome ou time…" />
         </div>
-        <select value={team} onChange={(e) => setTeam(e.target.value)} className="adm-select">
-          <option value="">Todos os times ({items.length})</option>
-          {teams.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
+        <TeamCombo teams={teams} value={team} total={items.length} onChange={setTeam} />
         {(team || q) && (
           <button className="adm-filter-clear" onClick={() => { setTeam(""); setQ(""); }}>Limpar</button>
         )}

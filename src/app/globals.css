@@ -920,6 +920,8 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .apc-media:hover .apc-nav { opacity:1; }
 .apc-nav.prev { left:8px; } .apc-nav.next { right:8px; }
 .apc-nav:hover { color:var(--green-deep); }
+/* mantém a centralização no clique (a regra global de :active trocava o transform) */
+.apc-nav:active { transform:translateY(-50%) scale(.94); }
 .apc-count { position:absolute; bottom:8px; left:8px; background:rgba(0,0,0,.6); color:#fff; font-size:.68rem;
   font-weight:700; padding:2px 7px; border-radius:20px; }
 @media (hover:none){ .apc-nav { opacity:1; } }
@@ -980,6 +982,16 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
   font-weight:600; font-size:.85rem; cursor:pointer; }
 .adm-filter-clear:hover { color:var(--ink); border-color:var(--muted); }
 .adm-filter-count { color:var(--muted); font-size:.85rem; margin-left:auto; }
+/* combobox de time (busca digitando) */
+.adm-combo { position:relative; min-width:220px; }
+.adm-combo-input { width:100%; }
+.adm-combo-list { position:absolute; z-index:30; top:calc(100% + 4px); left:0; right:0; max-height:280px; overflow-y:auto;
+  background:var(--surface); border:1px solid var(--line); border-radius:10px; box-shadow:0 12px 30px rgba(0,0,0,.16); padding:4px; }
+.adm-combo-opt { display:block; width:100%; text-align:left; background:none; border:0; padding:9px 11px; border-radius:8px;
+  font-size:.9rem; color:var(--ink); cursor:pointer; }
+.adm-combo-opt:hover { background:var(--ground); }
+.adm-combo-opt.on { color:var(--green-deep); font-weight:700; }
+.adm-combo-empty { padding:10px 11px; color:var(--muted); font-size:.85rem; }
 .adm-crosslist { display:flex; gap:18px; flex-wrap:wrap; margin:2px 0 4px; }
 .adm-check { display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:.9rem; cursor:pointer; }
 .adm-check input { width:18px; height:18px; accent-color:var(--green); }
