@@ -54,15 +54,25 @@ export function AdminProductForm({ id, initial }: { id?: string; initial?: Produ
     team: initial?.team ?? "",
     category: initial?.category ?? "brasileirao",
     feminina: initial?.feminina ?? false,
+    price: "189,90",
+    compare: "269,90",
   });
 
+  // auto-preenche a partir do título — apenas ao CRIAR (na edição não mexe)
   function onName(v: string) {
     setName(v);
+    if (id) return;
     const det = detectFromTitle(v);
     const a = autoRef.current;
     if (team === a.team) { setTeam(det.team); a.team = det.team; }
     if (category === a.category) { setCategory(det.category); a.category = det.category; }
     if (feminina === a.feminina) { setFeminina(det.feminina); a.feminina = det.feminina; }
+    // preços padrão: Retrô/Manga Longa → 229,90 (de 299,90); demais → 189,90 (de 269,90)
+    const special = det.category === "retro" || det.mangaLonga;
+    const dPrice = special ? "229,90" : "189,90";
+    const dCompare = special ? "299,90" : "269,90";
+    if (price === a.price) { setPrice(dPrice); a.price = dPrice; }
+    if (compare === a.compare) { setCompare(dCompare); a.compare = dCompare; }
   }
 
   const reais = (v: string) => Math.round(parseFloat(v.replace(",", ".")) * 100);

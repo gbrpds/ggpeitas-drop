@@ -17,7 +17,7 @@ function teamMap(): Record<string, { name: string; category: string }> {
   return map;
 }
 
-export type TitleDetect = { team: string; category: string; feminina: boolean };
+export type TitleDetect = { team: string; category: string; feminina: boolean; mangaLonga: boolean };
 
 /**
  * Deduz time / categoria / feminina a partir do título padrão:
@@ -30,6 +30,7 @@ export function detectFromTitle(title: string): TitleDetect {
   const t = title.trim();
   const feminina = /femin/i.test(t);
   const isRetro = /retr[ôo]/i.test(t);
+  const mangaLonga = /manga\s*longa/i.test(t);
 
   // tira o prefixo "Camisa " e o termo "Retrô", depois isola o time
   // (até o ano, um parêntese ou o traço). Sem depender de \b em acento.
@@ -45,5 +46,5 @@ export function detectFromTitle(title: string): TitleDetect {
   // Retrô é uma coleção própria e tem prioridade; senão, a coleção do time
   const category = isRetro ? "retro" : hit?.category ?? "brasileirao";
 
-  return { team, category, feminina };
+  return { team, category, feminina, mangaLonga };
 }
