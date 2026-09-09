@@ -65,7 +65,8 @@ export async function priceOrder(items: ClientItem[]): Promise<{
       throw new PricingError("Quantidade inválida.");
     }
     const persLabel = personalizationLabel(i.customName, i.customNumber);
-    const withSponsors = !!i.sponsors;
+    // retrôs já vêm com patrocínio — nunca cobra a taxa, mesmo se o cliente enviar
+    const withSponsors = !!i.sponsors && p.category !== "retro";
     // +R$20 se personalizado, +R$10 com patrocínios
     const unitCents = p.priceCents + (persLabel ? CUSTOM_FEE_CENTS : 0) + (withSponsors ? SPONSOR_FEE_CENTS : 0);
     grossCents += unitCents * i.qty; // inteiro, em centavos — sem float

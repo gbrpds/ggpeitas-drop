@@ -165,14 +165,16 @@ export function BuyBox({ product, summary, gender }: { product: Product; summary
         )}
       </div>
 
-      {/* Patrocínios */}
-      <div className="perso">
-        <label className="perso-toggle">
-          <input type="checkbox" checked={sponsors} onChange={(e) => setSponsors(e.target.checked)} />
-          <span><Shirt size={16} /> Incluir patrocínios na camisa</span>
-          <b className="perso-fee">+ {brl(SPONSOR_FEE)}</b>
-        </label>
-      </div>
+      {/* Patrocínios — retrôs já vêm com patrocínio, não mostra a opção */}
+      {product.category !== "retro" && (
+        <div className="perso">
+          <label className="perso-toggle">
+            <input type="checkbox" checked={sponsors} onChange={(e) => setSponsors(e.target.checked)} />
+            <span><Shirt size={16} /> Incluir patrocínios na camisa</span>
+            <b className="perso-fee">+ {brl(SPONSOR_FEE)}</b>
+          </label>
+        </div>
+      )}
 
       {/* Quantidade */}
       <div className="qtyrow">
