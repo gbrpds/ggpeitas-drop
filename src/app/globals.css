@@ -343,8 +343,8 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 @keyframes sh { 0% { left:-100%; } 100% { left:150%; } }
 
 /* botão flutuante do time (canto inferior esquerdo) */
-.team-float { position:fixed; left:18px; bottom:18px; z-index:80; display:inline-flex; align-items:center; gap:10px;
-  background:#111; color:#f0f0f0; border:0; border-radius:50px; padding:8px 16px 8px 8px; font-weight:700; font-size:.82rem;
+.team-float { position:fixed; left:18px; bottom:18px; z-index:80; display:inline-flex; align-items:center; gap:0;
+  background:#111; color:#f0f0f0; border:0; border-radius:50px; padding:8px; font-weight:700; font-size:.82rem;
   box-shadow:0 10px 28px rgba(0,0,0,.35); transition:transform .2s; }
 .team-float:hover { transform:scale(1.04); }
 .team-float-badge { width:42px; height:42px; border-radius:50%; background:#fff; display:grid; place-items:center; flex:none; overflow:hidden; }
@@ -352,7 +352,10 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .team-float-badge svg.jersey { width:64%; }
 .team-float:not(.has-team) .team-float-badge { background:rgba(255,255,255,.12); color:#ff6b81; }
 .team-float:not(.has-team) .team-float-badge svg { width:22px; height:22px; }
-.team-float-label { max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* recolhido: só o coração/escudo. No hover, expande o texto. */
+.team-float-label { max-width:0; opacity:0; overflow:hidden; white-space:nowrap; margin-left:0;
+  transition:max-width .28s ease, opacity .2s ease, margin .28s ease, padding .28s ease; }
+.team-float:hover .team-float-label { max-width:170px; opacity:1; margin-left:8px; padding-right:8px; }
 /* no celular o botão flutuante atrapalha — some (usa o link no menu) */
 @media (max-width:560px){ .team-float { display:none; } }
 

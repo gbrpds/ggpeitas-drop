@@ -14,12 +14,10 @@ function layout(title: string, body: string): string {
   return `
   <div style="margin:0;padding:0;background:#f2f2ef;font-family:Arial,Helvetica,sans-serif;color:${INK};">
     <div style="max-width:560px;margin:0 auto;padding:24px 16px;">
-      <div style="background:${GREEN};border-radius:14px;padding:24px 16px;text-align:center;margin-bottom:16px;">
-        <div style="display:inline-block;background:#111111;border-radius:16px;padding:12px 16px;box-shadow:0 4px 14px rgba(0,0,0,.25);">
-          <img src="${baseUrl()}/logo.png" alt="GG Peitas" width="82"
-            style="display:block;width:82px;max-width:82px;height:auto;border:0;outline:none;text-decoration:none;" />
-        </div>
-        <div style="font-size:11px;color:#dff0e6;letter-spacing:3px;margin-top:12px;font-weight:700;">CAMISAS PREMIUM</div>
+      <div style="background:#0d0d0d;background-image:radial-gradient(circle at 50% 45%, #15271c 0%, #0d0d0d 72%);border-radius:14px;padding:30px 16px;text-align:center;margin-bottom:16px;">
+        <img src="${baseUrl()}/logo.png" alt="GG Peitas" width="96"
+          style="display:inline-block;width:96px;max-width:96px;height:auto;border:0;outline:none;text-decoration:none;" />
+        <div style="font-size:11px;color:#7bd39b;letter-spacing:3px;margin-top:12px;font-weight:700;">CAMISAS PREMIUM</div>
       </div>
       <div style="background:#fff;border:1px solid #e4e4de;border-radius:14px;padding:26px 24px;">
         <h1 style="margin:0 0 14px;font-size:19px;color:${INK};">${title}</h1>
