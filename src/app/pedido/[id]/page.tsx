@@ -9,6 +9,7 @@ import { MainNav } from "@/components/MainNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { OrderView } from "@/components/order/OrderView";
+import { ClearCart } from "@/components/cart/ClearCart";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Pedido — GG Peitas" };
@@ -50,12 +51,16 @@ export default async function PedidoPage({
     (token ? await getOrderByToken(id, token) : null) ??
     (paidHere ? await getOrderById(id) : null);
 
+  // pagamento recém-confirmado no retorno → pode esvaziar o carrinho
+  const justPaid = paidHere && !!order && effectiveStatus(order) === "approved";
+
   return (
     <>
       <Announce />
       <Header />
       <MainNav />
       <main>
+        {justPaid && <ClearCart />}
         <div className="wrap checkout-wrap">
           {!order ? (
             <div className="cart-empty">

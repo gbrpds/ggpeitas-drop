@@ -97,6 +97,7 @@ export function CheckoutClient({
         const s = await fetch(`/api/checkout/status?paymentId=${pix.paymentId}`).then((r) => r.json());
         if (s.status === "approved" && pix.orderId) {
           clearInterval(poll);
+          clear(); // só esvazia o carrinho quando o pagamento é confirmado
           const t = pix.accessToken ? `?t=${pix.accessToken}` : "";
           router.push(`/pedido/${pix.orderId}${t}`);
         }
@@ -271,7 +272,7 @@ export function CheckoutClient({
       if (!res.ok) {
         setError(data.error ?? "Não foi possível gerar o PIX.");
       } else {
-        clear(); // pedido gerado → esvazia o carrinho
+        // não esvazia aqui: o carrinho é mantido até o pagamento ser confirmado
         setPix({
           qrCodeBase64: data.qrCodeBase64,
           qrCode: data.qrCode,
@@ -302,7 +303,7 @@ export function CheckoutClient({
         setError(data.error ?? "Não foi possível abrir o checkout do Mercado Pago.");
         return;
       }
-      clear(); // pedido já registrado (pendente) → esvazia o carrinho
+      // mantém o carrinho até o pagamento ser confirmado (se abandonar, não perde)
       window.location.href = data.initPoint; // vai para o ambiente do Mercado Pago
     } catch {
       setError("Falha de conexão ao abrir o checkout.");
