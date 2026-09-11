@@ -10,6 +10,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { HomeInitial } from "@/components/HomeInitial";
 import { CollectionsCarousel } from "@/components/CollectionsCarousel";
+import { LeaguesCarousel } from "@/components/LeaguesCarousel";
 import { getHomeSections, getBestSellers } from "@/lib/catalog";
 
 // ISR: a home é servida do cache (instantânea, sem esperar o banco) e revalida
@@ -40,6 +41,9 @@ export default async function Home() {
 
         {/* Coleções por time (carrossel) logo abaixo da primeira seção */}
         <CollectionsCarousel />
+
+        {/* Coleções por liga/região (cards largos) */}
+        <LeaguesCarousel />
 
         {/* A faixa de benefícios vem depois da primeira seção de produtos */}
         <TrustStrip />
