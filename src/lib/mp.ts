@@ -4,6 +4,7 @@ import { orders } from "@/db/schema";
 import { sendEmail } from "@/lib/email";
 import { orderConfirmedEmail, orderCancelledEmail } from "@/lib/email-templates";
 import { baseUrl } from "@/lib/site-url";
+import { notifyNewSale } from "@/lib/notify";
 
 const MP_BASE = "https://api.mercadopago.com";
 
@@ -56,6 +57,14 @@ export async function syncPaymentStatus(
       // envia a confirmação SÓ na transição (evita duplicar no polling/webhook)
       for (const o of changed) {
         const c = (o.customer as Customer) ?? {};
+        // notifica o dono (push no celular via ntfy)
+        await notifyNewSale({
+          number: o.number,
+          totalCents: o.totalCents,
+          customerName: c.name,
+          itemsCount: ((o.items as OrderItem[]) ?? []).reduce((n, i) => n + (i.qty ?? 1), 0),
+          url: `${baseUrl()}/admin/pedidos`,
+        });
         if (!c.email) continue;
         const tpl = orderConfirmedEmail({
           number: o.number,
