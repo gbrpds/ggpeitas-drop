@@ -167,7 +167,7 @@ nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(
 .sec-title { font-family:var(--disp); font-weight:900; font-size:clamp(1.15rem,2.6vw,1.55rem);
   text-transform:uppercase; letter-spacing:.01em; margin:0 0 16px; display:inline-flex; align-items:center; gap:8px;
   padding-bottom:7px; border-bottom:2px solid var(--green); }
-.cats { display:flex; gap:14px; overflow-x:auto; overflow-y:hidden; padding:14px 4px 16px; scroll-snap-type:x mandatory; }
+.cats { display:flex; gap:14px; overflow-x:auto; overflow-y:hidden; padding:14px 4px 16px; scroll-snap-type:x proximity; }
 .cats::-webkit-scrollbar { height:6px; } .cats::-webkit-scrollbar-thumb { background:var(--line); border-radius:6px; }
 .cat { flex:0 0 auto; width:104px; text-align:center; scroll-snap-align:start; }
 .cat .circ { width:104px; height:104px; border-radius:50%; background:var(--surface); border:1px solid var(--line);
@@ -186,8 +186,8 @@ nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(
 .see { font-family:var(--disp); font-weight:800; text-transform:uppercase; font-size:.74rem; letter-spacing:.05em;
   color:var(--green-deep); display:flex; align-items:center; gap:6px; white-space:nowrap; }
 .see svg { width:14px; height:14px; }
-.car { display:flex; gap:14px; overflow-x:auto; overflow-y:hidden; padding:12px 2px 14px; scroll-snap-type:x mandatory;
-  scrollbar-width:none; -ms-overflow-style:none; }
+.car { display:flex; gap:14px; overflow-x:auto; overflow-y:hidden; padding:12px 2px 14px; scroll-snap-type:x proximity;
+  scroll-behavior:smooth; scrollbar-width:none; -ms-overflow-style:none; }
 .car::-webkit-scrollbar { display:none; }
 
 /* controles do carrossel (setas + barrinha) */
@@ -973,7 +973,7 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .col-arrows button { width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--card,#fff);
   color:var(--ink); display:grid; place-items:center; cursor:pointer; transition:background .15s, border-color .15s; }
 .col-arrows button:hover { border-color:var(--green); color:var(--green-deep); }
-.col-track { display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding:4px 2px 10px;
+.col-track { display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x proximity; scroll-behavior:smooth; padding:4px 2px 10px;
   scrollbar-width:none; -ms-overflow-style:none; }
 .col-track::-webkit-scrollbar { display:none; }
 .col-card { position:relative; flex:0 0 auto; width:214px; height:290px; border-radius:16px; overflow:hidden;
