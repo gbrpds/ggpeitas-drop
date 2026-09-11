@@ -2,7 +2,6 @@ import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
 import { Banner } from "@/components/Banner";
-import { TrustStrip } from "@/components/TrustStrip";
 import { ProductCarousel } from "@/components/ProductCarousel";
 import { PromoBanner } from "@/components/PromoBanner";
 import { FooterTrust } from "@/components/FooterTrust";
@@ -39,17 +38,17 @@ export default async function Home() {
         {/* Abaixo do banner: "Mais vendidas" (ou o time do coração, se escolhido) */}
         <HomeInitial firstSection={topSection} />
 
-        {/* Coleções por time (carrossel) logo abaixo da primeira seção */}
+        {/* Coleções por time (carrossel) */}
         <CollectionsCarousel />
+
+        {/* Uma seção de produtos entre as duas coleções (Gigantes do Brasileirão) */}
+        {first && <ProductCarousel section={first} />}
 
         {/* Coleções por liga/região (cards largos) */}
         <LeaguesCarousel />
 
-        {/* A faixa de benefícios vem depois da primeira seção de produtos */}
-        <TrustStrip />
-
         <PromoBanner />
-        {sections.map((section) => (
+        {sections.slice(1).map((section) => (
           <ProductCarousel key={section.id} section={section} />
         ))}
       </main>
