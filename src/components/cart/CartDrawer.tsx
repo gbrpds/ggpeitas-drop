@@ -79,6 +79,18 @@ export function CartDrawer() {
   const total = subtotal - discount;
   const FRETE_MIN = 299;
 
+  // quais unidades saem grátis (Leve 3, Pague 2): as mais baratas (preço base)
+  const freeById: Record<string, number> = {};
+  const units: { id: string; base: number }[] = [];
+  for (const i of list) {
+    if (!i.promo) continue;
+    const base = itemBasePrice(i);
+    for (let k = 0; k < i.qty; k++) units.push({ id: i.id, base });
+  }
+  units.sort((a, b) => a.base - b.base);
+  const freeCount = Math.floor(units.length / 3);
+  for (let k = 0; k < freeCount; k++) freeById[units[k].id] = (freeById[units[k].id] ?? 0) + 1;
+
   return (
     <>
       <div className={`cd-scrim${open ? " open" : ""}`} onClick={close} />
@@ -120,7 +132,11 @@ export function CartDrawer() {
                 </div>
               )}
 
-              {list.map((i) => (
+              {list.map((i) => {
+                const freeN = freeById[i.id] ?? 0;
+                const originalLine = i.price * i.qty;
+                const lineNow = originalLine - freeN * itemBasePrice(i);
+                return (
                 <div className="cd-item" key={i.id}>
                   <div className="cd-item-media">
                     {i.image ? (
@@ -140,17 +156,28 @@ export function CartDrawer() {
                     {(i.size || i.version) && (
                       <span className="cd-item-var">{[i.size, i.version].filter(Boolean).join(" · ")}</span>
                     )}
+                    {freeN > 0 && (
+                      <span className="cd-item-free-tag">🎁 {freeN > 1 ? `${freeN} grátis` : "Grátis"} · Leve 3, Pague 2</span>
+                    )}
                     <div className="cd-item-bottom">
                       <div className="cd-qtybox">
                         <button onClick={() => setQty(i.id, i.qty - 1)} aria-label="Diminuir"><Minus size={14} /></button>
                         <span>{i.qty}</span>
                         <button onClick={() => setQty(i.id, i.qty + 1)} aria-label="Aumentar"><Plus size={14} /></button>
                       </div>
-                      <b className="cd-item-price">{brl(i.price * i.qty)}</b>
+                      {freeN > 0 ? (
+                        <b className="cd-item-price">
+                          <s>{brl(originalLine)}</s>{" "}
+                          {lineNow <= 0 ? <span className="free">R$ 0,00</span> : brl(lineNow)}
+                        </b>
+                      ) : (
+                        <b className="cd-item-price">{brl(originalLine)}</b>
+                      )}
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="cd-foot">
