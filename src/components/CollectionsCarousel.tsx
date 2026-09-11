@@ -30,7 +30,7 @@ export function CollectionsCarousel() {
   if (!teams || teams.length === 0) return null;
 
   return (
-    <Carousel title="Coleções" trackClassName="col-track">
+    <Carousel title="Coleções Brasileiras" trackClassName="col-track">
       {teams.map((t) => {
         const c0 = t.colors?.[0] ?? "#0f8a3d";
         const c1 = t.colors?.[1] ?? t.colors?.[0] ?? "#0b6e30";
