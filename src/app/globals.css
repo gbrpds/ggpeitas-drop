@@ -781,7 +781,9 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .order-body { display:flex; align-items:baseline; justify-content:space-between; gap:14px; margin-top:10px; }
 .order-items { font-size:.84rem; color:var(--muted); line-height:1.4; }
 .order-total { font-family:var(--disp); font-weight:900; color:var(--price); font-size:1.1rem; white-space:nowrap; }
-.order-foot { margin-top:10px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.order-foot { margin-top:10px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.order-acts { display:flex; align-items:center; gap:8px; margin-left:auto; flex-wrap:wrap; }
+@media (max-width:560px){ .order-acts { width:100%; margin-left:0; } .order-acts .wa-btn { flex:1; justify-content:center; } }
 .order-pay { font-size:.74rem; color:var(--muted); background:var(--ground); border:1px solid var(--line);
   padding:3px 9px; border-radius:6px; }
 .order-action { font-family:var(--disp); font-weight:800; text-transform:uppercase; font-size:.74rem;

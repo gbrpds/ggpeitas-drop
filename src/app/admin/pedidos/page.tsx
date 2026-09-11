@@ -142,24 +142,26 @@ export default async function AdminPedidosPage({
                         </div>
                         <div className="order-foot">
                           <span className="order-pay">{o.paymentMethod === "pix" ? "PIX" : o.paymentMethod === "boleto" ? "Boleto" : "Cartão"}</span>
-                          {c.phone && (
-                            <a className="wa-btn" href={waLink(c.phone)} target="_blank" rel="noopener">WhatsApp cliente</a>
-                          )}
-                          {o.status === "approved" && SUPPLIER_WA && (
-                            <a
-                              className="wa-btn supplier"
-                              href={waLinkMsg(SUPPLIER_WA, supplierOrderMessage({
-                                number: o.number,
-                                items: (o.items as Item[]) ?? [],
-                                customer: c,
-                                shipping: (o.shipping as { cep?: string; rua?: string; numero?: string; bairro?: string; cidade?: string; uf?: string }) ?? {},
-                              }, imageOf))}
-                              target="_blank"
-                              rel="noopener"
-                            >
-                              Enviar ao fornecedor
-                            </a>
-                          )}
+                          <div className="order-acts">
+                            {c.phone && (
+                              <a className="wa-btn" href={waLink(c.phone)} target="_blank" rel="noopener">WhatsApp cliente</a>
+                            )}
+                            {o.status === "approved" && SUPPLIER_WA && (
+                              <a
+                                className="wa-btn supplier"
+                                href={waLinkMsg(SUPPLIER_WA, supplierOrderMessage({
+                                  number: o.number,
+                                  items: (o.items as Item[]) ?? [],
+                                  customer: c,
+                                  shipping: (o.shipping as { cep?: string; rua?: string; numero?: string; bairro?: string; cidade?: string; uf?: string }) ?? {},
+                                }, imageOf))}
+                                target="_blank"
+                                rel="noopener"
+                              >
+                                Enviar ao fornecedor
+                              </a>
+                            )}
+                          </div>
                         </div>
                         {o.status === "approved" && (
                           <AdminOrderTracking
