@@ -61,6 +61,17 @@ const CATEGORY_META: Record<string, { title: string; emoji: string; href: string
 
 const ORDER = ["brasileirao", "europa", "selecoes", "feminina", "infantil", "retro"];
 
+/** Chave de time robusta (sem acento, espaço ou hífen). */
+const teamKey = (s?: string | null) =>
+  (s ?? "").normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/** "Gigantes do Brasileirão": só estes times entram na vitrine/coleção. */
+const GIGANTES = new Set([
+  "internacional", "gremio", "cruzeiro", "atleticomg", "atleticomineiro", "flamengo",
+  "fluminense", "santos", "corinthians", "palmeiras", "botafogo",
+]);
+const isGigante = (team?: string | null) => GIGANTES.has(teamKey(team));
+
 type Row = typeof products.$inferSelect;
 
 function mapRow(r: Row): Product {
@@ -179,7 +190,8 @@ export async function getHomeSections(): Promise<ProductSection[]> {
     for (const r of rows) {
       if (!r.active) continue; // só produtos ativos aparecem na loja
       const p = mapRow(r);
-      pushTo(r.category, p);
+      // "Gigantes do Brasileirão": só os times gigantes entram nessa vitrine
+      if (r.category !== "brasileirao" || isGigante(r.team)) pushTo(r.category, p);
       // flags de público convivem com a coleção (aparece também em Feminina/Infantil)
       if (r.feminina && r.category !== "feminina") pushTo("feminina", p);
       if (r.infantil && r.category !== "infantil") pushTo("infantil", p);
@@ -211,6 +223,8 @@ export async function getCategoryProducts(cat: string): Promise<Product[]> {
         if (!r.active) return false;
         if (cat === "feminina") return r.category === "feminina" || r.feminina;
         if (cat === "infantil") return r.category === "infantil" || r.infantil;
+        // Gigantes do Brasileirão: só os times gigantes
+        if (cat === "brasileirao") return r.category === "brasileirao" && isGigante(r.team);
         return r.category === cat;
       };
       return withRatings(rows.filter(match).map(mapRow));
