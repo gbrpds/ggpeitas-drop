@@ -33,7 +33,7 @@ export function ProductCard({ product }: { product: Product }) {
         )}
         {product.images && product.images[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="card-photo" src={product.images[0]} alt={product.name} />
+          <img className="card-photo" src={product.images[0]} alt={product.name} loading="lazy" decoding="async" />
         ) : (
           <Jersey colors={product.colors} />
         )}

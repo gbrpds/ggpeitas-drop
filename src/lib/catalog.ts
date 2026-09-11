@@ -16,7 +16,7 @@ const getProductRows = unstable_cache(
     return db.select().from(products).orderBy(desc(products.createdAt));
   },
   ["catalog:product-rows"],
-  { tags: ["products"], revalidate: 120 },
+  { tags: ["products"], revalidate: 300 },
 );
 
 /** Avaliações (id do produto + nota) em cache; invalida em revalidateTag("reviews"). */
@@ -26,7 +26,7 @@ const getRatingRows = unstable_cache(
     return db.select({ productId: reviews.productId, rating: reviews.rating }).from(reviews);
   },
   ["catalog:rating-rows"],
-  { tags: ["reviews"], revalidate: 120 },
+  { tags: ["reviews"], revalidate: 300 },
 );
 
 /** Anexa média/total de avaliações a uma lista de produtos (do cache). */

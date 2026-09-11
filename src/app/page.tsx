@@ -12,7 +12,9 @@ import { HomeInitial } from "@/components/HomeInitial";
 import { CollectionsCarousel } from "@/components/CollectionsCarousel";
 import { getHomeSections, getBestSellers } from "@/lib/catalog";
 
-export const dynamic = "force-dynamic";
+// ISR: a home é servida do cache (instantânea, sem esperar o banco) e revalida
+// em 2ª mão a cada 5 min. Mudanças no admin já invalidam via revalidateTag("products").
+export const revalidate = 300;
 
 export default async function Home() {
   const sections = await getHomeSections();
