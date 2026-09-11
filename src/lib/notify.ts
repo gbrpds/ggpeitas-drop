@@ -14,9 +14,10 @@ export async function notifyNewSale(o: {
   const topic = process.env.NTFY_TOPIC;
   if (!topic) return; // não configurado → ignora
   try {
+    // valor em ASCII puro (o header Title do ntfy não aceita acentos/espaço especial)
+    const valorAscii = `R$ ${(o.totalCents / 100).toFixed(2).replace(".", ",")}`;
     const headers: Record<string, string> = {
-      // headers do ntfy devem ser ASCII (título sem acentos)
-      Title: "GG Peitas: nova venda!",
+      Title: `Nova venda: ${valorAscii}`,
       Priority: "high",
       Tags: "moneybag,shirt",
     };

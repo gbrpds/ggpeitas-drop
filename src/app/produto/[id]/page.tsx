@@ -12,8 +12,9 @@ import { ProductBanner } from "@/components/product/ProductBanner";
 import { Description } from "@/components/product/Description";
 import { TrustBadges } from "@/components/TrustBadges";
 import { ProductReviews } from "@/components/reviews/ProductReviews";
-import { getCatalogProduct } from "@/lib/catalog";
+import { getCatalogProduct, getRelatedProducts } from "@/lib/catalog";
 import { metaFor } from "@/lib/catalog";
+import { ProductCarousel } from "@/components/ProductCarousel";
 import { getProductReviews } from "@/lib/reviews";
 import { resolveUserId } from "@/lib/order";
 import { getGenderInfo } from "@/lib/variant";
@@ -29,6 +30,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const uid = await resolveUserId();
   const { list, summary } = await getProductReviews(id, uid);
   const gender = await getGenderInfo(product);
+  const related = await getRelatedProducts(product.id, product.team, product.category);
+  const relatedHref = product.team ? `/busca?team=${encodeURIComponent(product.team)}` : cat.href;
 
   return (
     <>
@@ -55,6 +58,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         <TrustBadges />
         <ProductBanner />
         <Description product={product} />
+        {related.length > 0 && (
+          <ProductCarousel
+            section={{ id: "related", title: "Você também pode gostar", emoji: "", href: relatedHref, products: related }}
+          />
+        )}
         <ProductReviews productId={id} productName={product.name} summary={summary} list={list} />
       </main>
 

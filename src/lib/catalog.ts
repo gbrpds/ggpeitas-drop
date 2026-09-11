@@ -233,6 +233,30 @@ export async function getAllActive(): Promise<Product[]> {
   return mockSections.flatMap((s) => s.products);
 }
 
+/**
+ * Produtos relacionados a um produto: prioriza o MESMO time, depois a mesma
+ * categoria/coleção, e completa com os demais ativos. Exclui o próprio.
+ */
+export async function getRelatedProducts(
+  currentId: string,
+  team: string | undefined | null,
+  category: string,
+  limit = 12,
+): Promise<Product[]> {
+  try {
+    const all = (await getAllActive()).filter((p) => p.id !== currentId);
+    const nm = (s?: string | null) => (s ?? "").normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim();
+    const sameTeam = team ? all.filter((p) => p.team && nm(p.team) === nm(team)) : [];
+    const usados = new Set(sameTeam.map((p) => p.id));
+    const sameCat = all.filter((p) => !usados.has(p.id) && p.category === category);
+    for (const p of sameCat) usados.add(p.id);
+    const rest = all.filter((p) => !usados.has(p.id));
+    return [...sameTeam, ...sameCat, ...rest].slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
 /** Um produto: procura no catálogo em cache; senão, o mock. */
 export async function getCatalogProduct(id: string): Promise<Product | undefined> {
   try {
