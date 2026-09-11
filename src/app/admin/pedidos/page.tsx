@@ -4,6 +4,7 @@ import { Lock, ShoppingBag } from "lucide-react";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 import { isAdmin } from "@/lib/admin";
+import { getAllActive } from "@/lib/catalog";
 import { brl } from "@/lib/format";
 import { waLink, waLinkMsg, supplierOrderMessage } from "@/lib/whatsapp";
 
@@ -27,7 +28,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
   rejected: { label: "Cancelado", cls: "st-cancelled" },
 };
 
-type Item = { name: string; qty: number };
+type Item = { productId?: string; name: string; qty: number; size?: string; version?: string; customName?: string; customNumber?: string };
 type Customer = { name?: string; email?: string; phone?: string };
 
 const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
@@ -79,6 +80,17 @@ export default async function AdminPedidosPage({
     .filter((o) => o.status === "approved")
     .reduce((s, o) => s + o.totalCents, 0);
   const hasFilter = !!(status || from || to || q);
+
+  // foto (1ª) por produto — para incluir no recado ao fornecedor
+  const imgById = new Map<string, string>();
+  if (ok) {
+    try {
+      for (const p of await getAllActive()) if (p.images?.[0]) imgById.set(p.id, p.images[0]);
+    } catch {
+      /* segue sem fotos */
+    }
+  }
+  const imageOf = (pid?: string) => (pid ? imgById.get(pid) : undefined);
 
   return (
     <>
@@ -141,7 +153,7 @@ export default async function AdminPedidosPage({
                                 items: (o.items as Item[]) ?? [],
                                 customer: c,
                                 shipping: (o.shipping as { cep?: string; rua?: string; numero?: string; bairro?: string; cidade?: string; uf?: string }) ?? {},
-                              }))}
+                              }, imageOf))}
                               target="_blank"
                               rel="noopener"
                             >
