@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { getCategoryProducts, getTeamNames, metaFor } from "@/lib/catalog";
-import { genderOf, modeloOf, GENDER_LABEL } from "@/lib/facets";
+import { genderOf, modeloOf, GENDER_LABEL, seasonScore } from "@/lib/facets";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
@@ -74,6 +74,7 @@ export default async function CategoriaPage({
   if (selectedTipos.length) results = results.filter((p) => { const t = modeloOf(p.name); return !!t && selectedTipos.includes(t); });
   if (sort === "preco-asc") results = [...results].sort((a, b) => a.now - b.now);
   else if (sort === "preco-desc") results = [...results].sort((a, b) => b.now - a.now);
+  else results = [...results].sort((a, b) => seasonScore(b.name) - seasonScore(a.name)); // padrão: temporada mais recente
 
   // paginação
   const PAGE_SIZE = 15;

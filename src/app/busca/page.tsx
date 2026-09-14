@@ -9,7 +9,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
 import { SearchFilters } from "@/components/search/SearchFilters";
 import { Pagination } from "@/components/Pagination";
-import { genderOf, modeloOf as tipoOf, GENDER_LABEL } from "@/lib/facets";
+import { genderOf, modeloOf as tipoOf, GENDER_LABEL, seasonScore } from "@/lib/facets";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Busca — GG Peitas" };
@@ -81,6 +81,7 @@ export default async function BuscaPage({
   if (selectedTipos.length) results = results.filter((p) => { const t = tipoOf(p.name); return !!t && selectedTipos.includes(t); });
   if (sort === "preco-asc") results = [...results].sort((a, b) => a.now - b.now);
   else if (sort === "preco-desc") results = [...results].sort((a, b) => b.now - a.now);
+  else results = [...results].sort((a, b) => seasonScore(b.name) - seasonScore(a.name)); // padrão: temporada mais recente
 
   const heading = q ? `Resultados para “${q}”` : selectedTeams.length ? selectedTeams[0] : "Todos os produtos";
 
