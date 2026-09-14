@@ -18,6 +18,34 @@ export function seasonScore(name: string): number {
   return y ? Number(y[0]) : 0;
 }
 
+/** Chave normalizada de time (sem acento/caixa/pontuação) para dedup. */
+export const teamKey = (s?: string | null) =>
+  (s ?? "").normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/**
+ * Funde facetas de time por chave normalizada (defesa contra variações de
+ * caixa/acento). Mantém como rótulo o nome canônico cadastrado, se houver;
+ * senão, o primeiro nome visto. Soma as contagens e reordena.
+ */
+export function dedupeTeamFacets(
+  facets: { team: string; count: number }[],
+  registered: string[] = [],
+): { team: string; count: number }[] {
+  const canon = new Map<string, string>();
+  for (const t of registered) canon.set(teamKey(t), t);
+  const merged = new Map<string, { team: string; count: number }>();
+  for (const f of facets) {
+    const k = teamKey(f.team);
+    const label = canon.get(k) ?? f.team;
+    const cur = merged.get(k);
+    if (cur) cur.count += f.count;
+    else merged.set(k, { team: label, count: f.count });
+  }
+  return [...merged.values()].sort(
+    (a, b) => b.count - a.count || a.team.localeCompare(b.team, "pt-BR"),
+  );
+}
+
 /** Modelo/tipo (rótulo) deduzido do nome, para o filtro. */
 export function modeloOf(name: string): string | null {
   if (/manga longa/i.test(name)) return "Manga Longa";

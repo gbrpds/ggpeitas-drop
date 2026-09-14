@@ -5,6 +5,7 @@ import { eq, or, ilike } from "drizzle-orm";
 import { getDb } from "@/db";
 import { products } from "@/db/schema";
 import { isAdmin } from "@/lib/admin";
+import { getTeamNames } from "@/lib/catalog";
 import {
   yupooHeaders,
   parseCategory,
@@ -103,7 +104,14 @@ export async function POST(req: Request) {
   if (action === "one") {
     const id = String(body.id ?? "");
     const title = String(body.title ?? "");
-    const teamName = String(body.team ?? "").trim();
+    let teamName = String(body.team ?? "").trim();
+    // encaixa no nome canônico do time cadastrado (evita variações de caixa/acento)
+    if (teamName) {
+      const key = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const k = key(teamName);
+      const canon = (await getTeamNames()).find((t) => key(t) === k);
+      if (canon) teamName = canon;
+    }
     const active = !!body.active;
     if (!id) return NextResponse.json({ error: "Álbum inválido." }, { status: 400 });
     if (shouldSkipTitle(title)) {

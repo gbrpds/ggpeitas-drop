@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { getCategoryProducts, getTeamNames, metaFor } from "@/lib/catalog";
-import { genderOf, modeloOf, GENDER_LABEL, seasonScore } from "@/lib/facets";
+import { genderOf, modeloOf, GENDER_LABEL, seasonScore, dedupeTeamFacets } from "@/lib/facets";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
@@ -54,9 +54,10 @@ export default async function CategoriaPage({
   // só mostra times que têm produtos NESTA categoria (+ os cadastrados que também tenham)
   const teamNames = new Set<string>([...teamCounts.keys()]);
   for (const t of registeredTeams) if (teamCounts.has(t)) teamNames.add(t);
-  const teamFacets = [...teamNames]
-    .map((team) => ({ team, count: teamCounts.get(team) ?? 0 }))
-    .sort((a, b) => b.count - a.count || a.team.localeCompare(b.team, "pt-BR"));
+  const teamFacets = dedupeTeamFacets(
+    [...teamNames].map((team) => ({ team, count: teamCounts.get(team) ?? 0 })),
+    registeredTeams,
+  );
   const genderFacets = ["masculino", "feminina"]
     .filter((g) => genderCounts.has(g))
     .map((g) => ({ value: g, label: GENDER_LABEL[g], count: genderCounts.get(g) ?? 0 }));

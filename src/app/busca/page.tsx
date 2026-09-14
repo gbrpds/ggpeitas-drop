@@ -9,7 +9,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
 import { SearchFilters } from "@/components/search/SearchFilters";
 import { Pagination } from "@/components/Pagination";
-import { genderOf, modeloOf as tipoOf, GENDER_LABEL, seasonScore } from "@/lib/facets";
+import { genderOf, modeloOf as tipoOf, GENDER_LABEL, seasonScore, dedupeTeamFacets } from "@/lib/facets";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Busca — GG Peitas" };
@@ -67,9 +67,10 @@ export default async function BuscaPage({
   // Todos os times cadastrados ficam selecionáveis (mesmo sem produtos ainda),
   // somados aos times que aparecem nos resultados.
   const teamNames = new Set<string>([...registeredTeams, ...teamCounts.keys()]);
-  const teamFacets = [...teamNames]
-    .map((team) => ({ team, count: teamCounts.get(team) ?? 0 }))
-    .sort((a, b) => b.count - a.count || a.team.localeCompare(b.team, "pt-BR"));
+  const teamFacets = dedupeTeamFacets(
+    [...teamNames].map((team) => ({ team, count: teamCounts.get(team) ?? 0 })),
+    registeredTeams,
+  );
 
   let results = matched;
   if (selected.length) results = results.filter((p) => selected.includes(p.category));
