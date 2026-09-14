@@ -16,9 +16,8 @@ export const googleEnabled =
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
-  // sessão curta: expira após 20 min de inatividade (renova a cada acesso).
-  // O IdleLogout no cliente faz o redirect imediato; isto garante no servidor.
-  session: { strategy: "jwt", maxAge: 20 * 60, updateAge: 5 * 60 },
+  // sessão de loja: mantém o cliente logado por 30 dias (renova a cada acesso).
+  session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60, updateAge: 24 * 60 * 60 },
   pages: { signIn: "/conta" },
   providers: [
     Credentials({

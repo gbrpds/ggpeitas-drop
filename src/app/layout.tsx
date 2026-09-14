@@ -4,7 +4,6 @@ import "./globals.css";
 import { JerseySymbol } from "@/components/Jersey";
 import { Providers } from "@/components/Providers";
 import { CartDrawer } from "@/components/cart/CartDrawer";
-import { IdleLogout } from "@/components/IdleLogout";
 import { TeamModal } from "@/components/TeamModal";
 import { TeamFloat } from "@/components/TeamFloat";
 import { RevealOnScroll } from "@/components/RevealOnScroll";
@@ -75,7 +74,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           {children}
           <CartDrawer />
-          <IdleLogout />
           <TeamModal />
           <TeamFloat />
           <RevealOnScroll />
