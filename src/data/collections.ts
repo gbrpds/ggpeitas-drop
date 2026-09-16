@@ -4,6 +4,7 @@
 export type LeagueCollection = { title: string; href: string; colors: [string, string]; image?: string };
 
 import { LA_LIGA_TEAMS, SERIE_A_TEAMS, PREMIER_LEAGUE_TEAMS, BUNDESLIGA_TEAMS, LIGUE1_TEAMS } from "@/lib/euro-teams";
+import { MLS_TEAMS, ARGENTINA_TEAMS } from "@/lib/americas";
 
 // link de busca por lista de times, já com o título da liga (heading da busca)
 const leagueHref = (title: string, teams: string[]) =>
@@ -20,13 +21,6 @@ const BRASIL_TEAMS = [
   "Paysandu", "Remo", "Santa Cruz", "Confiança",
 ];
 
-// MLS (elenco padrão — ajusto pelos menus do fornecedor quando importar)
-const MLS_TEAMS = [
-  "Inter Miami", "LA Galaxy", "LAFC", "Seattle Sounders", "Atlanta United",
-  "Portland Timbers", "New York City FC", "Austin FC", "Columbus Crew",
-  "Cincinnati", "Philadelphia Union", "Orlando City", "Chicago Fire", "Toronto FC", "Nashville SC",
-];
-
 export const leagueCollections: LeagueCollection[] = [
   { title: "Brasileirão", href: leagueHref("Brasileirão", BRASIL_TEAMS), colors: ["#0a7d34", "#ffc400"], image: "/ligas/brasileirao.png" },
   { title: "Gigantes Europeus", href: "/categoria/europa", colors: ["#0a1a4f", "#1e63c9"], image: "/ligas/gigantes-europeus.png" },
@@ -35,6 +29,6 @@ export const leagueCollections: LeagueCollection[] = [
   { title: "Serie A TIM", href: leagueHref("Serie A TIM", SERIE_A_TEAMS), colors: ["#0b6e30", "#c8102e"], image: "/ligas/serie-a.png" },
   { title: "Bundesliga", href: leagueHref("Bundesliga", BUNDESLIGA_TEAMS), colors: ["#111111", "#d20515"], image: "/ligas/bundesliga.png" },
   { title: "Ligue One", href: leagueHref("Ligue One", LIGUE1_TEAMS), colors: ["#0a1a4f", "#c8102e"], image: "/ligas/ligue-one.png" },
-  { title: "Liga Argentina", href: leagueHref("Liga Argentina", ["Boca Juniors", "River Plate"]), colors: ["#6caee0", "#1b3a6b"], image: "/ligas/lpf.png" },
+  { title: "Liga Argentina", href: leagueHref("Liga Argentina", ARGENTINA_TEAMS), colors: ["#6caee0", "#1b3a6b"], image: "/ligas/lpf.png" },
   { title: "MLS", href: leagueHref("MLS", MLS_TEAMS), colors: ["#001f5b", "#c8102e"], image: "/ligas/mls.png" },
 ];

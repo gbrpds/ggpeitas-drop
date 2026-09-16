@@ -161,7 +161,7 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
   // times agrupados por coleção; a Europa é subdividida por liga
   // (La Liga, Serie A, Premier League, Bundesliga, Ligue One)
   const teamGroups = useMemo<TeamGroup[]>(() => {
-    const GRP: Record<string, string> = { brasileirao: "Brasileirão", europa: "Europa", selecoes: "Seleções" };
+    const GRP: Record<string, string> = { brasileirao: "Brasileirão", europa: "Europa", selecoes: "Seleções", mundo: "Mundo" };
     const primary = new Map<string, string>(); // time -> categoria base
     const allTeams = new Set<string>();
     for (const r of items) {
@@ -178,7 +178,7 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
       if (base === "Europa") put(leagueOfTeam(t) ?? "Europa (outros)", t);
       else put(base, t);
     }
-    const order = ["Brasileirão", "La Liga", "Serie A", "Premier League", "Bundesliga", "Ligue One", "Europa (outros)", "Seleções", "Outros"];
+    const order = ["Brasileirão", "La Liga", "Serie A", "Premier League", "Bundesliga", "Ligue One", "Europa (outros)", "Mundo", "Seleções", "Outros"];
     return order
       .filter((label) => buckets[label]?.length)
       .map((label) => ({ label, teams: buckets[label].sort((a, b) => a.localeCompare(b, "pt-BR")) }));

@@ -1,5 +1,6 @@
 import { classifyTeam } from "@/lib/team-detect";
 import { resolveEuroTeam } from "@/lib/euro-teams";
+import { resolveAmericasTeam } from "@/lib/americas";
 
 /** Headers que o Yupoo exige para servir páginas/imagens (checa referer). */
 export function yupooHeaders(referer: string) {
@@ -255,10 +256,12 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
   // reconhece times europeus (La Liga etc.) em qualquer posição do título
   // (só quando o admin não forçou um time)
   const euro = teamOverride?.trim() ? null : resolveEuroTeam(clean);
+  // MLS / Liga Argentina (categoria "mundo")
+  const americas = teamOverride?.trim() ? null : resolveAmericasTeam(clean);
   // seleção detectada no trecho do time (ex.: "long sleeve Spain" → Espanha)
   const country = teamOverride?.trim() ? null : resolveCountry(teamRaw);
-  // time: admin > país (seleção) > europeu reconhecido > derivado do título
-  const teamName = teamOverride?.trim() || country || euro || teamRaw;
+  // time: admin > país (seleção) > MLS/Argentina > europeu > derivado do título
+  const teamName = teamOverride?.trim() || country || americas || euro || teamRaw;
   // seleções: traduz o país (Brazil → Brasil) e manda para a categoria "selecoes"
   const countryPt = country ?? COUNTRY[normLower(teamName)];
   const finalTeam = countryPt ?? teamName;
@@ -269,9 +272,11 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
     ? "selecoes"
     : isRetro
       ? "retro"
-      : euro
-        ? "europa"
-        : hit?.category ?? "brasileirao";
+      : americas
+        ? "mundo"
+        : euro
+          ? "europa"
+          : hit?.category ?? "brasileirao";
 
   // TIPO — na ordem de prioridade dos padrões do fornecedor
   let tipo = "";

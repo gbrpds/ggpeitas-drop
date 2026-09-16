@@ -59,9 +59,10 @@ const CATEGORY_META: Record<string, { title: string; emoji: string; href: string
   feminina: { title: "Feminina", emoji: "", href: "/categoria/feminina" },
   infantil: { title: "Conjuntos Esportivos", emoji: "", href: "/categoria/infantil" },
   retro: { title: "Retrô Lendárias", emoji: "", href: "/categoria/retro" },
+  mundo: { title: "Mundo Afora", emoji: "", href: "/categoria/mundo" },
 };
 
-const ORDER = ["brasileirao", "europa", "selecoes", "feminina", "infantil", "retro"];
+const ORDER = ["brasileirao", "europa", "mundo", "selecoes", "feminina", "infantil", "retro"];
 
 /** Chave de time robusta (sem acento, espaço ou hífen). */
 const teamKey = (s?: string | null) =>
@@ -96,6 +97,7 @@ function tagsOf(r: Row): string[] {
   if (isRetroProduct(r.name, r.category)) t.add("retro");
   if (r.feminina || r.category === "feminina") t.add("feminina");
   if (r.infantil || r.category === "infantil") t.add("infantil");
+  if (r.category === "mundo") t.add("mundo");
   return [...t];
 }
 
