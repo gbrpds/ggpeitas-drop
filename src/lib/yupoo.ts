@@ -152,6 +152,8 @@ function expandRetroYear(year: string): string {
 export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): ImportedProduct {
   const clean = rawTitle
     .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "") // bandeiras/emoji
+    // temporada sem barra: "2627" → "26/27", "2526" → "25/26" (dois anos seguidos)
+    .replace(/\b(\d{2})(\d{2})\b/g, (m, a, b) => (Number(b) === Number(a) + 1 ? `${a}/${b}` : m))
     .replace(/\s{2,}/g, " ")
     .trim();
 
