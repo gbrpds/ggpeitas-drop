@@ -7,7 +7,7 @@
  * Fonte única: `league` marca a coleção (ex.: "laliga") e `giant` marca os
  * "Gigantes Europeus" (vitrine com os grandes clubes do continente).
  */
-export type EuroTeam = { name: string; keys: string[]; league?: "laliga"; giant?: boolean };
+export type EuroTeam = { name: string; keys: string[]; league?: "laliga" | "seriea"; giant?: boolean };
 
 const key = (s: string) =>
   s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -62,9 +62,9 @@ export const EURO_TEAMS: EuroTeam[] = [
   { name: "Manchester City", keys: ["manchestercity", "mancity"], giant: true },
   { name: "Liverpool", keys: ["liverpool", "lfc"], giant: true },
   { name: "Chelsea", keys: ["chelsea"], giant: true },
-  { name: "Juventus", keys: ["juventus"], giant: true },
-  { name: "Milan", keys: ["acmilan", "milan"], giant: true },
-  { name: "Inter de Milão", keys: ["intermilan", "internazionale"], giant: true },
+  { name: "Juventus", keys: ["juventus", "juve", "juv"], league: "seriea", giant: true },
+  { name: "Milan", keys: ["acmilan", "milan"], league: "seriea", giant: true },
+  { name: "Internazionale", keys: ["internazionale", "intermilan"], league: "seriea", giant: true },
   { name: "Bayern de Munique", keys: ["bayernmunich", "bayernmunchen", "bayern"], giant: true },
   { name: "Borussia Dortmund", keys: ["borussiadortmund", "dortmund"], giant: true },
   { name: "Hamburgo", keys: ["hamburgersv", "hamburgo", "hamburg"], giant: true },
@@ -103,6 +103,25 @@ export const EURO_TEAMS: EuroTeam[] = [
   { name: "Portsmouth", keys: ["portsmouth"] },
   { name: "Bournemouth", keys: ["afcbournemouth", "bournemouth"] },
   { name: "Wrexham", keys: ["wrexham"] },
+  // Serie A (Juventus/Milan/Internazionale acima)
+  { name: "Napoli", keys: ["napoli"], league: "seriea" },
+  { name: "Roma", keys: ["asroma", "roma"], league: "seriea" },
+  { name: "Fiorentina", keys: ["fiorentina"], league: "seriea" },
+  { name: "Atalanta", keys: ["atalanta"], league: "seriea" },
+  { name: "Bologna", keys: ["bologna"], league: "seriea" },
+  { name: "Lazio", keys: ["lazio"], league: "seriea" },
+  { name: "Torino", keys: ["torino"], league: "seriea" },
+  { name: "Parma", keys: ["parmacalcio", "parma"], league: "seriea" },
+  { name: "Sampdoria", keys: ["sampdoria"], league: "seriea" },
+  { name: "Brescia", keys: ["bresciacalcio", "brescia"], league: "seriea" },
+  { name: "Venezia", keys: ["venezia"], league: "seriea" },
+  { name: "Pisa", keys: ["pisa"], league: "seriea" },
+  { name: "Bari", keys: ["sscbari", "bari"], league: "seriea" },
+  { name: "Cremonese", keys: ["cremonese"], league: "seriea" },
+  { name: "Sassuolo", keys: ["sassuolo"], league: "seriea" },
+  { name: "Genoa", keys: ["genoa"], league: "seriea" },
+  { name: "Padova", keys: ["padova"], league: "seriea" },
+  { name: "Perugia", keys: ["perugia"], league: "seriea" },
 ];
 
 // índice (chave → nome) e lista de chaves ordenada da mais longa para a mais curta
@@ -114,6 +133,9 @@ const uniq = (a: string[]) => [...new Set(a)];
 
 /** Nomes canônicos de todos os times da La Liga (para a coleção da home). */
 export const LA_LIGA_TEAMS = uniq(EURO_TEAMS.filter((t) => t.league === "laliga").map((t) => t.name));
+
+/** Nomes canônicos de todos os times da Serie A (para a coleção da home). */
+export const SERIE_A_TEAMS = uniq(EURO_TEAMS.filter((t) => t.league === "seriea").map((t) => t.name));
 
 /** Nomes canônicos dos "Gigantes Europeus" (vitrine dos grandes clubes). */
 export const GIGANTES_EUROPEUS = uniq(EURO_TEAMS.filter((t) => t.giant).map((t) => t.name));

@@ -44,7 +44,7 @@ export const navItems: NavItem[] = [
           team("Bayern de Munique"),
           team("Juventus"),
           team("Milan"),
-          team("Inter de Milão"),
+          team("Internazionale"),
           team("Chelsea"),
           team("Arsenal"),
         ],
