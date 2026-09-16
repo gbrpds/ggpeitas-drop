@@ -104,14 +104,21 @@ export async function POST(req: Request) {
   if (action === "one") {
     const id = String(body.id ?? "");
     const title = String(body.title ?? "");
-    let teamName = String(body.team ?? "").trim();
-    // encaixa no nome canônico do time cadastrado (evita variações de caixa/acento)
-    if (teamName) {
-      const key = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
-      const k = key(teamName);
-      const canon = (await getTeamNames()).find((t) => key(t) === k);
-      if (canon) teamName = canon;
-    }
+    // encaixa no nome canônico do time cadastrado (evita duplicatas por
+    // variação de caixa/acento, ano colado ou prefixo como "Regata ...")
+    const registered = await getTeamNames();
+    const key = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const canonByLen = [...registered].sort((a, b) => key(b).length - key(a).length);
+    const snapTeam = (name: string): string => {
+      const raw = (name ?? "").trim();
+      if (!raw) return raw;
+      const k = key(raw);
+      const exact = registered.find((t) => key(t) === k);
+      if (exact) return exact;
+      const contained = canonByLen.find((t) => k.includes(key(t))); // "regatavascodagama..." → "Vasco da Gama"
+      return contained ?? raw;
+    };
+    const teamName = snapTeam(String(body.team ?? ""));
     const active = !!body.active;
     if (!id) return NextResponse.json({ error: "Álbum inválido." }, { status: 400 });
     if (shouldSkipTitle(title)) {
@@ -120,7 +127,10 @@ export async function POST(req: Request) {
 
     try {
       const db = getDb();
-      const p = yupooTitleToProduct(title, teamName || undefined);
+      const p0 = yupooTitleToProduct(title, teamName || undefined);
+      // encaixa o time (derivado do título) no canônico e reconstrói o nome
+      const finalTeam = snapTeam(p0.team ?? "") || p0.team || "";
+      const p = finalTeam && finalTeam !== p0.team ? yupooTitleToProduct(title, finalTeam) : p0;
 
       // NÃO DUPLICAR: pula se já existe por id do álbum (source_id) ou pelo nome
       const dup = await db
