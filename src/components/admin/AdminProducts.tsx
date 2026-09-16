@@ -55,10 +55,13 @@ type Row = {
 
 const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
-/** Seletor de time com busca por digitação (combobox). */
-function TeamCombo({ teams, value, total, onChange }: { teams: string[]; value: string; total: number; onChange: (t: string) => void }) {
+type TeamGroup = { label: string; teams: string[] };
+
+/** Seletor de time agrupado por coleção (Brasileirão/Europa/Seleções), com grupos expansíveis. */
+function TeamCombo({ groups, value, total, onChange }: { groups: TeamGroup[]; value: string; total: number; onChange: (t: string) => void }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,7 +72,11 @@ function TeamCombo({ teams, value, total, onChange }: { teams: string[]; value: 
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
-  const list = teams.filter((t) => norm(t).includes(norm(query)));
+  const q = norm(query);
+  // com busca, filtra os times e expande automaticamente os grupos com match
+  const filtered = groups
+    .map((g) => ({ ...g, teams: q ? g.teams.filter((t) => norm(t).includes(q)) : g.teams }))
+    .filter((g) => g.teams.length > 0);
 
   return (
     <div className="adm-combo" ref={ref}>
@@ -85,12 +92,23 @@ function TeamCombo({ teams, value, total, onChange }: { teams: string[]; value: 
           <button type="button" className="adm-combo-opt" onClick={() => { onChange(""); setOpen(false); }}>
             Todos os times ({total})
           </button>
-          {list.map((t) => (
-            <button type="button" key={t} className={`adm-combo-opt${t === value ? " on" : ""}`} onClick={() => { onChange(t); setOpen(false); }}>
-              {t}
-            </button>
-          ))}
-          {list.length === 0 && <div className="adm-combo-empty">Nenhum time</div>}
+          {filtered.map((g) => {
+            const isOpen = q ? true : !!expanded[g.label];
+            return (
+              <div key={g.label} className="adm-combo-group">
+                <button type="button" className="adm-combo-head" onClick={() => setExpanded((e) => ({ ...e, [g.label]: !e[g.label] }))}>
+                  <span>{g.label} <span className="adm-combo-gcount">{g.teams.length}</span></span>
+                  <ChevronRight size={15} className={`adm-combo-chev${isOpen ? " open" : ""}`} />
+                </button>
+                {isOpen && g.teams.map((t) => (
+                  <button type="button" key={t} className={`adm-combo-opt sub${t === value ? " on" : ""}`} onClick={() => { onChange(t); setOpen(false); }}>
+                    {t}
+                  </button>
+                ))}
+              </div>
+            );
+          })}
+          {filtered.length === 0 && <div className="adm-combo-empty">Nenhum time</div>}
         </div>
       )}
     </div>
@@ -139,10 +157,24 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
     } catch {}
   }, [team, q, cat, gender, modelo, status, onlyPromo, onlyOut]);
 
-  const teams = useMemo(() => {
-    const set = new Set<string>();
-    for (const r of items) if (r.team?.trim()) set.add(r.team.trim());
-    return [...set].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  // times agrupados por coleção (Brasileirão/Europa/Seleções/Outros),
+  // deduzindo o grupo pela categoria dos produtos de cada time
+  const teamGroups = useMemo<TeamGroup[]>(() => {
+    const GRP: Record<string, string> = { brasileirao: "Brasileirão", europa: "Europa", selecoes: "Seleções" };
+    const primary = new Map<string, string>(); // time -> rótulo do grupo
+    const allTeams = new Set<string>();
+    for (const r of items) {
+      const t = r.team?.trim();
+      if (!t) continue;
+      allTeams.add(t);
+      const g = GRP[r.category];
+      if (g && !primary.has(t)) primary.set(t, g);
+    }
+    const buckets: Record<string, string[]> = { Brasileirão: [], Europa: [], Seleções: [], Outros: [] };
+    for (const t of allTeams) buckets[primary.get(t) ?? "Outros"].push(t);
+    return ["Brasileirão", "Europa", "Seleções", "Outros"]
+      .map((label) => ({ label, teams: buckets[label].sort((a, b) => a.localeCompare(b, "pt-BR")) }))
+      .filter((g) => g.teams.length > 0);
   }, [items]);
 
   // facetas (contagem por coleção/gênero/modelo) sobre todos os itens
@@ -227,7 +259,7 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
 
         <div className="adm-side-group">
           <label className="adm-side-lbl">Time</label>
-          <TeamCombo teams={teams} value={team} total={items.length} onChange={setTeam} />
+          <TeamCombo groups={teamGroups} value={team} total={items.length} onChange={setTeam} />
         </div>
 
         <div className="adm-side-group">
