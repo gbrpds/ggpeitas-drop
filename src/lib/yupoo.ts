@@ -69,6 +69,8 @@ const COUNTRY: Record<string, string> = {
   german: "Alemanha",
   netherlands: "Holanda", holanda: "Holanda", mexico: "México", japan: "Japão",
   colombia: "Colômbia", chile: "Chile", croatia: "Croácia", belgium: "Bélgica",
+  peru: "Peru", ecuador: "Equador", paraguay: "Paraguai", paraguai: "Paraguai",
+  bolivia: "Bolívia", venezuela: "Venezuela",
   morocco: "Marrocos", "united states": "Estados Unidos", usa: "Estados Unidos",
 };
 /** Nomes canônicos (PT) de todas as seleções reconhecidas. */

@@ -10,8 +10,8 @@ const key = (s: string) =>
 
 export const AMERICAS_TEAMS: AmTeam[] = [
   // MLS
-  { name: "Inter Miami", keys: ["intermiami", "intermiamicf"], league: "mls" },
-  { name: "LA Galaxy", keys: ["lagalaxy", "losangelesgalaxy"], league: "mls" },
+  { name: "Inter Miami", keys: ["intermiami", "intermiamicf", "miami"], league: "mls" },
+  { name: "LA Galaxy", keys: ["lagalaxy", "losangelesgalaxy", "galaxy"], league: "mls" },
   { name: "LAFC", keys: ["lafc", "losangelesfc"], league: "mls" },
   { name: "Seattle Sounders", keys: ["seattlesounders", "seattle"], league: "mls" },
   { name: "Atlanta United", keys: ["atlantaunited", "atlanta"], league: "mls" },
@@ -39,6 +39,7 @@ export const AMERICAS_TEAMS: AmTeam[] = [
   { name: "CF Montréal", keys: ["cfmontreal", "montreal"], league: "mls" },
   { name: "St. Louis City", keys: ["stlouiscity", "stlouis"], league: "mls" },
   { name: "Charlotte FC", keys: ["charlottefc", "charlotte"], league: "mls" },
+  { name: "San Diego FC", keys: ["sandiegofc", "sandiego"], league: "mls" },
   // Liga Argentina (Liga Profesional)
   { name: "Boca Juniors", keys: ["bocajuniors", "boca"], league: "argentina" },
   { name: "River Plate", keys: ["riverplate", "river"], league: "argentina" },

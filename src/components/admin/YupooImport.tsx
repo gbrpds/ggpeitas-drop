@@ -108,6 +108,7 @@ export function YupooImport() {
           <option value="brasileirao">Brasileirão</option>
           <option value="europa">Europa</option>
           <option value="selecoes">Seleções</option>
+          <option value="mundo">Mundo (MLS/Argentina)</option>
           <option value="retro">Retrô</option>
         </select>
         <span className="co-hint">
