@@ -48,6 +48,7 @@ export function shouldSkipTitle(title: string): boolean {
     /\bsocks?\b/i.test(title) ||
     /\bscarf\b/i.test(title) ||
     /\bbeanie\b/i.test(title) ||
+    /\bbaseball\b/i.test(title) ||
     (!isEdition && (/\bt-?shirts?\b/i.test(title) || /\btee\b/i.test(title))) ||
     /\btraining\b/i.test(title) ||
     /\btreino\b/i.test(title) ||
@@ -292,6 +293,8 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
     const c = clean.match(colorRe);
     if (c) tipo = `Edição ${COLORS[c[1].toLowerCase()]}`;
   }
+  // sem modelo no título → assume Home (padrão do fornecedor p/ camisa "lisa")
+  if (!tipo && !cropTop) tipo = "Home";
 
   const teamLabel = team ?? "Camisa";
   // Crop top e infantil não levam sufixo de gênero
