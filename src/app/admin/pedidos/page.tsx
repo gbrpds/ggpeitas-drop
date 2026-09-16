@@ -29,7 +29,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
 };
 
 type Item = { productId?: string; name: string; qty: number; size?: string; version?: string; customName?: string; customNumber?: string };
-type Customer = { name?: string; email?: string; phone?: string };
+type Customer = { name?: string; email?: string; phone?: string; cpf?: string };
 
 const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 

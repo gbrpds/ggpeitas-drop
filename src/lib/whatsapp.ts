@@ -24,7 +24,7 @@ type OrderItem = {
   customNumber?: string;
 };
 type Address = { cep?: string; rua?: string; numero?: string; bairro?: string; cidade?: string; uf?: string };
-type Customer = { name?: string };
+type Customer = { name?: string; email?: string; phone?: string; cpf?: string };
 
 /** Nome base da camisa (sem o sufixo de tamanho/versão/personalização). */
 function baseName(i: OrderItem): string {
@@ -63,13 +63,19 @@ export function supplierOrderMessage(
     if (img) linhas.push(`  Foto: ${img}`);
   }
 
+  const endereco = [s.rua, s.numero, s.bairro].filter(Boolean).join(", ");
+  const cidade = [s.cidade, s.uf].filter(Boolean).join(" / ");
   linhas.push(
     "",
     "Dados de envio:",
-    c.name ?? "",
-    `${s.rua ?? ""}, ${s.numero ?? ""} - ${s.bairro ?? ""}`,
-    `${s.cidade ?? ""}/${s.uf ?? ""}`,
-    `CEP ${s.cep ?? ""}`,
+    `Nome: ${c.name ?? ""}`,
+    `Cidade: ${cidade}`,
+    `País: Brasil`,
+    `Endereço: ${endereco}`,
+    `Código postal: ${s.cep ?? ""}`,
+    `Telefone: ${c.phone ?? ""}`,
+    `E-mail: ${c.email ?? ""}`,
+    `CPF: ${c.cpf ?? ""}`,
   );
   return linhas.join("\n");
 }
