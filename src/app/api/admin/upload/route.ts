@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
 import { isAdmin } from "@/lib/admin";
+import { uploadProductImage } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
@@ -27,14 +27,11 @@ export async function POST(req: Request) {
   }
 
   try {
-    const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-    const blob = await put(`produtos/${Date.now()}-${safe}`, file, {
-      access: "public",
-      addRandomSuffix: true,
-    });
-    return NextResponse.json({ url: blob.url });
+    const buf = Buffer.from(await file.arrayBuffer());
+    const url = await uploadProductImage(buf, file.name);
+    return NextResponse.json({ url });
   } catch (e) {
-    console.error("blob upload error", e); // detalhe fica só no log do servidor
+    console.error("r2 upload error", e); // detalhe fica só no log do servidor
     return NextResponse.json({ error: "Falha no upload da imagem." }, { status: 500 });
   }
 }

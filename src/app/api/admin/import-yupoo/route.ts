@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
 import { revalidateTag } from "next/cache";
 import { eq, or, ilike } from "drizzle-orm";
 import { getDb } from "@/db";
 import { products } from "@/db/schema";
 import { isAdmin } from "@/lib/admin";
 import { getTeamNames } from "@/lib/catalog";
+import { uploadProductImage } from "@/lib/storage";
 import {
   yupooHeaders,
   parseCategory,
@@ -26,7 +26,7 @@ function originOf(url: string): string {
   }
 }
 
-/** Baixa uma foto do Yupoo (com referer) e re-hospeda no Vercel Blob. */
+/** Baixa uma foto do Yupoo (com referer), otimiza e re-hospeda no R2. */
 async function reupload(base: string, referer: string): Promise<string | null> {
   try {
     const r = await fetch(photoUrl(base), { headers: yupooHeaders(referer), cache: "no-store" });
@@ -36,12 +36,7 @@ async function reupload(base: string, referer: string): Promise<string | null> {
     const buf = Buffer.from(await r.arrayBuffer());
     if (buf.length < 1024) return null;
     const hash = base.split("/").pop() ?? String(Date.now());
-    const blob = await put(`produtos/yupoo-${hash}.jpg`, buf, {
-      access: "public",
-      addRandomSuffix: true,
-      contentType: ct,
-    });
-    return blob.url;
+    return await uploadProductImage(buf, `yupoo-${hash}`);
   } catch {
     return null;
   }
