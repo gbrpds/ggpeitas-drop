@@ -104,9 +104,9 @@ export const EURO_TEAMS: EuroTeam[] = [
   { name: "Bournemouth", keys: ["afcbournemouth", "bournemouth"] },
   { name: "Wrexham", keys: ["wrexham"] },
   // Serie A (Juventus/Milan/Internazionale acima)
-  { name: "Napoli", keys: ["napoli"], league: "seriea" },
-  { name: "Roma", keys: ["asroma", "roma"], league: "seriea" },
-  { name: "Fiorentina", keys: ["fiorentina"], league: "seriea" },
+  { name: "Napoli", keys: ["napoli", "naples"], league: "seriea" },
+  { name: "Roma", keys: ["asroma", "roma", "rome"], league: "seriea" },
+  { name: "Fiorentina", keys: ["fiorentina", "florence"], league: "seriea" },
   { name: "Atalanta", keys: ["atalanta"], league: "seriea" },
   { name: "Bologna", keys: ["bologna"], league: "seriea" },
   { name: "Lazio", keys: ["lazio"], league: "seriea" },

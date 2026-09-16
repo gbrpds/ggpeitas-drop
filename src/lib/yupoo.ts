@@ -212,6 +212,7 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
     .replace(/\bM[.\s-]*United\b/gi, "Manchester United")
     .replace(/\bM[.\s-]*U(?![a-z])/gi, " Manchester United ")
     .replace(/\bLFC\b/gi, "Liverpool")
+    .replace(/\bAC\b/g, "AC Milan") // "AC" (maiúsculo) = AC Milan (fornecedor abrevia)
     // temporada sem barra: "2627" → "26/27", "2526" → "25/26" (dois anos seguidos)
     .replace(/\b(\d{2})(\d{2})\b/g, (m, a, b) => (Number(b) === Number(a) + 1 ? `${a}/${b}` : m))
     // temporada com traço/espaço: "23-24" / "22 / 23" → "23/24" / "22/23"
