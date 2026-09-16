@@ -18,7 +18,7 @@ for (const line of fs.readFileSync(path.join(process.cwd(), ".env.local"), "utf8
   if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim().replace(/^["']|["']$/g, "");
 }
 
-const { uploadProductImage, storageConfigured } = await import("../src/lib/storage");
+import { uploadProductImage, storageConfigured } from "../src/lib/storage";
 
 const isR2 = (url: string) => {
   const base = (process.env.R2_PUBLIC_BASE ?? "").replace(/\/$/, "");
