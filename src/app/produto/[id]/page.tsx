@@ -13,6 +13,8 @@ import { Gallery } from "@/components/product/Gallery";
 import { BuyBox } from "@/components/product/BuyBox";
 import { ProductBanner } from "@/components/product/ProductBanner";
 import { Description } from "@/components/product/Description";
+import { SizeChart } from "@/components/product/SizeChart";
+import { genderOf } from "@/lib/facets";
 import { TrustBadges } from "@/components/TrustBadges";
 import { ProductReviews } from "@/components/reviews/ProductReviews";
 import { getCatalogProduct, getRelatedProducts } from "@/lib/catalog";
@@ -98,6 +100,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         <TrustBadges />
         <ProductBanner />
         <Description product={product} />
+        <SizeChart defaultGender={genderOf(product.name) === "feminina" ? "feminino" : "masculino"} />
         {related.length > 0 && (
           <ProductCarousel
             section={{ id: "related", title: "Você também pode gostar", emoji: "", href: relatedHref, products: related }}

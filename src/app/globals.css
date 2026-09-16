@@ -1104,6 +1104,22 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .faq-item p { margin:0 0 14px; color:var(--muted); line-height:1.6; }
 .lnk-green { color:var(--green-deep); font-weight:700; text-decoration:underline; }
 
+/* tabela de medidas (produto) */
+.sizechart { max-width:640px; margin:16px auto 0; padding:0 16px 8px; }
+.sizechart-title { display:flex; align-items:center; gap:8px; font-family:var(--disp); font-size:1.3rem; margin:0 0 6px; }
+.sizechart-title svg { color:var(--green-deep); }
+.sizechart-lead { color:var(--muted); font-size:.9rem; margin:0 0 14px; }
+.sizechart-toggle { display:inline-flex; background:var(--ground); border:1px solid var(--line); border-radius:10px; padding:3px; margin-bottom:12px; }
+.sizechart-toggle button { border:0; background:none; padding:8px 18px; border-radius:8px; font-weight:700; font-size:.86rem; color:var(--muted); cursor:pointer; }
+.sizechart-toggle button.on { background:var(--green); color:#fff; }
+.sizechart-scroll { overflow-x:auto; }
+.sizechart-table { width:100%; border-collapse:collapse; }
+.sizechart-table th, .sizechart-table td { padding:11px 12px; text-align:center; border-bottom:1px solid var(--line); font-size:.92rem; }
+.sizechart-table th { background:var(--surface); color:var(--muted); font-size:.76rem; text-transform:uppercase; letter-spacing:.05em; }
+.sizechart-table td:first-child, .sizechart-table th:first-child { text-align:left; }
+.sizechart-table tbody tr:nth-child(even) { background:var(--ground); }
+.sizechart-note { color:var(--muted); font-size:.82rem; line-height:1.5; margin-top:12px; }
+
 /* favoritos: estrela no card + toast */
 .card { position:relative; }
 .cat-grid .card, .car .card { position:relative; }
