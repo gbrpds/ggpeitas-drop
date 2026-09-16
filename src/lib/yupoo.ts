@@ -69,6 +69,29 @@ const COUNTRY: Record<string, string> = {
   colombia: "Colômbia", chile: "Chile", croatia: "Croácia", belgium: "Bélgica",
   morocco: "Marrocos", "united states": "Estados Unidos", usa: "Estados Unidos",
 };
+const COUNTRY_KEYS = Object.keys(COUNTRY)
+  .map((k) => ({ k, norm: k.replace(/[^a-z0-9]/g, "") }))
+  .filter((x) => x.norm.length >= 4) // evita falso-positivo com chaves curtas (ex.: "usa")
+  .sort((a, b) => b.norm.length - a.norm.length);
+
+/** Modificadores que aparecem antes do nome do time e devem ser ignorados. */
+const LEAD_MODIFIERS =
+  /^(?:long|sleeve|longsleeve|long-sleeved|longsleeved|retro|shirt|vintage|classic|new|women|womens|woman|men|mens|man|male|female|kids?|youth|home|away|third|goalkeeper|gk|special|edition|version|main|size)\s+/;
+
+/**
+ * Detecta o país (seleção) NO INÍCIO do trecho do time, após remover
+ * modificadores ("long sleeve Spain", "retro shirt Spain", "Women Brazil").
+ * Exige que COMECE com o país — assim "Flamengo Brazil Edition" (edição de
+ * clube) NÃO é confundido com a seleção do Brasil.
+ */
+export function resolveCountry(teamRaw: string): string | null {
+  let s = normLower(teamRaw);
+  for (let i = 0; i < 6 && LEAD_MODIFIERS.test(s); i++) s = s.replace(LEAD_MODIFIERS, "");
+  const k = s.replace(/[^a-z0-9]/g, "");
+  if (!k) return null;
+  for (const { k: key, norm } of COUNTRY_KEYS) if (k.startsWith(norm)) return COUNTRY[key];
+  return null;
+}
 
 /** Times da Série A (do menu do fornecedor), com apelidos, para filtrar só o Brasileirão. */
 export const BRASILEIRAO_TEAMS = [
@@ -219,17 +242,20 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
   // reconhece times europeus (La Liga etc.) em qualquer posição do título
   // (só quando o admin não forçou um time)
   const euro = teamOverride?.trim() ? null : resolveEuroTeam(clean);
-  // time: admin > europeu reconhecido > derivado do título
-  const teamName = teamOverride?.trim() || euro || teamRaw;
+  // seleção detectada no trecho do time (ex.: "long sleeve Spain" → Espanha)
+  const country = teamOverride?.trim() ? null : resolveCountry(teamRaw);
+  // time: admin > país (seleção) > europeu reconhecido > derivado do título
+  const teamName = teamOverride?.trim() || country || euro || teamRaw;
   // seleções: traduz o país (Brazil → Brasil) e manda para a categoria "selecoes"
-  const countryPt = COUNTRY[normLower(teamName)];
+  const countryPt = country ?? COUNTRY[normLower(teamName)];
   const finalTeam = countryPt ?? teamName;
   const hit = classifyTeam(finalTeam);
   const team = finalTeam || null;
-  const category = isRetro
-    ? "retro"
-    : countryPt
-      ? "selecoes"
+  // seleção (país) tem prioridade sobre retrô: camisa de seleção fica em "selecoes"
+  const category = countryPt
+    ? "selecoes"
+    : isRetro
+      ? "retro"
       : euro
         ? "europa"
         : hit?.category ?? "brasileirao";
