@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Jersey } from "@/components/Jersey";
@@ -30,6 +30,7 @@ function TeamCard({ t }: { t: Team }) {
 
 export function CollectionsCarousel() {
   const [teams, setTeams] = useState<Team[] | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let ok = true;
@@ -44,6 +45,44 @@ export function CollectionsCarousel() {
     };
   }, []);
 
+  // auto-scroll infinito + rolagem manual (arrasta/swipe/roda). Pausa ao
+  // interagir ou passar o mouse; loop contínuo com itens duplicados.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!teams || teams.length === 0 || !el) return;
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+    let hovering = false;
+    let idleUntil = 0;
+    const bump = () => (idleUntil = Date.now() + 2500);
+    const onEnter = () => (hovering = true);
+    const onLeave = () => (hovering = false);
+    el.addEventListener("pointerdown", bump);
+    el.addEventListener("wheel", bump, { passive: true });
+    el.addEventListener("touchstart", bump, { passive: true });
+    el.addEventListener("mouseenter", onEnter);
+    el.addEventListener("mouseleave", onLeave);
+    const step = () => {
+      const half = el.scrollWidth / 2;
+      if (half > 0) {
+        if (!reduced && !hovering && Date.now() > idleUntil) el.scrollLeft += 0.5;
+        // loop infinito nos dois sentidos
+        if (el.scrollLeft >= half) el.scrollLeft -= half;
+        else if (el.scrollLeft <= 0) el.scrollLeft += half;
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("pointerdown", bump);
+      el.removeEventListener("wheel", bump);
+      el.removeEventListener("touchstart", bump);
+      el.removeEventListener("mouseenter", onEnter);
+      el.removeEventListener("mouseleave", onLeave);
+    };
+  }, [teams]);
+
   // sem times cadastrados → não renderiza a seção
   if (!teams || teams.length === 0) return null;
 
@@ -52,9 +91,8 @@ export function CollectionsCarousel() {
       <div className="car-head">
         <h2>Coleções Brasileiras</h2>
       </div>
-      {/* marquee: rola sozinho devagar, em loop infinito (duplicamos os itens) */}
-      <div className="col-marquee-wrap">
-        <div className="col-marquee" style={{ animationDuration: `${Math.max(24, teams.length * 4)}s` }}>
+      <div className="col-marquee-wrap" ref={wrapRef}>
+        <div className="col-marquee">
           {teams.map((t) => <TeamCard key={t.id} t={t} />)}
           {teams.map((t) => <TeamCard key={`dup-${t.id}`} t={t} />)}
         </div>
