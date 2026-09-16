@@ -60,6 +60,21 @@ export const feedbacks = pgTable("feedbacks", {
 export type FeedbackRow = typeof feedbacks.$inferSelect;
 export type NewFeedbackRow = typeof feedbacks.$inferInsert;
 
+/** Solicitações de camisa que o cliente não achou na busca. */
+export const productRequests = pgTable("product_requests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name"),
+  contact: text("contact").notNull(), // whatsapp ou e-mail
+  query: text("query"), // termo buscado que não achou
+  description: text("description").notNull(),
+  imageUrl: text("image_url"), // foto de referência (R2), opcional
+  status: text("status").notNull().default("novo"), // novo | respondido | resolvido
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type ProductRequestRow = typeof productRequests.$inferSelect;
+export type NewProductRequestRow = typeof productRequests.$inferInsert;
+
 /** Catálogo de produtos cadastrados pelo admin. */
 export const products = pgTable("products", {
   id: uuid("id").defaultRandom().primaryKey(),

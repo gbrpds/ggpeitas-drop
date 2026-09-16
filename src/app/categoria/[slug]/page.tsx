@@ -134,7 +134,10 @@ export default async function CategoriaPage({
                   <div className="cart-empty">
                     <ShoppingBag strokeWidth={1.5} />
                     <h2>Nenhum resultado para esse filtro</h2>
-                    <Link className="btn btn-g" href={`/categoria/${slug}`}>Limpar filtros</Link>
+                    <div className="empty-actions">
+                      <Link className="btn btn-g" href="/solicitar">Solicitar uma camisa</Link>
+                      <Link className="btn btn-ghost" href={`/categoria/${slug}`}>Limpar filtros</Link>
+                    </div>
                   </div>
                 ) : (
                   <>

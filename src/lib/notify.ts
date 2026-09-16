@@ -36,3 +36,33 @@ export async function notifyNewSale(o: {
     console.error("ntfy notify error", e);
   }
 }
+
+/** Notificação de uma nova solicitação de camisa (cliente não achou na busca). */
+export async function notifyProductRequest(r: {
+  contact: string;
+  description: string;
+  query?: string | null;
+  name?: string | null;
+  imageUrl?: string | null;
+}): Promise<void> {
+  const topic = process.env.NTFY_TOPIC;
+  if (!topic) return;
+  try {
+    const headers: Record<string, string> = {
+      Title: "Nova solicitacao de camisa",
+      Priority: "high",
+      Tags: "mag,shirt",
+    };
+    if (r.imageUrl) headers.Attach = r.imageUrl;
+    const linhas = [
+      r.name ? `Cliente: ${r.name}` : "",
+      `Contato: ${r.contact}`,
+      r.query ? `Buscou: ${r.query}` : "",
+      `Pedido: ${r.description}`,
+      r.imageUrl ? `Foto: ${r.imageUrl}` : "",
+    ].filter(Boolean);
+    await fetch(`https://ntfy.sh/${topic}`, { method: "POST", headers, body: linhas.join("\n") });
+  } catch (e) {
+    console.error("ntfy request error", e);
+  }
+}

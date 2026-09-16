@@ -135,8 +135,11 @@ export default async function BuscaPage({
                 <div className="cart-empty">
                   <SearchIcon strokeWidth={1.5} />
                   <h2>Nenhum resultado encontrado</h2>
-                  <p>Tente outro termo ou remova os filtros.</p>
-                  <Link className="btn btn-g" href="/">Voltar à loja</Link>
+                  <p>Não achou a camisa que procurava? A gente busca pra você — é só pedir.</p>
+                  <div className="empty-actions">
+                    <Link className="btn btn-g" href={`/solicitar${q ? `?q=${encodeURIComponent(q)}` : ""}`}>Solicitar essa camisa</Link>
+                    <Link className="btn btn-ghost" href="/">Voltar à loja</Link>
+                  </div>
                 </div>
               ) : (
                 <>

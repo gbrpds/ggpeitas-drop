@@ -207,6 +207,11 @@ function expandRetroYear(year: string): string {
 export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): ImportedProduct {
   const clean = rawTitle
     .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "") // bandeiras/emoji
+    // apelidos do fornecedor p/ Manchester United ("M-U", "M United", "M. United",
+    // "M-U1998"...) e Liverpool ("LFC")
+    .replace(/\bM[.\s-]*United\b/gi, "Manchester United")
+    .replace(/\bM[.\s-]*U(?![a-z])/gi, " Manchester United ")
+    .replace(/\bLFC\b/gi, "Liverpool")
     // temporada sem barra: "2627" → "26/27", "2526" → "25/26" (dois anos seguidos)
     .replace(/\b(\d{2})(\d{2})\b/g, (m, a, b) => (Number(b) === Number(a) + 1 ? `${a}/${b}` : m))
     // temporada com traço/espaço: "23-24" / "22 / 23" → "23/24" / "22/23"
