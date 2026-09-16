@@ -4,10 +4,10 @@ Suba os arquivos aqui com estes nomes exatos (usados em src/data/collections.ts)
   gigantes-europeus.jpg
   premier-league.jpg
   la-liga.jpg
-  liga-italiana.jpg
+  serie-a.jpg
   bundesliga.jpg
-  ligue-1.jpg
-  liga-argentina.jpg
+  ligue-one.jpg
+  lpf.jpg          (Liga Profesional Argentina)
 
 Especificação:
 - Proporção 2:1 (o card é 300x150). Envie em 2x/3x para ficar nítido em telas retina:
