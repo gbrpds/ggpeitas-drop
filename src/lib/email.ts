@@ -24,7 +24,8 @@ export async function sendEmail(opts: {
       },
       body: JSON.stringify({
         from,
-        to: opts.to,
+        // Resend espera uma lista quando há mais de um destinatário
+        to: opts.to.includes(",") ? opts.to.split(",").map((s) => s.trim()).filter(Boolean) : opts.to,
         subject: opts.subject,
         html: opts.html,
         ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
