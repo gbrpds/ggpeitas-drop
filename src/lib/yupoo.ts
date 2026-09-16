@@ -106,6 +106,30 @@ export type ImportedProduct = {
 
 const reais = (v: number) => Math.round(v * 100);
 
+/** Cores (forma feminina, para concordar com "Camisa"/"Edição"). */
+const COLORS: Record<string, string> = {
+  white: "Branca", black: "Preta", blue: "Azul", red: "Vermelha",
+  yellow: "Amarela", green: "Verde", purple: "Roxa", pink: "Rosa",
+  orange: "Laranja", gray: "Cinza", grey: "Cinza", gold: "Dourada",
+  silver: "Prata", brown: "Marrom", navy: "Azul-Marinho", beige: "Bege",
+};
+const colorRe = new RegExp(`\\b(${Object.keys(COLORS).join("|")})\\b`, "i");
+
+/** Palavras conhecidas para nomear edições especiais (o resto mantém o original). */
+const EDITION_WORDS: Record<string, string> = {
+  special: "Especial", anniversary: "Aniversário", commemorative: "Comemorativa",
+  champions: "Campeões", champion: "Campeão", legend: "Lenda", legends: "Lendas",
+  training: "Treino", concept: "Conceito", classic: "Clássica", heritage: "Herança",
+  ...COLORS,
+};
+
+/** Traduz o nome de uma edição: cor/palavra conhecida ou mantém capitalizado. */
+function editionLabel(word: string): string {
+  const k = word.toLowerCase();
+  if (EDITION_WORDS[k]) return EDITION_WORDS[k];
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
 /** Expande o ano de camisas retrô: "93/94" → "1993/94"; "05/06" → "2005/06". */
 function expandRetroYear(year: string): string {
   const m = year.match(/^(\d{2})\/(\d{2})$/);
@@ -165,6 +189,16 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
   else if (/\baway\b/i.test(clean)) tipo = "Away";
   else if (/\bhome\b/i.test(clean)) tipo = "Home";
   else if (/\bspecial\b/i.test(clean)) tipo = "Edição Especial";
+  // "Superman Edition" → "Edição Superman"; "White Edition" → "Edição Branca"
+  else if (/\b[\w-]+\s+edition\b/i.test(clean)) {
+    const ed = clean.match(/\b([\w-]+)\s+edition\b/i);
+    tipo = ed ? `Edição ${editionLabel(ed[1])}` : "Edição Especial";
+  }
+  // cor "solta" (sem outro modelo): "Bahia 26/27 White Jersey" → "Edição Branca"
+  else if (colorRe.test(clean)) {
+    const c = clean.match(colorRe);
+    if (c) tipo = `Edição ${COLORS[c[1].toLowerCase()]}`;
+  }
 
   const teamLabel = team ?? "Camisa";
   // Crop top e infantil não levam sufixo de gênero
