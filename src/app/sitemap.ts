@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const url = baseUrl();
   const now = new Date();
   const cats = ["brasileirao", "europa", "mundo", "selecoes", "retro", "feminina", "infantil"];
-  const staticPaths = ["", "/busca", "/promocao", "/solicitar", "/rastrear", "/blog"];
+  const staticPaths = ["", "/busca", "/promocao", "/solicitar", "/rastrear", "/blog", "/quem-somos", "/contato", "/faq", "/trocas"];
 
   let products: { id: string }[] = [];
   try {

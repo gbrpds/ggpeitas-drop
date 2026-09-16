@@ -1086,6 +1086,22 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .blog-cta { margin-top:34px; padding:22px; border:1px solid var(--line); border-radius:14px; background:var(--ground);
   display:flex; flex-direction:column; gap:12px; align-items:flex-start; }
 .blog-cta p { margin:0; font-weight:600; }
+/* contato */
+.contato-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; margin:20px 0; }
+.contato-card { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--line);
+  border-radius:12px; padding:16px; text-decoration:none; color:var(--ink); }
+.contato-card:hover { border-color:var(--green); }
+.contato-card svg { color:var(--green-deep); flex:none; }
+.contato-card div { display:flex; flex-direction:column; }
+.contato-card b { font-size:.95rem; } .contato-card span { font-size:.82rem; color:var(--muted); }
+/* faq */
+.faq-list { display:flex; flex-direction:column; gap:10px; margin:18px 0; }
+.faq-item { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:2px 16px; }
+.faq-item summary { cursor:pointer; font-weight:700; padding:14px 0; list-style:none; display:flex; justify-content:space-between; align-items:center; }
+.faq-item summary::after { content:"+"; color:var(--muted); font-size:1.3rem; font-weight:400; }
+.faq-item[open] summary::after { content:"−"; }
+.faq-item summary::-webkit-details-marker { display:none; }
+.faq-item p { margin:0 0 14px; color:var(--muted); line-height:1.6; }
 .adm-combo-head { display:flex; align-items:center; justify-content:space-between; width:100%; text-align:left;
   background:none; border:0; padding:9px 11px; border-radius:8px; cursor:pointer; font-weight:800; font-size:.82rem;
   text-transform:uppercase; letter-spacing:.04em; color:var(--ink); }
