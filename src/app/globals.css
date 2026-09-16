@@ -221,6 +221,8 @@ nav.main li:hover > .drop { opacity:1; visibility:visible; transform:translateY(
 .car-bar-thumb { position:absolute; top:0; height:100%; min-width:28px; border-radius:20px; background:var(--muted);
   transition:background .15s; }
 .car-bar:hover .car-bar-thumb { background:var(--green); }
+/* no desktop, só as setas navegam (esconde a barrinha de arrastar) */
+@media (min-width:700px) { .car-bar { display:none; } }
 .card { flex:0 0 auto; width:210px; background:var(--surface); border:1px solid var(--line);
   border-radius:var(--radius); overflow:hidden; scroll-snap-align:start; display:flex; flex-direction:column; }
 .card .media { position:relative; aspect-ratio:1/1; background:#ffffff; display:grid; place-items:center; }
