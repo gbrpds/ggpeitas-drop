@@ -54,6 +54,17 @@ export function shouldSkipTitle(title: string): boolean {
 const normLower = (s: string) =>
   s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/\s{2,}/g, " ").trim();
 
+/** Seleções: nome do país (EN/PT normalizado) → nome canônico em PT. */
+const COUNTRY: Record<string, string> = {
+  brazil: "Brasil", brasil: "Brasil", argentina: "Argentina", uruguay: "Uruguai",
+  uruguai: "Uruguai", portugal: "Portugal", spain: "Espanha", espanha: "Espanha",
+  france: "França", franca: "França", germany: "Alemanha", alemanha: "Alemanha",
+  england: "Inglaterra", inglaterra: "Inglaterra", italy: "Itália", italia: "Itália",
+  netherlands: "Holanda", holanda: "Holanda", mexico: "México", japan: "Japão",
+  colombia: "Colômbia", chile: "Chile", croatia: "Croácia", belgium: "Bélgica",
+  morocco: "Marrocos", "united states": "Estados Unidos", usa: "Estados Unidos",
+};
+
 /** Times da Série A (do menu do fornecedor), com apelidos, para filtrar só o Brasileirão. */
 export const BRASILEIRAO_TEAMS = [
   "flamengo", "palmeiras", "sao paulo", "corinthians", "santos", "gremio",
@@ -190,9 +201,12 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
 
   // time: prioriza o nome informado no admin (força tag/categoria e o filtro)
   const teamName = teamOverride?.trim() || teamRaw;
-  const hit = classifyTeam(teamName);
-  const team = teamName || null;
-  const category = isRetro ? "retro" : hit?.category ?? "brasileirao";
+  // seleções: traduz o país (Brazil → Brasil) e manda para a categoria "selecoes"
+  const countryPt = COUNTRY[normLower(teamName)];
+  const finalTeam = countryPt ?? teamName;
+  const hit = classifyTeam(finalTeam);
+  const team = finalTeam || null;
+  const category = isRetro ? "retro" : countryPt ? "selecoes" : hit?.category ?? "brasileirao";
 
   // TIPO — na ordem de prioridade dos padrões do fornecedor
   let tipo = "";
