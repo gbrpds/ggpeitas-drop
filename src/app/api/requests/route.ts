@@ -65,7 +65,13 @@ export async function POST(req: Request) {
 
   // notifica o dono (push + e-mail) — não bloqueia a resposta em caso de erro
   notifyProductRequest({ contact, description, query, name, imageUrl }).catch(() => {});
-  const admins = adminEmails();
+  // destinatário do e-mail: STORE_EMAIL (dedicado, não dá acesso admin) ou, se
+  // não configurado, cai nos e-mails do admin.
+  const recipients = (process.env.STORE_EMAIL ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const admins = recipients.length ? recipients : adminEmails();
   if (admins.length) {
     const html = `
       <h2>Nova solicitação de camisa</h2>
