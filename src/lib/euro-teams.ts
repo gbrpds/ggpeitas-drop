@@ -142,7 +142,9 @@ export const EURO_TEAMS: EuroTeam[] = [
   { name: "Saint-Étienne", keys: ["saintetienne", "asse"], league: "ligue1" },
   { name: "Metz", keys: ["fcmetz", "metz"], league: "ligue1" },
   { name: "Lorient", keys: ["fclorient", "lorient"], league: "ligue1" },
-  { name: "Bordeaux", keys: ["girondinsbordeaux", "bordeaux"], league: "ligue1" },
+  { name: "Paris FC", keys: ["parisfc"], league: "ligue1" },
+  { name: "AS Cannes", keys: ["ascannes", "cannes"], league: "ligue1" },
+  { name: "Bordeaux", keys: ["girondinsdebordeaux", "girondinsbordeaux", "bordeaux"], league: "ligue1" },
 ];
 
 // índice (chave → nome) e lista de chaves ordenada da mais longa para a mais curta
