@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Trash2, Pencil, Search, ExternalLink, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { brl } from "@/lib/format";
 import { genderOf, modeloOf } from "@/lib/facets";
+import { leagueOfTeam } from "@/lib/euro-teams";
 
 const CAT_LABEL: Record<string, string> = {
   brasileirao: "Brasileirão",
@@ -157,11 +158,11 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
     } catch {}
   }, [team, q, cat, gender, modelo, status, onlyPromo, onlyOut]);
 
-  // times agrupados por coleção (Brasileirão/Europa/Seleções/Outros),
-  // deduzindo o grupo pela categoria dos produtos de cada time
+  // times agrupados por coleção; a Europa é subdividida por liga
+  // (La Liga, Serie A, Premier League, Bundesliga, Ligue One)
   const teamGroups = useMemo<TeamGroup[]>(() => {
     const GRP: Record<string, string> = { brasileirao: "Brasileirão", europa: "Europa", selecoes: "Seleções" };
-    const primary = new Map<string, string>(); // time -> rótulo do grupo
+    const primary = new Map<string, string>(); // time -> categoria base
     const allTeams = new Set<string>();
     for (const r of items) {
       const t = r.team?.trim();
@@ -170,11 +171,17 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
       const g = GRP[r.category];
       if (g && !primary.has(t)) primary.set(t, g);
     }
-    const buckets: Record<string, string[]> = { Brasileirão: [], Europa: [], Seleções: [], Outros: [] };
-    for (const t of allTeams) buckets[primary.get(t) ?? "Outros"].push(t);
-    return ["Brasileirão", "Europa", "Seleções", "Outros"]
-      .map((label) => ({ label, teams: buckets[label].sort((a, b) => a.localeCompare(b, "pt-BR")) }))
-      .filter((g) => g.teams.length > 0);
+    const buckets: Record<string, string[]> = {};
+    const put = (label: string, t: string) => (buckets[label] ??= []).push(t);
+    for (const t of allTeams) {
+      const base = primary.get(t) ?? "Outros";
+      if (base === "Europa") put(leagueOfTeam(t) ?? "Europa (outros)", t);
+      else put(base, t);
+    }
+    const order = ["Brasileirão", "La Liga", "Serie A", "Premier League", "Bundesliga", "Ligue One", "Europa (outros)", "Seleções", "Outros"];
+    return order
+      .filter((label) => buckets[label]?.length)
+      .map((label) => ({ label, teams: buckets[label].sort((a, b) => a.localeCompare(b, "pt-BR")) }));
   }, [items]);
 
   // facetas (contagem por coleção/gênero/modelo) sobre todos os itens

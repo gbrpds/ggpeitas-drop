@@ -7,7 +7,8 @@
  * Fonte única: `league` marca a coleção (ex.: "laliga") e `giant` marca os
  * "Gigantes Europeus" (vitrine com os grandes clubes do continente).
  */
-export type EuroTeam = { name: string; keys: string[]; league?: "laliga" | "seriea"; giant?: boolean };
+export type League = "laliga" | "seriea" | "premier" | "bundesliga" | "ligue1";
+export type EuroTeam = { name: string; keys: string[]; league?: League; giant?: boolean };
 
 const key = (s: string) =>
   s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -58,51 +59,51 @@ export const EURO_TEAMS: EuroTeam[] = [
   { name: "CD Castellón", keys: ["cdcastellon", "castellon"], league: "laliga" },
   { name: "UD Almería", keys: ["udalmeria", "almeria"], league: "laliga" },
   // Gigantes Europeus (grandes clubes do continente)
-  { name: "Manchester United", keys: ["manchesterunited", "manutd", "manunited"], giant: true },
-  { name: "Manchester City", keys: ["manchestercity", "mancity"], giant: true },
-  { name: "Liverpool", keys: ["liverpool", "lfc"], giant: true },
-  { name: "Chelsea", keys: ["chelsea"], giant: true },
+  { name: "Manchester United", keys: ["manchesterunited", "manutd", "manunited"], league: "premier", giant: true },
+  { name: "Manchester City", keys: ["manchestercity", "mancity"], league: "premier", giant: true },
+  { name: "Liverpool", keys: ["liverpool", "lfc"], league: "premier", giant: true },
+  { name: "Chelsea", keys: ["chelsea"], league: "premier", giant: true },
   { name: "Juventus", keys: ["juventus", "juve", "juv"], league: "seriea", giant: true },
   { name: "Milan", keys: ["acmilan", "milan"], league: "seriea", giant: true },
   { name: "Internazionale", keys: ["internazionale", "intermilan"], league: "seriea", giant: true },
-  { name: "Bayern de Munique", keys: ["bayernmunich", "bayernmunchen", "bayern"], giant: true },
-  { name: "Borussia Dortmund", keys: ["borussiadortmund", "dortmund"], giant: true },
-  { name: "Hamburgo", keys: ["hamburgersv", "hamburgo", "hamburg"], giant: true },
+  { name: "Bayern de Munique", keys: ["bayernmunich", "bayernmunchen", "bayern"], league: "bundesliga", giant: true },
+  { name: "Borussia Dortmund", keys: ["borussiadortmund", "dortmund"], league: "bundesliga", giant: true },
+  { name: "Hamburgo", keys: ["hamburgersv", "hamburgo", "hamburg"], league: "bundesliga", giant: true },
   { name: "Ajax", keys: ["ajaxamsterdam", "afcajax", "ajax"], giant: true },
   { name: "Benfica", keys: ["slbenfica", "benfica"], giant: true },
   { name: "PSV", keys: ["psveindhoven", "psv"], giant: true },
-  { name: "Olympique de Marseille", keys: ["olympiquedemarseille", "olympiquemarseille", "marseille"], giant: true },
-  { name: "PSG", keys: ["parissaintgermain", "psg"], giant: false },
+  { name: "Olympique de Marseille", keys: ["olympiquedemarseille", "olympiquemarseille", "marseille"], league: "ligue1", giant: true },
+  { name: "PSG", keys: ["parissaintgermain", "psg"], league: "ligue1", giant: false },
   // Premier League (Arsenal/Chelsea/Man City/Man United/Liverpool acima)
-  { name: "Arsenal", keys: ["arsenal"] },
-  { name: "Tottenham", keys: ["tottenhamhotspur", "tottenham", "spurs"] },
-  { name: "West Ham United", keys: ["westhamunited", "westham"] },
-  { name: "Wolverhampton", keys: ["wolverhampton", "wolves"] },
-  { name: "Aston Villa", keys: ["astonvilla"] },
-  { name: "Everton", keys: ["everton"] },
-  { name: "Leicester City", keys: ["leicestercity", "leicester"] },
-  { name: "Newcastle United", keys: ["newcastleunited", "newcastle"] },
-  { name: "Crystal Palace", keys: ["crystalpalace"] },
-  { name: "Brighton", keys: ["brightonhovealbion", "brighton"] },
-  { name: "Fulham", keys: ["fulham"] },
-  { name: "Sheffield Wednesday", keys: ["sheffieldwednesday"] },
-  { name: "Sunderland", keys: ["sunderland"] },
-  { name: "Southampton", keys: ["southampton"] },
-  { name: "Birmingham City", keys: ["birminghamcity", "birmingham"] },
-  { name: "Leeds United", keys: ["leedsunited", "leeds"] },
-  { name: "Nottingham Forest", keys: ["nottinghamforest", "nottingham"] },
-  { name: "Coventry City", keys: ["coventrycity", "coventry"] },
-  { name: "Hull City", keys: ["hullcity"] },
-  { name: "Blackburn Rovers", keys: ["blackburnrovers", "blackburn"] },
-  { name: "Lincoln City", keys: ["lincolncity", "lincoln"] },
-  { name: "Derby County", keys: ["derbycounty", "derby"] },
-  { name: "Bradford City", keys: ["bradfordcity", "bradford"] },
-  { name: "Plymouth Argyle", keys: ["plymouthargyle", "plymouth"] },
-  { name: "Queens Park Rangers", keys: ["queensparkrangers", "qpr"] },
-  { name: "Preston", keys: ["prestonnorthend", "preston"] },
-  { name: "Portsmouth", keys: ["portsmouth"] },
-  { name: "Bournemouth", keys: ["afcbournemouth", "bournemouth"] },
-  { name: "Wrexham", keys: ["wrexham"] },
+  { name: "Arsenal", keys: ["arsenal"], league: "premier" },
+  { name: "Tottenham", keys: ["tottenhamhotspur", "tottenham", "spurs"], league: "premier" },
+  { name: "West Ham United", keys: ["westhamunited", "westham"], league: "premier" },
+  { name: "Wolverhampton", keys: ["wolverhampton", "wolves"], league: "premier" },
+  { name: "Aston Villa", keys: ["astonvilla"], league: "premier" },
+  { name: "Everton", keys: ["everton"], league: "premier" },
+  { name: "Leicester City", keys: ["leicestercity", "leicester"], league: "premier" },
+  { name: "Newcastle United", keys: ["newcastleunited", "newcastle"], league: "premier" },
+  { name: "Crystal Palace", keys: ["crystalpalace"], league: "premier" },
+  { name: "Brighton", keys: ["brightonhovealbion", "brighton"], league: "premier" },
+  { name: "Fulham", keys: ["fulham"], league: "premier" },
+  { name: "Sheffield Wednesday", keys: ["sheffieldwednesday"], league: "premier" },
+  { name: "Sunderland", keys: ["sunderland"], league: "premier" },
+  { name: "Southampton", keys: ["southampton"], league: "premier" },
+  { name: "Birmingham City", keys: ["birminghamcity", "birmingham"], league: "premier" },
+  { name: "Leeds United", keys: ["leedsunited", "leeds"], league: "premier" },
+  { name: "Nottingham Forest", keys: ["nottinghamforest", "nottingham"], league: "premier" },
+  { name: "Coventry City", keys: ["coventrycity", "coventry"], league: "premier" },
+  { name: "Hull City", keys: ["hullcity"], league: "premier" },
+  { name: "Blackburn Rovers", keys: ["blackburnrovers", "blackburn"], league: "premier" },
+  { name: "Lincoln City", keys: ["lincolncity", "lincoln"], league: "premier" },
+  { name: "Derby County", keys: ["derbycounty", "derby"], league: "premier" },
+  { name: "Bradford City", keys: ["bradfordcity", "bradford"], league: "premier" },
+  { name: "Plymouth Argyle", keys: ["plymouthargyle", "plymouth"], league: "premier" },
+  { name: "Queens Park Rangers", keys: ["queensparkrangers", "qpr"], league: "premier" },
+  { name: "Preston", keys: ["prestonnorthend", "preston"], league: "premier" },
+  { name: "Portsmouth", keys: ["portsmouth"], league: "premier" },
+  { name: "Bournemouth", keys: ["afcbournemouth", "bournemouth"], league: "premier" },
+  { name: "Wrexham", keys: ["wrexham"], league: "premier" },
   // Serie A (Juventus/Milan/Internazionale acima)
   { name: "Napoli", keys: ["napoli", "naples"], league: "seriea" },
   { name: "Roma", keys: ["asroma", "roma", "rome"], league: "seriea" },
@@ -136,6 +137,22 @@ export const LA_LIGA_TEAMS = uniq(EURO_TEAMS.filter((t) => t.league === "laliga"
 
 /** Nomes canônicos de todos os times da Serie A (para a coleção da home). */
 export const SERIE_A_TEAMS = uniq(EURO_TEAMS.filter((t) => t.league === "seriea").map((t) => t.name));
+
+/** Rótulo em PT de cada liga (para agrupar no filtro do admin). */
+export const LEAGUE_LABEL: Record<League, string> = {
+  laliga: "La Liga",
+  seriea: "Serie A",
+  premier: "Premier League",
+  bundesliga: "Bundesliga",
+  ligue1: "Ligue One",
+};
+const TEAMKEY_TO_LEAGUE = new Map<string, League>();
+for (const t of EURO_TEAMS) if (t.league) TEAMKEY_TO_LEAGUE.set(key(t.name), t.league);
+/** Liga (rótulo PT) de um time europeu, ou null se não for de liga mapeada. */
+export function leagueOfTeam(name: string): string | null {
+  const lg = TEAMKEY_TO_LEAGUE.get(key(name));
+  return lg ? LEAGUE_LABEL[lg] : null;
+}
 
 /** Nomes canônicos dos "Gigantes Europeus" (vitrine dos grandes clubes). */
 export const GIGANTES_EUROPEUS = uniq(EURO_TEAMS.filter((t) => t.giant).map((t) => t.name));
