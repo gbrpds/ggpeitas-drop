@@ -1063,6 +1063,29 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .adm-combo-opt:hover { background:var(--ground); }
 .adm-combo-opt.on { color:var(--green-deep); font-weight:700; }
 .adm-combo-empty { padding:10px 11px; color:var(--muted); font-size:.85rem; }
+
+/* blog */
+.blog-page { padding:24px 0 60px; }
+.blog-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:18px; margin-top:22px; }
+.blog-card { display:flex; flex-direction:column; gap:8px; background:var(--surface); border:1px solid var(--line);
+  border-radius:14px; padding:20px; text-decoration:none; color:var(--ink); transition:transform .2s, box-shadow .2s; }
+.blog-card:hover { transform:translateY(-3px); box-shadow:0 16px 34px -18px rgba(0,0,0,.4); }
+.blog-card h2 { font-size:1.12rem; line-height:1.25; margin:2px 0; }
+.blog-card p { font-size:.9rem; color:var(--muted); line-height:1.5; margin:0; }
+.blog-tag { align-self:flex-start; background:rgba(15,138,61,.12); color:var(--green-deep); font-weight:800;
+  font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; padding:4px 10px; border-radius:999px; }
+.blog-meta { color:var(--muted); font-size:.82rem; }
+.blog-article { max-width:720px; padding:24px 0 60px; }
+.blog-article h1 { font-family:var(--disp); font-size:2rem; line-height:1.12; margin:10px 0 6px; }
+.blog-body { margin-top:18px; color:var(--ink); font-size:1.02rem; line-height:1.75; }
+.blog-body h2 { font-family:var(--disp); font-size:1.35rem; margin:28px 0 8px; }
+.blog-body p { margin:0 0 14px; }
+.blog-body ul { margin:0 0 14px; padding-left:20px; }
+.blog-body li { margin:6px 0; }
+.blog-body a { color:var(--green-deep); font-weight:700; text-decoration:underline; }
+.blog-cta { margin-top:34px; padding:22px; border:1px solid var(--line); border-radius:14px; background:var(--ground);
+  display:flex; flex-direction:column; gap:12px; align-items:flex-start; }
+.blog-cta p { margin:0; font-weight:600; }
 .adm-combo-head { display:flex; align-items:center; justify-content:space-between; width:100%; text-align:left;
   background:none; border:0; padding:9px 11px; border-radius:8px; cursor:pointer; font-weight:800; font-size:.82rem;
   text-transform:uppercase; letter-spacing:.04em; color:var(--ink); }

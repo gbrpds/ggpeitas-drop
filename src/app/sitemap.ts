@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { baseUrl } from "@/lib/site-url";
 import { getAllActive } from "@/lib/catalog";
+import { blogPosts } from "@/data/blog";
 
 export const revalidate = 3600; // atualiza o sitemap de hora em hora
 
@@ -8,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const url = baseUrl();
   const now = new Date();
   const cats = ["brasileirao", "europa", "mundo", "selecoes", "retro", "feminina", "infantil"];
-  const staticPaths = ["", "/busca", "/promocao", "/solicitar", "/rastrear"];
+  const staticPaths = ["", "/busca", "/promocao", "/solicitar", "/rastrear", "/blog"];
 
   let products: { id: string }[] = [];
   try {
@@ -29,6 +30,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.8,
+    })),
+    ...blogPosts.map((p) => ({
+      url: `${url}/blog/${p.slug}`,
+      lastModified: new Date(p.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
     ...products.map((p) => ({
       url: `${url}/produto/${p.id}`,
