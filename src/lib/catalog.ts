@@ -5,6 +5,7 @@ import { products, reviews, orders, teams } from "@/db/schema";
 import { sections as mockSections, type Product, type ProductSection } from "@/data/products";
 import { getProduct as getMockProduct } from "@/lib/product";
 import { GIGANTES_EUROPEUS_KEYS } from "@/lib/euro-teams";
+import { COUNTRY_NAMES } from "@/lib/yupoo";
 
 /**
  * Leitura do catálogo em CACHE (produtos mudam pouco). Invalidada na hora
@@ -74,6 +75,29 @@ const GIGANTES = new Set([
 const isGigante = (team?: string | null) => GIGANTES.has(teamKey(team));
 /** "Gigantes Europeus": só os grandes clubes entram na vitrine/coleção Europa. */
 const isGiganteEuropeu = (team?: string | null) => GIGANTES_EUROPEUS_KEYS.has(teamKey(team));
+/** Seleções: o time é um país reconhecido. */
+const COUNTRY_KEYSET = new Set(COUNTRY_NAMES.map((n) => teamKey(n)));
+const isCountryTeam = (team?: string | null) => COUNTRY_KEYSET.has(teamKey(team));
+const isRetroProduct = (name: string, category: string) =>
+  category === "retro" || /retr[ôo]/i.test(name);
+
+/**
+ * Tags (coleções) de um produto — uma camisa pode estar em VÁRIAS. Ex.: um
+ * Real Madrid retrô 2000 entra em Europa (gigante), Retrô — e no card da La
+ * Liga/no filtro por time (que são por time, à parte). As vitrines "Gigantes"
+ * (Brasileirão/Europa) só aceitam os grandes; Retrô/Seleções/Feminina/Infantil
+ * entram por atributo.
+ */
+function tagsOf(r: Row): string[] {
+  const t = new Set<string>();
+  if (isGigante(r.team)) t.add("brasileirao");
+  if (isGiganteEuropeu(r.team)) t.add("europa");
+  if (isCountryTeam(r.team) || r.category === "selecoes") t.add("selecoes");
+  if (isRetroProduct(r.name, r.category)) t.add("retro");
+  if (r.feminina || r.category === "feminina") t.add("feminina");
+  if (r.infantil || r.category === "infantil") t.add("infantil");
+  return [...t];
+}
 
 type Row = typeof products.$inferSelect;
 
@@ -193,17 +217,9 @@ export async function getHomeSections(): Promise<ProductSection[]> {
     for (const r of rows) {
       if (!r.active) continue; // só produtos ativos aparecem na loja
       const p = mapRow(r);
-      // vitrines de "Gigantes": só os grandes times entram (Brasileirão e Europa)
-      if (r.category === "brasileirao") {
-        if (isGigante(r.team)) pushTo("brasileirao", p);
-      } else if (r.category === "europa") {
-        if (isGiganteEuropeu(r.team)) pushTo("europa", p);
-      } else {
-        pushTo(r.category, p);
-      }
-      // flags de público convivem com a coleção (aparece também em Feminina/Infantil)
-      if (r.feminina && r.category !== "feminina") pushTo("feminina", p);
-      if (r.infantil && r.category !== "infantil") pushTo("infantil", p);
+      // uma camisa pode entrar em várias coleções (ex.: retrô do Flamengo →
+      // Brasileirão + Retrô; Real Madrid retrô → Europa + Retrô)
+      for (const tag of tagsOf(r)) pushTo(tag, p);
     }
 
     const cats = [...byCat.keys()].sort((a, b) => {
@@ -228,16 +244,7 @@ export async function getCategoryProducts(cat: string): Promise<Product[]> {
   try {
     const rows = await allRows();
     if (rows.length) {
-      const match = (r: Row) => {
-        if (!r.active) return false;
-        if (cat === "feminina") return r.category === "feminina" || r.feminina;
-        if (cat === "infantil") return r.category === "infantil" || r.infantil;
-        // Gigantes do Brasileirão: só os times gigantes
-        if (cat === "brasileirao") return r.category === "brasileirao" && isGigante(r.team);
-        // Gigantes Europeus: só os grandes clubes
-        if (cat === "europa") return r.category === "europa" && isGiganteEuropeu(r.team);
-        return r.category === cat;
-      };
+      const match = (r: Row) => r.active && tagsOf(r).includes(cat);
       return withRatings(rows.filter(match).map(mapRow));
     }
   } catch {

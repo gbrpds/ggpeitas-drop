@@ -69,6 +69,8 @@ const COUNTRY: Record<string, string> = {
   colombia: "Colômbia", chile: "Chile", croatia: "Croácia", belgium: "Bélgica",
   morocco: "Marrocos", "united states": "Estados Unidos", usa: "Estados Unidos",
 };
+/** Nomes canônicos (PT) de todas as seleções reconhecidas. */
+export const COUNTRY_NAMES = [...new Set(Object.values(COUNTRY))];
 const COUNTRY_KEYS = Object.keys(COUNTRY)
   .map((k) => ({ k, norm: k.replace(/[^a-z0-9]/g, "") }))
   .filter((x) => x.norm.length >= 4) // evita falso-positivo com chaves curtas (ex.: "usa")
