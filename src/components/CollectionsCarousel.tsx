@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Jersey } from "@/components/Jersey";
 import type { JerseyColors } from "@/data/products";
 
@@ -83,6 +83,12 @@ export function CollectionsCarousel() {
     };
   }, [teams]);
 
+  const scrollByDir = (dir: 1 | -1) => {
+    const el = wrapRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.8), behavior: "smooth" });
+  };
+
   // sem times cadastrados → não renderiza a seção
   if (!teams || teams.length === 0) return null;
 
@@ -90,6 +96,16 @@ export function CollectionsCarousel() {
     <section className="car-sec wrap reveal">
       <div className="car-head">
         <h2>Coleções Brasileiras</h2>
+        <div className="car-head-right">
+          <div className="car-arrows">
+            <button type="button" aria-label="Anterior" onClick={() => scrollByDir(-1)}>
+              <ChevronLeft size={20} strokeWidth={2.4} />
+            </button>
+            <button type="button" aria-label="Próximo" onClick={() => scrollByDir(1)}>
+              <ChevronRight size={20} strokeWidth={2.4} />
+            </button>
+          </div>
+        </div>
       </div>
       <div className="col-marquee-wrap" ref={wrapRef}>
         <div className="col-marquee">
