@@ -123,6 +123,26 @@ export const EURO_TEAMS: EuroTeam[] = [
   { name: "Genoa", keys: ["genoa"], league: "seriea" },
   { name: "Padova", keys: ["padova"], league: "seriea" },
   { name: "Perugia", keys: ["perugia"], league: "seriea" },
+  // Ligue 1 (PSG/Marseille acima)
+  { name: "Lyon", keys: ["olympiquelyonnais", "lyon"], league: "ligue1" },
+  { name: "Monaco", keys: ["asmonaco", "monaco"], league: "ligue1" },
+  { name: "Lille", keys: ["losclille", "lille", "losc"], league: "ligue1" },
+  { name: "Rennes", keys: ["staderennais", "rennes"], league: "ligue1" },
+  { name: "Nice", keys: ["ogcnice", "nice"], league: "ligue1" },
+  { name: "Lens", keys: ["rclens", "lens"], league: "ligue1" },
+  { name: "Nantes", keys: ["fcnantes", "nantes"], league: "ligue1" },
+  { name: "Strasbourg", keys: ["rcstrasbourg", "strasbourg"], league: "ligue1" },
+  { name: "Montpellier", keys: ["montpellier"], league: "ligue1" },
+  { name: "Toulouse", keys: ["toulouse"], league: "ligue1" },
+  { name: "Brest", keys: ["stadebrestois", "brest"], league: "ligue1" },
+  { name: "Reims", keys: ["stadedereims", "reims"], league: "ligue1" },
+  { name: "Auxerre", keys: ["ajauxerre", "auxerre"], league: "ligue1" },
+  { name: "Le Havre", keys: ["lehavre", "havre"], league: "ligue1" },
+  { name: "Angers", keys: ["angers"], league: "ligue1" },
+  { name: "Saint-Étienne", keys: ["saintetienne", "asse"], league: "ligue1" },
+  { name: "Metz", keys: ["fcmetz", "metz"], league: "ligue1" },
+  { name: "Lorient", keys: ["fclorient", "lorient"], league: "ligue1" },
+  { name: "Bordeaux", keys: ["girondinsbordeaux", "bordeaux"], league: "ligue1" },
 ];
 
 // índice (chave → nome) e lista de chaves ordenada da mais longa para a mais curta
