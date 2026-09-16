@@ -63,8 +63,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Não foi possível registrar. Tente novamente." }, { status: 500 });
   }
 
-  // notifica o dono (push + e-mail) — não bloqueia a resposta em caso de erro
-  notifyProductRequest({ contact, description, query, name, imageUrl }).catch(() => {});
+  // notifica o dono (push + e-mail). IMPORTANTE: aguardar antes de responder —
+  // na Vercel a função congela após a resposta e mataria envios pendentes.
+  const tasks: Promise<unknown>[] = [notifyProductRequest({ contact, description, query, name, imageUrl })];
   // destinatário do e-mail: STORE_EMAIL (dedicado, não dá acesso admin) ou, se
   // não configurado, cai nos e-mails do admin.
   const recipients = (process.env.STORE_EMAIL ?? "")
@@ -81,8 +82,19 @@ export async function POST(req: Request) {
       <p><b>Pedido:</b><br>${esc(description).replace(/\n/g, "<br>")}</p>
       ${imageUrl ? `<p><b>Foto:</b><br><a href="${imageUrl}"><img src="${imageUrl}" style="max-width:360px;border-radius:10px"></a></p>` : ""}
     `;
-    sendEmail({ to: admins.join(","), subject: "GG Peitas — Nova solicitação de camisa", html, replyTo: contact.includes("@") ? contact : undefined }).catch(() => {});
+    tasks.push(
+      sendEmail({
+        to: admins.join(","),
+        subject: "GG Peitas — Nova solicitação de camisa",
+        html,
+        replyTo: contact.includes("@") ? contact : undefined,
+      }),
+    );
   }
+  const results = await Promise.allSettled(tasks);
+  const emailResult = admins.length ? results[1] : null;
+  const emailOk =
+    emailResult?.status === "fulfilled" && (emailResult.value as { ok?: boolean })?.ok === true;
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, emailOk, notifiedTo: admins });
 }
