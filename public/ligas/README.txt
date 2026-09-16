@@ -8,6 +8,8 @@ Suba os arquivos aqui com estes nomes exatos (usados em src/data/collections.ts)
   bundesliga.png
   ligue-one.png
   lpf.png          (Liga Profesional Argentina)
+  brasileirao.png
+  mls.png
 
 Especificação:
 - Proporção 2:1 (o card é 300x150). Envie em 2x/3x para ficar nítido em telas retina:
