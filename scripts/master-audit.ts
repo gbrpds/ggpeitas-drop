@@ -77,6 +77,7 @@ async function main() {
   const retroBad: string[] = [];
   for (const r of active) {
     if (!/retr[ôo]/i.test(r.name)) continue;
+    if (/\(manga longa\)/i.test(r.name)) continue; // manga longa = 229,90 sempre
     const y = season(r.name); if (!y) continue;
     const esperado = y <= 2016 ? 22990 : 18990;
     if (r.price_cents !== esperado) retroBad.push(`${r.name} (${y}) R$${(r.price_cents / 100).toFixed(2)} → esperado R$${(esperado / 100).toFixed(2)}`);

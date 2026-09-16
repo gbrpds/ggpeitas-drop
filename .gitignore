@@ -32,3 +32,8 @@ next-env.d.ts
 
 # reference (mockup estático)
 home-mockup.html
+
+scripts/ml-sheets/
+scripts/dedup-review/
+scripts/sleeves/
+scripts/*-plan.json
