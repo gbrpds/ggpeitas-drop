@@ -9,9 +9,17 @@ export function LeaguesCarousel() {
   return (
     <Carousel title="Ligas do mundo" trackClassName="col-track">
       {leagueCollections.map((c) => {
-        const bg = {
-          backgroundImage: `linear-gradient(120deg, rgba(0,0,0,.35), rgba(0,0,0,.05)), linear-gradient(120deg, ${c.colors[0]}, ${c.colors[1]})`,
-        };
+        // com imagem: escurece um pouco por cima (texto legível) e mantém o
+        // gradiente de cor por baixo como fallback caso a imagem não exista.
+        const bg: React.CSSProperties = c.image
+          ? {
+              backgroundImage: `linear-gradient(120deg, rgba(0,0,0,.55), rgba(0,0,0,.2)), url(${c.image}), linear-gradient(120deg, ${c.colors[0]}, ${c.colors[1]})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }
+          : {
+              backgroundImage: `linear-gradient(120deg, rgba(0,0,0,.35), rgba(0,0,0,.05)), linear-gradient(120deg, ${c.colors[0]}, ${c.colors[1]})`,
+            };
         return (
           <Link key={c.title} className="league-card" style={bg} href={c.href}>
             <b className="league-card-title">{c.title}</b>
