@@ -23,26 +23,26 @@ export default function Trocas() {
           <h1>Trocas e devoluções</h1>
           <div className="blog-body">
             <p>Queremos que você fique 100% satisfeito com a sua camisa. Veja como funcionam nossas trocas e devoluções.</p>
-            <h2>Direito de arrependimento (7 dias)</h2>
+            <h2>Trocas e devoluções: como funciona</h2>
             <p>
-              Conforme o Código de Defesa do Consumidor, você pode desistir da compra em até <strong>7 dias corridos</strong>
-              após o recebimento, sem necessidade de justificativa. O produto deve estar sem uso, com etiquetas e na
-              embalagem original.
+              Como as compras são enviadas direto da China, por causa do tempo de entrega, as trocas e devoluções
+              são feitas <strong>somente quando o produto apresenta falhas</strong> (defeito de fabricação). Por isso,
+              recomendamos conferir bem o tamanho antes de comprar.
             </p>
-            <h2>Defeito de fabricação</h2>
+            <h2>Produto com defeito</h2>
             <p>
-              Se a peça chegar com algum defeito, entre em contato em até <strong>7 dias</strong> após o recebimento com
-              fotos do problema. Faremos a troca ou a devolução do valor.
+              Se a peça chegar com algum defeito, entre em contato em até <strong>7 dias</strong> após o recebimento
+              com fotos do problema. Vamos avaliar e resolver da melhor forma para você.
             </p>
-            <h2>Troca de tamanho</h2>
+            <h2>Confira o tamanho antes de comprar</h2>
             <p>
-              Ficou justa ou folgada? Fale com a gente. Como cada modelo vem do fornecedor, a troca de tamanho depende de
-              disponibilidade — por isso, confira a tabela de medidas antes de comprar (na dúvida, suba um tamanho).
+              As camisas importadas tendem a vestir um pouco mais justo. Consulte a tabela de medidas na página do
+              produto e, na dúvida entre dois tamanhos, suba um. Isso evita a maioria dos problemas de caimento.
             </p>
             <h2>Como solicitar</h2>
             <p>
-              É simples: entre em <Link href="/contato">Contato</Link> com o número do pedido e o motivo. Nosso time
-              orienta o passo a passo do envio e da restituição.
+              É simples: entre em <Link href="/contato">Contato</Link> com o número do pedido e as fotos. Nosso time
+              orienta o passo a passo.
             </p>
           </div>
           <div className="blog-cta">

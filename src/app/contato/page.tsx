@@ -23,7 +23,7 @@ export default function Contato() {
         <article className="wrap blog-article">
           <h1>Contato</h1>
           <div className="blog-body">
-            <p>Ficou com alguma dúvida ou quer falar com a gente? Escolha o canal que preferir — respondemos o mais rápido possível.</p>
+            <p>Ficou com alguma dúvida ou quer falar com a gente? Escolha o canal que preferir, respondemos o mais rápido possível.</p>
           </div>
           <div className="contato-list">
             <a className="contato-card" href="https://www.instagram.com/ggpeitas/" target="_blank" rel="noopener noreferrer">

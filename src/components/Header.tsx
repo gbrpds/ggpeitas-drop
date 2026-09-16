@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, Search, User, ShoppingCart, Package, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, Search, User, ShoppingCart, Package, LogOut, LayoutDashboard, Star } from "lucide-react";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 import { useUI } from "@/store/ui";
@@ -105,6 +105,9 @@ export function Header() {
                 </Link>
                 <Link href="/pedidos" onClick={() => setAccOpen(false)}>
                   <Package strokeWidth={1.8} /> Meus pedidos
+                </Link>
+                <Link href="/favoritos" onClick={() => setAccOpen(false)}>
+                  <Star strokeWidth={1.8} /> Favoritos
                 </Link>
                 {isAdmin && (
                   <Link href="/admin" onClick={() => setAccOpen(false)}>

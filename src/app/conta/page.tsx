@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { User as UserIcon, Package, MapPin } from "lucide-react";
+import { User as UserIcon, Package, MapPin, Star } from "lucide-react";
 import { auth, googleEnabled } from "@/auth";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
@@ -63,6 +63,11 @@ export default async function ContaPage({
                   <UserIcon strokeWidth={1.8} />
                   <b>Meus dados</b>
                   <span>Endereço, telefone e CPF</span>
+                </Link>
+                <Link className="account-card" href="/favoritos">
+                  <Star strokeWidth={1.8} />
+                  <b>Favoritos</b>
+                  <span>Suas camisas salvas</span>
                 </Link>
                 <Link className="account-card" href="/rastrear">
                   <MapPin strokeWidth={1.8} />

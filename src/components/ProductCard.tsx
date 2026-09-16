@@ -7,6 +7,7 @@ import type { Product } from "@/data/products";
 import { brl, parcela, desconto } from "@/lib/format";
 import { Jersey } from "./Jersey";
 import { Stars } from "./reviews/Stars";
+import { FavoriteStar } from "./favorites/FavoriteStar";
 
 export function ProductCard({ product }: { product: Product }) {
   const off = desconto(product.now, product.was);
@@ -38,6 +39,7 @@ export function ProductCard({ product }: { product: Product }) {
           <Jersey colors={product.colors} />
         )}
       </Link>
+      <FavoriteStar productId={product.id} />
       <div className="body">
         <div className="pr">
           <span className="now">{brl(product.now)}</span>

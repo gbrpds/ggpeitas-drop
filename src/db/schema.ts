@@ -75,6 +75,14 @@ export const productRequests = pgTable("product_requests", {
 export type ProductRequestRow = typeof productRequests.$inferSelect;
 export type NewProductRequestRow = typeof productRequests.$inferInsert;
 
+/** Favoritos (wishlist) por usuário. */
+export const favorites = pgTable("favorites", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull(),
+  productId: uuid("product_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 /** Catálogo de produtos cadastrados pelo admin. */
 export const products = pgTable("products", {
   id: uuid("id").defaultRandom().primaryKey(),

@@ -1102,6 +1102,21 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .faq-item[open] summary::after { content:"−"; }
 .faq-item summary::-webkit-details-marker { display:none; }
 .faq-item p { margin:0 0 14px; color:var(--muted); line-height:1.6; }
+.lnk-green { color:var(--green-deep); font-weight:700; text-decoration:underline; }
+
+/* favoritos: estrela no card + toast */
+.card { position:relative; }
+.cat-grid .card, .car .card { position:relative; }
+.fav-star { position:absolute; top:10px; right:10px; z-index:4; width:34px; height:34px; border-radius:50%;
+  border:0; background:rgba(255,255,255,.92); color:#b4b4b4; display:grid; place-items:center; cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.16); transition:color .15s, transform .12s, background .15s; }
+.fav-star:hover { transform:scale(1.09); color:#f5b301; }
+.fav-star.on { color:#f5b301; }
+:root.gg-dark .fav-star { background:rgba(18,21,14,.9); }
+.fav-toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#111; color:#fff;
+  padding:12px 22px; border-radius:999px; font-weight:700; font-size:.9rem; z-index:220;
+  box-shadow:0 12px 34px rgba(0,0,0,.35); animation:favpop .18s ease; }
+@keyframes favpop { from { opacity:0; transform:translate(-50%,10px); } to { opacity:1; transform:translate(-50%,0); } }
 .adm-combo-head { display:flex; align-items:center; justify-content:space-between; width:100%; text-align:left;
   background:none; border:0; padding:9px 11px; border-radius:8px; cursor:pointer; font-weight:800; font-size:.82rem;
   text-transform:uppercase; letter-spacing:.04em; color:var(--ink); }
