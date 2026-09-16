@@ -11,6 +11,15 @@ const leagueHref = (title: string, teams: string[]) =>
 
 // banners: suba os arquivos em public/ligas/ (proporção 2:1, ex.: 800x400).
 // enquanto o arquivo não existir, o gradiente de cor aparece como fallback.
+// Todos os times do Brasileirão (nomes como aparecem nos produtos)
+const BRASIL_TEAMS = [
+  "Flamengo", "Palmeiras", "Corinthians", "São Paulo", "Grêmio", "Internacional",
+  "Cruzeiro", "Atlético-MG", "Atlético Paranaense", "Vasco da Gama", "Botafogo",
+  "Fluminense", "Santos", "Bahia", "Fortaleza", "Sport Recife", "Ceará Sporting",
+  "Coritiba", "Cuiabá", "Chapecoense", "Red Bull Bragantino", "Vitória", "Náutico",
+  "Paysandu", "Remo", "Santa Cruz", "Confiança",
+];
+
 // MLS (elenco padrão — ajusto pelos menus do fornecedor quando importar)
 const MLS_TEAMS = [
   "Inter Miami", "LA Galaxy", "LAFC", "Seattle Sounders", "Atlanta United",
@@ -19,7 +28,7 @@ const MLS_TEAMS = [
 ];
 
 export const leagueCollections: LeagueCollection[] = [
-  { title: "Brasileirão", href: "/categoria/brasileirao", colors: ["#0a7d34", "#ffc400"], image: "/ligas/brasileirao.png" },
+  { title: "Brasileirão", href: leagueHref("Brasileirão", BRASIL_TEAMS), colors: ["#0a7d34", "#ffc400"], image: "/ligas/brasileirao.png" },
   { title: "Gigantes Europeus", href: "/categoria/europa", colors: ["#0a1a4f", "#1e63c9"], image: "/ligas/gigantes-europeus.png" },
   { title: "Premier League", href: leagueHref("Premier League", PREMIER_LEAGUE_TEAMS), colors: ["#3d195b", "#963cbd"], image: "/ligas/premier-league.png" },
   { title: "La Liga", href: leagueHref("La Liga", LA_LIGA_TEAMS), colors: ["#c8102e", "#ffb703"], image: "/ligas/la-liga.png" },
