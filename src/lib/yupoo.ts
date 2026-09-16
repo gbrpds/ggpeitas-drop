@@ -298,7 +298,10 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
 
   // Pré-Jogo: 129,90. Regra da promo: tudo até 189,90 entra no "Leve 3, Pague 2".
   const preJogo = tipo === "Pré-Jogo";
-  const special = category === "retro" || mangaLonga;
+  // retrô só mantém 229,90 se for de 2016 pra trás; retrô 2017+ vira 189,90 e entra na promo
+  const retroYear = isRetro ? Number((year.match(/(?:19|20)\d{2}/) ?? ["0"])[0]) : 0;
+  const retroClassic = isRetro && retroYear > 0 && retroYear <= 2016;
+  const special = retroClassic || (mangaLonga && !isRetro);
   const priceCents = preJogo ? reais(129.9) : special ? reais(229.9) : reais(189.9);
   const compareCents = preJogo ? reais(189.9) : special ? reais(299.9) : reais(269.9);
   const promo3x2 = priceCents <= reais(189.9);
