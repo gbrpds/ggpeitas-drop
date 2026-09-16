@@ -1041,6 +1041,34 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .adm-combo-opt:hover { background:var(--ground); }
 .adm-combo-opt.on { color:var(--green-deep); font-weight:700; }
 .adm-combo-empty { padding:10px 11px; color:var(--muted); font-size:.85rem; }
+
+/* layout admin com filtro lateral */
+.adm-layout { display:grid; grid-template-columns:250px 1fr; gap:20px; align-items:start; }
+.adm-side { position:sticky; top:16px; display:flex; flex-direction:column; gap:16px;
+  background:var(--card,#fff); border:1px solid var(--line); border-radius:14px; padding:16px; }
+.adm-side .adm-search { flex:none; }
+.adm-side-group { display:flex; flex-direction:column; gap:8px; }
+.adm-side-lbl { font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+.adm-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.adm-chip { display:inline-flex; align-items:center; gap:6px; background:var(--ground); border:1px solid var(--line);
+  border-radius:999px; padding:6px 11px; font-size:.82rem; font-weight:600; color:var(--ink); cursor:pointer; }
+.adm-chip span { color:var(--muted); font-size:.74rem; font-weight:700; }
+.adm-chip:hover { border-color:var(--muted); }
+.adm-chip.on { background:var(--green); border-color:var(--green); color:#fff; }
+.adm-chip.on span { color:rgba(255,255,255,.85); }
+.adm-side-check { display:flex; align-items:center; gap:8px; font-size:.86rem; font-weight:600; color:var(--ink); cursor:pointer; }
+.adm-side-check input { width:17px; height:17px; accent-color:var(--green); }
+.adm-side .adm-filter-clear { width:100%; }
+.adm-main-head { display:flex; align-items:center; margin:0 0 14px; }
+.adm-main-head .adm-filter-count { margin:0; }
+.adm-side-toggle { display:none; align-items:center; justify-content:center; gap:8px; width:100%; margin:0 0 14px;
+  background:var(--card,#fff); border:1px solid var(--line); border-radius:10px; padding:11px; font-weight:700; color:var(--ink); cursor:pointer; }
+@media (max-width:860px) {
+  .adm-layout { grid-template-columns:1fr; }
+  .adm-side-toggle { display:flex; }
+  .adm-side { position:static; display:none; }
+  .adm-side.open { display:flex; }
+}
 .adm-crosslist { display:flex; gap:18px; flex-wrap:wrap; margin:2px 0 4px; }
 .adm-check { display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:.9rem; cursor:pointer; }
 .adm-check input { width:18px; height:18px; accent-color:var(--green); }

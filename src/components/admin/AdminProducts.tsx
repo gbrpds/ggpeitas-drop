@@ -3,8 +3,19 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Trash2, Pencil, Search, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { Trash2, Pencil, Search, ExternalLink, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { brl } from "@/lib/format";
+import { genderOf, modeloOf } from "@/lib/facets";
+
+const CAT_LABEL: Record<string, string> = {
+  brasileirao: "Brasileirão",
+  europa: "Europa",
+  selecoes: "Seleções",
+  retro: "Retrô",
+  feminina: "Feminina",
+  infantil: "Conjuntos Esportivos",
+};
+const catLabel = (c: string) => CAT_LABEL[c] ?? c.charAt(0).toUpperCase() + c.slice(1);
 
 /** Miniatura do card com setas para ver todas as fotos do produto. */
 function CardMedia({ images }: { images: string[] }) {
@@ -92,6 +103,13 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [team, setTeam] = useState("");
   const [q, setQ] = useState("");
+  const [cat, setCat] = useState("");
+  const [gender, setGender] = useState("");
+  const [modelo, setModelo] = useState("");
+  const [status, setStatus] = useState<"" | "active" | "inactive">("");
+  const [onlyPromo, setOnlyPromo] = useState(false);
+  const [onlyOut, setOnlyOut] = useState(false);
+  const [sideOpen, setSideOpen] = useState(false); // toggle no mobile
 
   // mantém o filtro ao editar uma camisa e voltar (persiste entre navegações)
   const firstSave = useRef(true);
@@ -102,6 +120,12 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
         const f = JSON.parse(raw);
         if (f.team) setTeam(f.team);
         if (f.q) setQ(f.q);
+        if (f.cat) setCat(f.cat);
+        if (f.gender) setGender(f.gender);
+        if (f.modelo) setModelo(f.modelo);
+        if (f.status) setStatus(f.status);
+        if (f.onlyPromo) setOnlyPromo(true);
+        if (f.onlyOut) setOnlyOut(true);
       }
     } catch {}
   }, []);
@@ -111,9 +135,9 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
       return;
     }
     try {
-      localStorage.setItem("gg-admin-filter", JSON.stringify({ team, q }));
+      localStorage.setItem("gg-admin-filter", JSON.stringify({ team, q, cat, gender, modelo, status, onlyPromo, onlyOut }));
     } catch {}
-  }, [team, q]);
+  }, [team, q, cat, gender, modelo, status, onlyPromo, onlyOut]);
 
   const teams = useMemo(() => {
     const set = new Set<string>();
@@ -121,14 +145,36 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
     return [...set].sort((a, b) => a.localeCompare(b, "pt-BR"));
   }, [items]);
 
+  // facetas (contagem por coleção/gênero/modelo) sobre todos os itens
+  const catCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of items) m.set(r.category, (m.get(r.category) ?? 0) + 1);
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }, [items]);
+  const modelos = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of items) { const t = modeloOf(r.name); if (t) m.set(t, (m.get(t) ?? 0) + 1); }
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }, [items]);
+
   const filtered = useMemo(() => {
     const nq = norm(q.trim());
     return items.filter((r) => {
       if (team && (r.team ?? "") !== team) return false;
+      if (cat && r.category !== cat) return false;
+      if (gender && genderOf(r.name) !== gender) return false;
+      if (modelo && modeloOf(r.name) !== modelo) return false;
+      if (status === "active" && !r.active) return false;
+      if (status === "inactive" && r.active) return false;
+      if (onlyPromo && !r.promo3x2) return false;
+      if (onlyOut && r.inStock) return false;
       if (nq && !norm(r.name).includes(nq) && !norm(r.team ?? "").includes(nq)) return false;
       return true;
     });
-  }, [items, team, q]);
+  }, [items, team, q, cat, gender, modelo, status, onlyPromo, onlyOut]);
+
+  const hasFilter = !!(team || q || cat || gender || modelo || status || onlyPromo || onlyOut);
+  const clearAll = () => { setTeam(""); setQ(""); setCat(""); setGender(""); setModelo(""); setStatus(""); setOnlyPromo(false); setOnlyOut(false); };
 
   // atualiza um campo booleano no banco + localmente (sem recarregar a página)
   async function patch(id: string, field: "active" | "inStock" | "promo3x2", value: boolean) {
@@ -168,24 +214,84 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
   }
 
   return (
-    <>
-      <div className="adm-filters">
+    <div className="adm-layout">
+      <button className="adm-side-toggle" onClick={() => setSideOpen((v) => !v)}>
+        <SlidersHorizontal size={16} /> Filtros{hasFilter ? " (ativos)" : ""}
+      </button>
+
+      <aside className={`adm-side${sideOpen ? " open" : ""}`}>
         <div className="adm-search">
           <Search size={16} />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nome ou time…" />
         </div>
-        <TeamCombo teams={teams} value={team} total={items.length} onChange={setTeam} />
-        {(team || q) && (
-          <button className="adm-filter-clear" onClick={() => { setTeam(""); setQ(""); }}>Limpar</button>
-        )}
-        <span className="adm-filter-count">{filtered.length} {filtered.length === 1 ? "produto" : "produtos"}</span>
-      </div>
 
-      {filtered.length === 0 ? (
-        <div className="cart-empty"><h2>Nenhum produto para esse filtro</h2></div>
-      ) : (
-        <div className="apc-grid">
-          {filtered.map((p) => (
+        <div className="adm-side-group">
+          <label className="adm-side-lbl">Time</label>
+          <TeamCombo teams={teams} value={team} total={items.length} onChange={setTeam} />
+        </div>
+
+        <div className="adm-side-group">
+          <label className="adm-side-lbl">Coleção</label>
+          <div className="adm-chips">
+            <button className={`adm-chip${!cat ? " on" : ""}`} onClick={() => setCat("")}>Todas</button>
+            {catCounts.map(([c, n]) => (
+              <button key={c} className={`adm-chip${cat === c ? " on" : ""}`} onClick={() => setCat(cat === c ? "" : c)}>
+                {catLabel(c)} <span>{n}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="adm-side-group">
+          <label className="adm-side-lbl">Gênero</label>
+          <div className="adm-chips">
+            <button className={`adm-chip${!gender ? " on" : ""}`} onClick={() => setGender("")}>Todos</button>
+            <button className={`adm-chip${gender === "masculino" ? " on" : ""}`} onClick={() => setGender(gender === "masculino" ? "" : "masculino")}>Masculino</button>
+            <button className={`adm-chip${gender === "feminina" ? " on" : ""}`} onClick={() => setGender(gender === "feminina" ? "" : "feminina")}>Feminino</button>
+          </div>
+        </div>
+
+        {modelos.length > 0 && (
+          <div className="adm-side-group">
+            <label className="adm-side-lbl">Modelo</label>
+            <div className="adm-chips">
+              <button className={`adm-chip${!modelo ? " on" : ""}`} onClick={() => setModelo("")}>Todos</button>
+              {modelos.map(([t, n]) => (
+                <button key={t} className={`adm-chip${modelo === t ? " on" : ""}`} onClick={() => setModelo(modelo === t ? "" : t)}>
+                  {t} <span>{n}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="adm-side-group">
+          <label className="adm-side-lbl">Status</label>
+          <div className="adm-chips">
+            <button className={`adm-chip${!status ? " on" : ""}`} onClick={() => setStatus("")}>Todos</button>
+            <button className={`adm-chip${status === "active" ? " on" : ""}`} onClick={() => setStatus(status === "active" ? "" : "active")}>Ativos</button>
+            <button className={`adm-chip${status === "inactive" ? " on" : ""}`} onClick={() => setStatus(status === "inactive" ? "" : "inactive")}>Inativos</button>
+          </div>
+          <label className="adm-side-check">
+            <input type="checkbox" checked={onlyPromo} onChange={(e) => setOnlyPromo(e.target.checked)} /> Só na promoção 3×2
+          </label>
+          <label className="adm-side-check">
+            <input type="checkbox" checked={onlyOut} onChange={(e) => setOnlyOut(e.target.checked)} /> Só esgotados
+          </label>
+        </div>
+
+        {hasFilter && <button className="adm-filter-clear" onClick={clearAll}>Limpar filtros</button>}
+      </aside>
+
+      <div className="adm-main">
+        <div className="adm-main-head">
+          <span className="adm-filter-count">{filtered.length} de {items.length} {items.length === 1 ? "produto" : "produtos"}</span>
+        </div>
+        {filtered.length === 0 ? (
+          <div className="cart-empty"><h2>Nenhum produto para esse filtro</h2></div>
+        ) : (
+          <div className="apc-grid">
+            {filtered.map((p) => (
             <div className={`apc${p.active ? "" : " off"}`} key={p.id}>
               <div className="apc-media">
                 <CardMedia images={p.images} />
@@ -220,9 +326,10 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
-    </>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
