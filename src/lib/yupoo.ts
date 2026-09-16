@@ -31,6 +31,20 @@ export function shouldSkipTitle(title: string): boolean {
     /\bshorts?\b/i.test(title) ||
     /\bjacket\b/i.test(title) ||
     /\bwindbreaker\b/i.test(title) ||
+    /\bwindrunner\b/i.test(title) ||
+    /\banthem\b/i.test(title) ||
+    /\bcoat\b/i.test(title) ||
+    /\bvest\b/i.test(title) ||
+    /\bregata\b/i.test(title) ||
+    /\bsweat(er|shirt)?\b/i.test(title) ||
+    /\bhoodie\b/i.test(title) ||
+    /\bpuffer\b/i.test(title) ||
+    /\btracksuit\b/i.test(title) ||
+    /\bpants?\b/i.test(title) ||
+    /\bleggings?\b/i.test(title) ||
+    /\bsocks?\b/i.test(title) ||
+    /\bscarf\b/i.test(title) ||
+    /\bbeanie\b/i.test(title) ||
     /\btraining\b/i.test(title) ||
     /\btreino\b/i.test(title) ||
     /\bsuit\b/i.test(title)

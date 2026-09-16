@@ -130,7 +130,16 @@ export async function POST(req: Request) {
       const p0 = yupooTitleToProduct(title, teamName || undefined);
       // encaixa o time (derivado do título) no canônico e reconstrói o nome
       const finalTeam = snapTeam(p0.team ?? "") || p0.team || "";
-      const p = finalTeam && finalTeam !== p0.team ? yupooTitleToProduct(title, finalTeam) : p0;
+      // sem time (título sem o nome do time e campo em branco) → não cria "Camisa Camisa"
+      if (!finalTeam) {
+        return NextResponse.json({
+          ok: false,
+          skipped: true,
+          reason: "time não detectado — preencha o nome do time",
+          title,
+        });
+      }
+      const p = finalTeam !== p0.team ? yupooTitleToProduct(title, finalTeam) : p0;
 
       // NÃO DUPLICAR: pula se já existe por id do álbum (source_id) ou pelo nome
       const dup = await db
