@@ -20,10 +20,11 @@ const norm = (s: string) =>
 export default async function BuscaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; cat?: string; team?: string; gender?: string; tipo?: string; sort?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; cat?: string; team?: string; gender?: string; tipo?: string; sort?: string; page?: string; title?: string }>;
 }) {
   const sp = await searchParams;
   const q = (sp.q ?? "").trim();
+  const pageTitle = (sp.title ?? "").trim();
   const selected = (sp.cat ?? "").split(",").filter(Boolean);
   const selectedTeams = (sp.team ?? "").split(",").filter(Boolean);
   const selectedGenders = (sp.gender ?? "").split(",").filter(Boolean);
@@ -84,7 +85,9 @@ export default async function BuscaPage({
   else if (sort === "preco-desc") results = [...results].sort((a, b) => b.now - a.now);
   else results = [...results].sort((a, b) => seasonScore(b.name) - seasonScore(a.name)); // padrão: temporada mais recente
 
-  const heading = q ? `Resultados para “${q}”` : selectedTeams.length ? selectedTeams[0] : "Todos os produtos";
+  const heading = q
+    ? `Resultados para “${q}”`
+    : pageTitle || (selectedTeams.length === 1 ? selectedTeams[0] : "Todos os produtos");
 
   // paginação
   const PAGE_SIZE = 15;
@@ -99,6 +102,7 @@ export default async function BuscaPage({
     if (selectedGenders.length) params.set("gender", selectedGenders.join(","));
     if (selectedTipos.length) params.set("tipo", selectedTipos.join(","));
     if (sort !== "relevancia") params.set("sort", sort);
+    if (pageTitle) params.set("title", pageTitle);
     if (p > 1) params.set("page", String(p));
     const qs = params.toString();
     return qs ? `/busca?${qs}` : "/busca";

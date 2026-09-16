@@ -137,6 +137,9 @@ export const LA_LIGA_TEAMS = uniq(EURO_TEAMS.filter((t) => t.league === "laliga"
 
 /** Nomes canônicos de todos os times da Serie A (para a coleção da home). */
 export const SERIE_A_TEAMS = uniq(EURO_TEAMS.filter((t) => t.league === "seriea").map((t) => t.name));
+export const PREMIER_LEAGUE_TEAMS = uniq(EURO_TEAMS.filter((t) => t.league === "premier").map((t) => t.name));
+export const BUNDESLIGA_TEAMS = uniq(EURO_TEAMS.filter((t) => t.league === "bundesliga").map((t) => t.name));
+export const LIGUE1_TEAMS = uniq(EURO_TEAMS.filter((t) => t.league === "ligue1").map((t) => t.name));
 
 /** Rótulo em PT de cada liga (para agrupar no filtro do admin). */
 export const LEAGUE_LABEL: Record<League, string> = {
