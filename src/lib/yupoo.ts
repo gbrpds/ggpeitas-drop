@@ -24,6 +24,8 @@ function decodeEntities(s: string): string {
  *  - shorts/bermudas, jaquetas/corta-vento (Jacket/Windbreaker)
  */
 export function shouldSkipTitle(title: string): boolean {
+  // camiseta casual só é importada quando é uma edição reconhecida
+  const isEdition = /\bterrace icons?\b|\boriginals?\b|\bculture\b|\bedition\b/i.test(title);
   return (
     /\bkids?\b/i.test(title) ||
     /\bkit\b/i.test(title) ||
@@ -46,10 +48,7 @@ export function shouldSkipTitle(title: string): boolean {
     /\bsocks?\b/i.test(title) ||
     /\bscarf\b/i.test(title) ||
     /\bbeanie\b/i.test(title) ||
-    /\bt-?shirts?\b/i.test(title) ||
-    /\btee\b/i.test(title) ||
-    /\bterrace icons?\b/i.test(title) ||
-    /\boriginals?\b/i.test(title) ||
+    (!isEdition && (/\bt-?shirts?\b/i.test(title) || /\btee\b/i.test(title))) ||
     /\btraining\b/i.test(title) ||
     /\btreino\b/i.test(title) ||
     /\bsuit\b/i.test(title)
@@ -223,7 +222,9 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
   const feminina = cropTop || /\b(women|woman|female|feminin[oa]?|lady|girls?)\b/i.test(clean);
   const infantil = /\b(kids?|infantil|youth|crian[çc]a)\b/i.test(clean);
   const mangaLonga = /\b(long\s*sleeve|manga\s*longa)\b/i.test(clean);
-  const isRetro = /\bretro\b|\bretr[ôo]\b/i.test(clean);
+  // "retro" em linhas casuais (Terrace Icons/Originals) é estilo, não camisa retrô
+  const casualEdition = /\bterrace icons?\b|\boriginals?\b/i.test(clean);
+  const isRetro = (/\bretro\b|\bretr[ôo]\b/i.test(clean)) && !casualEdition;
 
   // ano: "26/27", "93/94", "1993/94" ou "1994"
   const yearMatch = clean.match(/\b\d{2,4}\/\d{2,4}\b|\b(?:19|20)\d{2}\b/);
@@ -274,6 +275,9 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
   else if (/\bbrazil\s*edition\b|\bworld\s*cup\b|\bcopa do mundo\b/i.test(clean)) tipo = "Copa do Mundo";
   else if (/\bpre-?match\b/i.test(clean)) tipo = "Pré-Jogo";
   else if (/\btraining\b|\btreino\b/i.test(clean)) tipo = "Treino";
+  // linhas casuais/edição de estilo do fornecedor
+  else if (/\bterrace icons?\b/i.test(clean)) tipo = "Edição Terrace Icons";
+  else if (/\boriginals?\b/i.test(clean)) tipo = /\bculture\b/i.test(clean) ? "Edição Originals Culture" : "Edição Originals";
   else if (/\bthird\b|\b3rd\b/i.test(clean)) tipo = /\bhome\b/i.test(clean) ? "Third Home" : "Third Away";
   else if (/\baway\b/i.test(clean)) tipo = "Away";
   else if (/\bhome\b/i.test(clean)) tipo = "Home";
