@@ -2,9 +2,16 @@ import { and, eq, ne, or } from "drizzle-orm";
 import { getDb } from "@/db";
 import { orders } from "@/db/schema";
 import { sendEmail } from "@/lib/email";
-import { orderConfirmedEmail, orderCancelledEmail } from "@/lib/email-templates";
+import { orderConfirmedEmail, orderCancelledEmail, newSaleOwnerEmail } from "@/lib/email-templates";
 import { baseUrl } from "@/lib/site-url";
 import { notifyNewSale } from "@/lib/notify";
+import { adminEmails } from "@/lib/admin-emails";
+
+/** Destinatários das notificações internas (dono): STORE_EMAIL ou ADMIN_EMAILS. */
+function ownerRecipients(): string[] {
+  const store = (process.env.STORE_EMAIL ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+  return store.length ? store : adminEmails();
+}
 
 const MP_BASE = "https://api.mercadopago.com";
 
@@ -65,6 +72,23 @@ export async function syncPaymentStatus(
           itemsCount: ((o.items as OrderItem[]) ?? []).reduce((n, i) => n + (i.qty ?? 1), 0),
           url: `${baseUrl()}/admin/pedidos`,
         });
+        // notifica o dono também por e-mail (espelha o push)
+        const owners = ownerRecipients();
+        if (owners.length) {
+          const ownerTpl = newSaleOwnerEmail({
+            number: o.number,
+            items: (o.items as OrderItem[]) ?? [],
+            totalCents: o.totalCents,
+            discountCents: o.discountCents,
+            couponCents: o.couponCents,
+            couponCode: o.couponCode,
+            freightCents: o.freightCents,
+            customerName: c.name,
+            customerContact: c.email,
+            adminUrl: `${baseUrl()}/admin/pedidos`,
+          });
+          await sendEmail({ to: owners.join(","), subject: ownerTpl.subject, html: ownerTpl.html });
+        }
         if (!c.email) continue;
         const tpl = orderConfirmedEmail({
           number: o.number,

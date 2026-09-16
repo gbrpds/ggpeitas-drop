@@ -174,6 +174,37 @@ export function orderConfirmedEmail(order: {
   };
 }
 
+/** Aviso ao DONO: nova venda paga (espelha o push do ntfy). */
+export function newSaleOwnerEmail(order: {
+  number: string | null;
+  items: OrderItem[];
+  totalCents: number;
+  discountCents?: number;
+  couponCents?: number;
+  couponCode?: string | null;
+  freightCents?: number;
+  customerName?: string;
+  customerContact?: string;
+  adminUrl: string;
+}) {
+  return {
+    subject: `💰 Nova venda — Pedido #${order.number ?? ""} · ${brl(order.totalCents)}`,
+    html: layout(
+      "Nova venda confirmada! 💰",
+      `<p style="font-size:14px;line-height:1.6;color:#444;">
+        Pagamento aprovado do pedido <b>#${order.number ?? ""}</b>.
+        ${order.customerName ? `Cliente: <b>${order.customerName}</b>.` : ""}
+        ${order.customerContact ? `<br>Contato: ${order.customerContact}` : ""}
+      </p>
+      ${itemsTable(order.items, order.totalCents, order.discountCents ?? 0, order.couponCents ?? 0, order.couponCode, order.freightCents ?? 0)}
+      <p style="margin:20px 0 6px;">${button(order.adminUrl, "Abrir no painel")}</p>
+      <p style="font-size:13px;color:#8a8a80;margin-top:14px;">
+        Lembre de enviar ao fornecedor pelo botão do pedido no painel.
+      </p>`,
+    ),
+  };
+}
+
 /** Pedido gerado — aguardando pagamento. */
 export function orderPendingEmail(order: {
   number: string | null;
