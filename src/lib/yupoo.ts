@@ -220,8 +220,10 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
     .replace(/\s{2,}/g, " ")
     .trim();
 
-  const cropTop = /\bcrop\s*top\b/i.test(clean);
-  const feminina = cropTop || /\b(women|woman|female|feminin[oa]?|lady|girls?)\b/i.test(clean);
+  // "crop top", "crop jersey", "cropped" → cropped feminino
+  const cropTop = /\bcrop(ped)?\b/i.test(clean);
+  // pega women/womens/woman's/female/feminino(a)/lady/ladies/girls
+  const feminina = cropTop || /\b(wom[ae]n'?s?|female|feminin[oa]?|ladies|lady|girls?)\b/i.test(clean);
   const infantil = /\b(kids?|infantil|youth|crian[çc]a)\b/i.test(clean);
   const mangaLonga = /\b(long\s*sleeve|manga\s*longa)\b/i.test(clean);
   // "retro" em linhas casuais (Terrace Icons/Originals) é estilo, não camisa retrô
