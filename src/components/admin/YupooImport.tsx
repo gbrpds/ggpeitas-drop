@@ -19,8 +19,7 @@ export function YupooImport() {
 
   async function importar(limit: number) {
     setError(null);
-    if (!url.trim()) return setError("Cole a URL da página do time no Yupoo.");
-    if (!teamName.trim()) return setError("Digite o nome do time (ex.: Atlético-MG).");
+    if (!url.trim()) return setError("Cole a URL da página do Yupoo.");
     setResults([]);
     setProgress(null);
     setRunning(true);
@@ -88,13 +87,17 @@ export function YupooImport() {
       </div>
 
       <div className="co-field">
-        <label>Nome do time</label>
+        <label>Nome do time <span style={{ fontWeight: 400, opacity: 0.6 }}>(opcional)</span></label>
         <input
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
           placeholder="Ex.: Atlético-MG"
         />
-        <span className="co-hint">Define o time, a categoria/tag e faz o filtro funcionar. Use o nome como no site.</span>
+        <span className="co-hint">
+          Preencha para forçar um time em toda a página. <b>Deixe em branco</b> para importar uma
+          categoria com vários times (ex.: Brasileirão inteiro) — o time de cada camisa é detectado
+          pelo título.
+        </span>
       </div>
 
       <div className="co-field adm-active">
