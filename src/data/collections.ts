@@ -19,8 +19,8 @@ export const leagueCollections: LeagueCollection[] = [
     image: "/ligas/premier-league.jpg",
   },
   { title: "La Liga", href: laLigaHref, colors: ["#c8102e", "#ffb703"], image: "/ligas/la-liga.jpg" },
-  { title: "Liga Italiana", href: "/busca?team=Juventus,Milan,Inter de Milão", colors: ["#0b6e30", "#c8102e"], image: "/ligas/liga-italiana.jpg" },
+  { title: "Serie A TIM", href: "/busca?team=Juventus,Milan,Inter de Milão", colors: ["#0b6e30", "#c8102e"], image: "/ligas/liga-italiana.jpg" },
   { title: "Bundesliga", href: "/busca?team=Bayern de Munique", colors: ["#111111", "#d20515"], image: "/ligas/bundesliga.jpg" },
-  { title: "Ligue 1", href: "/busca?team=PSG", colors: ["#0a1a4f", "#c8102e"], image: "/ligas/ligue-1.jpg" },
+  { title: "Ligue One", href: "/busca?team=PSG", colors: ["#0a1a4f", "#c8102e"], image: "/ligas/ligue-1.jpg" },
   { title: "Liga Argentina", href: "/busca?team=Boca Juniors,River Plate", colors: ["#6caee0", "#1b3a6b"], image: "/ligas/liga-argentina.jpg" },
 ];
