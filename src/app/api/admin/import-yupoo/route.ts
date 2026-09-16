@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
-import { eq, or, ilike } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { products } from "@/db/schema";
 import { isAdmin } from "@/lib/admin";
@@ -137,14 +137,16 @@ export async function POST(req: Request) {
       }
       const p = finalTeam !== p0.team ? yupooTitleToProduct(title, finalTeam) : p0;
 
-      // NÃO DUPLICAR: pula se já existe por id do álbum (source_id) ou pelo nome
+      // NÃO DUPLICAR: pula apenas se este MESMO álbum (source_id) já foi importado.
+      // (não dedupamos por nome: manga longa x curta do mesmo time/ano são álbuns
+      // diferentes e devem entrar as duas)
       const dup = await db
         .select({ id: products.id })
         .from(products)
-        .where(or(eq(products.sourceId, id), ilike(products.name, p.name)))
+        .where(eq(products.sourceId, id))
         .limit(1);
       if (dup.length) {
-        return NextResponse.json({ ok: false, skipped: true, reason: "já existe", name: p.name, title });
+        return NextResponse.json({ ok: false, skipped: true, reason: "já importado", name: p.name, title });
       }
 
       const albumUrl = `${origin}/albums/${id}?uid=1`;

@@ -229,7 +229,8 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
   // pega women/womens/woman's/female/feminino(a)/lady/ladies/girls
   const feminina = cropTop || /\b(wom[ae]n'?s?|female|feminin[oa]?|ladies|lady|girls?)\b/i.test(clean);
   const infantil = /\b(kids?|infantil|youth|crian[çc]a)\b/i.test(clean);
-  const mangaLonga = /\b(long\s*sleeve|manga\s*longa)\b/i.test(clean);
+  // manga longa: "long sleeve/sleeves/sleeved", "long-sleeve", "full sleeve", "manga longa/comprida"
+  const mangaLonga = /\blong[\s-]*sleeve[ds]?\b|\bfull[\s-]*sleeve[ds]?\b|\bmanga\s*(longa|comprida)\b/i.test(clean);
   // "retro" em linhas casuais (Terrace Icons/Originals) é estilo, não camisa retrô
   const casualEdition = /\bterrace icons?\b|\boriginals?\b/i.test(clean);
   const isRetro = (/\bretro\b|\bretr[ôo]\b/i.test(clean)) && !casualEdition;
