@@ -65,6 +65,7 @@ const COUNTRY: Record<string, string> = {
   uruguai: "Uruguai", portugal: "Portugal", spain: "Espanha", espanha: "Espanha",
   france: "França", franca: "França", germany: "Alemanha", alemanha: "Alemanha",
   england: "Inglaterra", inglaterra: "Inglaterra", italy: "Itália", italia: "Itália",
+  german: "Alemanha",
   netherlands: "Holanda", holanda: "Holanda", mexico: "México", japan: "Japão",
   colombia: "Colômbia", chile: "Chile", croatia: "Croácia", belgium: "Bélgica",
   morocco: "Marrocos", "united states": "Estados Unidos", usa: "Estados Unidos",
