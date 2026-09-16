@@ -52,8 +52,8 @@ async function runMigration() {
     changed++;
   }
   console.log(`\n=== migração ===\nprodutos alterados: ${changed} | time: ${fixedTeam} | categoria->selecoes: ${movedCat} | nome: ${fixedName}`);
-  const bycat = await sql`SELECT category, count(*)::int n FROM products WHERE team = ANY(${["Brasil", "Espanha", "Argentina", "Portugal", "França", "Alemanha", "Inglaterra", "Itália"]}) GROUP BY category ORDER BY category`;
-  console.log("seleções por categoria:", bycat.map((x: { category: string; n: number }) => x.category + ":" + x.n).join(", "));
+  const bycat = (await sql`SELECT category, count(*)::int n FROM products WHERE team = ANY(${["Brasil", "Espanha", "Argentina", "Portugal", "França", "Alemanha", "Inglaterra", "Itália"]}) GROUP BY category ORDER BY category`) as { category: string; n: number }[];
+  console.log("seleções por categoria:", bycat.map((x) => x.category + ":" + x.n).join(", "));
 }
 
 main().catch((e) => {
