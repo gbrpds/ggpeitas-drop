@@ -18,7 +18,7 @@ const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").to
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return { title: `${metaFor(slug).title} — GG Peitas` };
+  return { title: metaFor(slug).title, alternates: { canonical: `/categoria/${slug}` } };
 }
 
 export default async function CategoriaPage({

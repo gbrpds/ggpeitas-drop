@@ -12,7 +12,7 @@ import { Pagination } from "@/components/Pagination";
 import { genderOf, modeloOf as tipoOf, GENDER_LABEL, seasonScore, dedupeTeamFacets } from "@/lib/facets";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Busca — GG Peitas" };
+export const metadata = { title: "Busca" };
 
 const norm = (s: string) =>
   s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();

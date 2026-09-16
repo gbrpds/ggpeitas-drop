@@ -7,7 +7,7 @@ import { RequestForm } from "@/components/RequestForm";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Solicite sua camisa — GG Peitas",
+  title: "Solicite sua camisa",
   description: "Não achou a camisa que procurava? Faça o pedido e a gente busca pra você.",
 };
 

@@ -23,8 +23,9 @@ export function SiteFooter() {
             <Logo />
           </Link>
           <p className="about">
-            Futebol, estilo e presença. As melhores camisas de clubes e seleções do mundo, com entrega para todo o
-            Brasil.
+            A GG Peitas é sua loja de <b>camisas de futebol importadas</b> — qualidade premium (padrão
+            tailandesa 1:1) de clubes e seleções do mundo todo, versões atuais e <b>retrô</b>, com entrega
+            para todo o Brasil.
           </p>
           <div className="socials">
             <a href="https://www.instagram.com/ggpeitas/" target="_blank" rel="noopener noreferrer" aria-label="Instagram da GG Peitas">

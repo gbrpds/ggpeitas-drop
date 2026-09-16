@@ -13,7 +13,7 @@ import { Pagination } from "@/components/Pagination";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Leve 3, Pague 2 — GG Peitas",
+  title: "Leve 3, Pague 2",
   description: "Monte o kit da família: a cada 3 camisas participantes, a mais barata sai grátis.",
 };
 
