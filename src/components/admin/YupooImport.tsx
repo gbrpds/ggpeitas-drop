@@ -10,6 +10,7 @@ export function YupooImport() {
   const router = useRouter();
   const [url, setUrl] = useState("");
   const [teamName, setTeamName] = useState("");
+  const [category, setCategory] = useState(""); // "" = detectar automaticamente
   const [qtd, setQtd] = useState(50);
   const [active, setActive] = useState(true);
   const [running, setRunning] = useState(false);
@@ -49,7 +50,7 @@ export function YupooImport() {
           const res = await fetch("/api/admin/import-yupoo", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "one", url, id: a.id, title: a.title, team: teamName.trim(), active }),
+            body: JSON.stringify({ action: "one", url, id: a.id, title: a.title, team: teamName.trim(), category, active }),
           });
           const d = await res.json();
           setResults((prev) => [
@@ -97,6 +98,21 @@ export function YupooImport() {
           Preencha para forçar um time em toda a página. <b>Deixe em branco</b> para importar uma
           categoria com vários times (ex.: Brasileirão inteiro) — o time de cada camisa é detectado
           pelo título.
+        </span>
+      </div>
+
+      <div className="co-field">
+        <label>Categoria</label>
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="">Detectar automaticamente</option>
+          <option value="brasileirao">Brasileirão</option>
+          <option value="europa">Europa</option>
+          <option value="selecoes">Seleções</option>
+          <option value="retro">Retrô</option>
+        </select>
+        <span className="co-hint">
+          Force a coleção de toda a página (ex.: <b>Europa</b> para La Liga/Premier). Em branco, o
+          importador deduz pelo título.
         </span>
       </div>
 

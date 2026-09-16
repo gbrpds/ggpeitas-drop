@@ -1,4 +1,5 @@
 import { classifyTeam } from "@/lib/team-detect";
+import { resolveEuroTeam } from "@/lib/euro-teams";
 
 /** Headers que o Yupoo exige para servir páginas/imagens (checa referer). */
 export function yupooHeaders(referer: string) {
@@ -45,6 +46,10 @@ export function shouldSkipTitle(title: string): boolean {
     /\bsocks?\b/i.test(title) ||
     /\bscarf\b/i.test(title) ||
     /\bbeanie\b/i.test(title) ||
+    /\bt-?shirts?\b/i.test(title) ||
+    /\btee\b/i.test(title) ||
+    /\bterrace icons?\b/i.test(title) ||
+    /\boriginals?\b/i.test(title) ||
     /\btraining\b/i.test(title) ||
     /\btreino\b/i.test(title) ||
     /\bsuit\b/i.test(title)
@@ -179,6 +184,8 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
     .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "") // bandeiras/emoji
     // temporada sem barra: "2627" → "26/27", "2526" → "25/26" (dois anos seguidos)
     .replace(/\b(\d{2})(\d{2})\b/g, (m, a, b) => (Number(b) === Number(a) + 1 ? `${a}/${b}` : m))
+    // temporada com traço/espaço: "23-24" / "22 / 23" → "23/24" / "22/23"
+    .replace(/\b(\d{2})\s*[-/]\s*(\d{2})\b/g, (m, a, b) => (Number(b) === Number(a) + 1 ? `${a}/${b}` : m))
     .replace(/\s{2,}/g, " ")
     .trim();
 
@@ -198,15 +205,34 @@ export function yupooTitleToProduct(rawTitle: string, teamOverride?: string): Im
     ? clean.slice(0, yearMatch.index).trim()
     : clean.split(/\b(jersey|home|away|third|goalkeeper|gk|kit|retro|edition)\b/i)[0].trim();
   teamRaw = teamRaw.replace(/\bretro\b/i, "").replace(/\s{2,}/g, " ").trim();
+  // título com o ano na frente ("23/24 Barcelona ...") → pega o time depois do ano
+  if (!teamRaw && yearMatch) {
+    const after = clean.slice(yearMatch.index! + yearMatch[0].length);
+    teamRaw = after
+      .split(/\b(jersey|home|away|third|goalkeeper|gk|long|special|edition|version|women|main|size)\b/i)[0]
+      .replace(/\bretro\b/i, "")
+      .replace(/[^\p{L}\s]/gu, " ")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  }
 
-  // time: prioriza o nome informado no admin (força tag/categoria e o filtro)
-  const teamName = teamOverride?.trim() || teamRaw;
+  // reconhece times europeus (La Liga etc.) em qualquer posição do título
+  // (só quando o admin não forçou um time)
+  const euro = teamOverride?.trim() ? null : resolveEuroTeam(clean);
+  // time: admin > europeu reconhecido > derivado do título
+  const teamName = teamOverride?.trim() || euro || teamRaw;
   // seleções: traduz o país (Brazil → Brasil) e manda para a categoria "selecoes"
   const countryPt = COUNTRY[normLower(teamName)];
   const finalTeam = countryPt ?? teamName;
   const hit = classifyTeam(finalTeam);
   const team = finalTeam || null;
-  const category = isRetro ? "retro" : countryPt ? "selecoes" : hit?.category ?? "brasileirao";
+  const category = isRetro
+    ? "retro"
+    : countryPt
+      ? "selecoes"
+      : euro
+        ? "europa"
+        : hit?.category ?? "brasileirao";
 
   // TIPO — na ordem de prioridade dos padrões do fornecedor
   let tipo = "";

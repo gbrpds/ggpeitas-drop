@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { products, reviews, orders, teams } from "@/db/schema";
 import { sections as mockSections, type Product, type ProductSection } from "@/data/products";
 import { getProduct as getMockProduct } from "@/lib/product";
+import { GIGANTES_EUROPEUS_KEYS } from "@/lib/euro-teams";
 
 /**
  * Leitura do catálogo em CACHE (produtos mudam pouco). Invalidada na hora
@@ -52,7 +53,7 @@ const FALLBACK_COLORS: [string, string, string] = ["#0f8a3d", "#ffc400", "#fffff
 /** Metadados por tag/categoria (título e emoji da seção na home). */
 const CATEGORY_META: Record<string, { title: string; emoji: string; href: string }> = {
   brasileirao: { title: "Gigantes do Brasileirão", emoji: "", href: "/categoria/brasileirao" },
-  europa: { title: "Elite Europeia", emoji: "", href: "/categoria/europa" },
+  europa: { title: "Gigantes Europeus", emoji: "", href: "/categoria/europa" },
   selecoes: { title: "Seleções", emoji: "", href: "/categoria/selecoes" },
   feminina: { title: "Feminina", emoji: "", href: "/categoria/feminina" },
   infantil: { title: "Conjuntos Esportivos", emoji: "", href: "/categoria/infantil" },
@@ -71,6 +72,8 @@ const GIGANTES = new Set([
   "fluminense", "santos", "corinthians", "palmeiras", "botafogo",
 ]);
 const isGigante = (team?: string | null) => GIGANTES.has(teamKey(team));
+/** "Gigantes Europeus": só os grandes clubes entram na vitrine/coleção Europa. */
+const isGiganteEuropeu = (team?: string | null) => GIGANTES_EUROPEUS_KEYS.has(teamKey(team));
 
 type Row = typeof products.$inferSelect;
 
@@ -190,8 +193,14 @@ export async function getHomeSections(): Promise<ProductSection[]> {
     for (const r of rows) {
       if (!r.active) continue; // só produtos ativos aparecem na loja
       const p = mapRow(r);
-      // "Gigantes do Brasileirão": só os times gigantes entram nessa vitrine
-      if (r.category !== "brasileirao" || isGigante(r.team)) pushTo(r.category, p);
+      // vitrines de "Gigantes": só os grandes times entram (Brasileirão e Europa)
+      if (r.category === "brasileirao") {
+        if (isGigante(r.team)) pushTo("brasileirao", p);
+      } else if (r.category === "europa") {
+        if (isGiganteEuropeu(r.team)) pushTo("europa", p);
+      } else {
+        pushTo(r.category, p);
+      }
       // flags de público convivem com a coleção (aparece também em Feminina/Infantil)
       if (r.feminina && r.category !== "feminina") pushTo("feminina", p);
       if (r.infantil && r.category !== "infantil") pushTo("infantil", p);
@@ -225,6 +234,8 @@ export async function getCategoryProducts(cat: string): Promise<Product[]> {
         if (cat === "infantil") return r.category === "infantil" || r.infantil;
         // Gigantes do Brasileirão: só os times gigantes
         if (cat === "brasileirao") return r.category === "brasileirao" && isGigante(r.team);
+        // Gigantes Europeus: só os grandes clubes
+        if (cat === "europa") return r.category === "europa" && isGiganteEuropeu(r.team);
         return r.category === cat;
       };
       return withRatings(rows.filter(match).map(mapRow));

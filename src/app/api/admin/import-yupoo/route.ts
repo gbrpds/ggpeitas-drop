@@ -119,6 +119,7 @@ export async function POST(req: Request) {
       return contained ?? raw;
     };
     const teamName = snapTeam(String(body.team ?? ""));
+    const catOverride = String(body.category ?? "").trim(); // "" = detectar automaticamente
     const active = !!body.active;
     if (!id) return NextResponse.json({ error: "Álbum inválido." }, { status: 400 });
     if (shouldSkipTitle(title)) {
@@ -166,10 +167,12 @@ export async function POST(req: Request) {
 
       const [row] = await db
         .insert(products)
+        // o override força a coleção, mas preserva Retrô e Seleções detectados
         .values({
           name: p.name,
           team: p.team,
-          category: p.category,
+          category:
+            catOverride && p.category !== "retro" && p.category !== "selecoes" ? catOverride : p.category,
           priceCents: p.priceCents,
           compareCents: p.compareCents,
           version: "Torcedor",
@@ -189,7 +192,8 @@ export async function POST(req: Request) {
         id: row?.id,
         name: p.name,
         team: p.team,
-        category: p.category,
+        category:
+          catOverride && p.category !== "retro" && p.category !== "selecoes" ? catOverride : p.category,
         images: images.length,
       });
     } catch (e) {
