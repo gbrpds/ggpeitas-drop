@@ -1,6 +1,5 @@
 {
   "crons": [
-    { "path": "/api/cron/expire-orders", "schedule": "0 3 * * *" },
-    { "path": "/api/health", "schedule": "*/5 * * * *" }
+    { "path": "/api/cron/expire-orders", "schedule": "0 3 * * *" }
   ]
 }
