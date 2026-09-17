@@ -230,9 +230,12 @@ export async function getHomeSections(): Promise<ProductSection[]> {
       return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
     });
 
+    // cada carrossel da home mostra só os mais recentes da coleção (o "Ver
+    // todos" leva à categoria). Evita renderizar o catálogo inteiro no HTML.
+    const HOME_PER_SECTION = 16;
     const built = cats.map((cat) => {
       const m = metaFor(cat);
-      return { id: cat, title: m.title, emoji: m.emoji, href: m.href, products: byCat.get(cat)! };
+      return { id: cat, title: m.title, emoji: m.emoji, href: m.href, products: byCat.get(cat)!.slice(0, HOME_PER_SECTION) };
     });
     await withRatings(built.flatMap((s) => s.products));
     return built;
