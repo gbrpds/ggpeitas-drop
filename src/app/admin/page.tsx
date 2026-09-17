@@ -21,17 +21,24 @@ export default async function AdminPage() {
   let rows: { id: string; name: string; team: string | null; category: string; priceCents: number; active: boolean; inStock: boolean; promo3x2: boolean; images: string[] }[] = [];
   if (ok) {
     const db = getDb();
-    const data = await db.select().from(products).orderBy(desc(products.createdAt));
+    // só as colunas usadas na listagem (evita trafegar descrição, tamanhos, etc.)
+    const data = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        team: products.team,
+        category: products.category,
+        priceCents: products.priceCents,
+        active: products.active,
+        inStock: products.inStock,
+        promo3x2: products.promo3x2,
+        images: products.images,
+      })
+      .from(products)
+      .orderBy(desc(products.createdAt));
     rows = data.map((p) => ({
-      id: p.id,
-      name: p.name,
-      team: p.team,
-      category: p.category,
-      priceCents: p.priceCents,
-      active: p.active,
-      inStock: p.inStock,
-      promo3x2: p.promo3x2,
-      images: (p.images as string[]) ?? [],
+      ...p,
+      images: (p.images as string[])?.slice(0, 2) ?? [],
     }));
   }
 

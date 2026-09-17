@@ -1169,6 +1169,7 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .adm-side .adm-filter-clear { width:100%; }
 .adm-main-head { display:flex; align-items:center; margin:0 0 14px; }
 .adm-main-head .adm-filter-count { margin:0; }
+.adm-more { display:flex; justify-content:center; margin:22px 0 4px; }
 .adm-side-toggle { display:none; align-items:center; justify-content:center; gap:8px; width:100%; margin:0 0 14px;
   background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:11px; font-weight:700; color:var(--ink); cursor:pointer; }
 @media (max-width:860px) {

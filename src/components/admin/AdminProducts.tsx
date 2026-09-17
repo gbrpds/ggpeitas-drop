@@ -30,7 +30,7 @@ function CardMedia({ images }: { images: string[] }) {
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={images[i]} alt="" />
+      <img src={images[i]} alt="" loading="lazy" decoding="async" />
       {images.length > 1 && (
         <>
           <button type="button" className="apc-nav prev" onClick={go(-1)} aria-label="Foto anterior"><ChevronLeft size={18} /></button>
@@ -215,6 +215,13 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
   const hasFilter = !!(team || q || cat || gender || modelo || status || onlyPromo || onlyOut);
   const clearAll = () => { setTeam(""); setQ(""); setCat(""); setGender(""); setModelo(""); setStatus(""); setOnlyPromo(false); setOnlyOut(false); };
 
+  // paginação client-side: só monta no DOM os primeiros N cards (evita
+  // renderizar ~3 mil de uma vez). Reseta ao mudar qualquer filtro.
+  const PAGE = 60;
+  const [visible, setVisible] = useState(PAGE);
+  useEffect(() => { setVisible(PAGE); }, [team, q, cat, gender, modelo, status, onlyPromo, onlyOut, rows]);
+  const shown = filtered.slice(0, visible);
+
   // atualiza um campo booleano no banco + localmente (sem recarregar a página)
   async function patch(id: string, field: "active" | "inStock" | "promo3x2", value: boolean) {
     setBusy(id);
@@ -330,7 +337,7 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
           <div className="cart-empty"><h2>Nenhum produto para esse filtro</h2></div>
         ) : (
           <div className="apc-grid">
-            {filtered.map((p) => (
+            {shown.map((p) => (
             <div className={`apc${p.active ? "" : " off"}`} key={p.id}>
               <div className="apc-media">
                 <CardMedia images={p.images} />
@@ -366,6 +373,13 @@ export function AdminProducts({ rows }: { rows: Row[] }) {
               </div>
             </div>
             ))}
+          </div>
+        )}
+        {filtered.length > visible && (
+          <div className="adm-more">
+            <button className="btn btn-ghost" onClick={() => setVisible((v) => v + PAGE)}>
+              Mostrar mais ({filtered.length - visible} restantes)
+            </button>
           </div>
         )}
       </div>
