@@ -37,3 +37,6 @@ scripts/ml-sheets/
 scripts/dedup-review/
 scripts/sleeves/
 scripts/*-plan.json
+scripts/dedupC-review/
+scripts/groups-tiles/
+scripts/*-plan.json
