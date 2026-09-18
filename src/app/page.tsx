@@ -8,7 +8,6 @@ import { FooterTrust } from "@/components/FooterTrust";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { HomeInitial } from "@/components/HomeInitial";
-import { CollectionsCarousel } from "@/components/CollectionsCarousel";
 import { LeaguesCarousel } from "@/components/LeaguesCarousel";
 import { getHomeSections, getBestSellers } from "@/lib/catalog";
 
@@ -38,10 +37,7 @@ export default async function Home() {
         {/* Abaixo do banner: "Mais vendidas" (ou o time do coração, se escolhido) */}
         <HomeInitial firstSection={topSection} />
 
-        {/* Coleções por time (carrossel) */}
-        <CollectionsCarousel />
-
-        {/* Uma seção de produtos entre as duas coleções (Gigantes do Brasileirão) */}
+        {/* Uma seção de produtos (Gigantes do Brasileirão) */}
         {first && <ProductCarousel section={first} />}
 
         {/* Coleções por liga/região (cards largos) */}
