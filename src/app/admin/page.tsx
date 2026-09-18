@@ -4,6 +4,7 @@ import { Plus, Lock } from "lucide-react";
 import { getDb } from "@/db";
 import { products } from "@/db/schema";
 import { isAdmin } from "@/lib/admin";
+import { mpMode } from "@/lib/mp";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
@@ -59,6 +60,15 @@ export default async function AdminPage() {
           ) : (
             <>
               <AdminNav />
+              {(() => {
+                const mode = mpMode();
+                const txt = {
+                  producao: "Mercado Pago: Produção — vendas reais ativas.",
+                  teste: "⚠️ Mercado Pago em modo TESTE — as vendas NÃO são reais. Troque o MP_ACCESS_TOKEN por um APP_USR- (produção) na Vercel.",
+                  ausente: "⚠️ Mercado Pago não configurado — defina MP_ACCESS_TOKEN na Vercel.",
+                } as const;
+                return <div className={`adm-mp-badge ${mode}`}>{txt[mode]}</div>;
+              })()}
               <div className="adm-head">
                 <h1 className="page-title" style={{ margin: 0 }}>Produtos</h1>
                 <Link className="btn btn-g" href="/admin/novo"><Plus size={18} /> Novo produto</Link>

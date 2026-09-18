@@ -15,6 +15,15 @@ function ownerRecipients(): string[] {
 
 const MP_BASE = "https://api.mercadopago.com";
 
+/** Modo do Mercado Pago pelo prefixo do token (nunca expõe o valor).
+ *  APP_USR- = produção; TEST- = sandbox; vazio = não configurado. */
+export function mpMode(): "producao" | "teste" | "ausente" {
+  const t = (process.env.MP_ACCESS_TOKEN ?? "").trim();
+  if (!t) return "ausente";
+  if (t.startsWith("APP_USR-")) return "producao";
+  return "teste"; // TEST- ou qualquer outro prefixo → trata como não-produção
+}
+
 type OrderItem = { name: string; qty: number; price: number };
 type Customer = { name?: string; email?: string };
 
