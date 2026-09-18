@@ -34,8 +34,10 @@ export function SearchFilters({
   sort,
   basePath = "/busca",
   hideCategory = false,
+  league,
 }: {
   q: string;
+  league?: string;
   facets: { cat: string; count: number }[];
   selected: string[];
   teamFacets: { team: string; count: number }[];
@@ -57,6 +59,7 @@ export function SearchFilters({
   const push = (s: Sel) => {
     const p = new URLSearchParams();
     if (q) p.set("q", q);
+    if (league) p.set("league", league);
     if (!hideCategory && s.cats.length) p.set("cat", s.cats.join(","));
     if (s.teams.length) p.set("team", s.teams.join(","));
     if (s.genders.length) p.set("gender", s.genders.join(","));

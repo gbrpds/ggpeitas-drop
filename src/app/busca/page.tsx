@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Search as SearchIcon } from "lucide-react";
 import { getAllActive, getTeamNames } from "@/lib/catalog";
+import { getLeague } from "@/lib/leagues";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
@@ -20,11 +21,10 @@ const norm = (s: string) =>
 export default async function BuscaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; cat?: string; team?: string; gender?: string; tipo?: string; sort?: string; page?: string; title?: string }>;
+  searchParams: Promise<{ q?: string; cat?: string; team?: string; gender?: string; tipo?: string; sort?: string; page?: string; title?: string; league?: string }>;
 }) {
   const sp = await searchParams;
   const q = (sp.q ?? "").trim();
-  const pageTitle = (sp.title ?? "").trim();
   const selected = (sp.cat ?? "").split(",").filter(Boolean);
   const selectedTeams = (sp.team ?? "").split(",").filter(Boolean);
   const selectedGenders = (sp.gender ?? "").split(",").filter(Boolean);
@@ -32,8 +32,16 @@ export default async function BuscaPage({
   const sort = sp.sort ?? "relevancia";
   const pageNum = Math.max(1, Number(sp.page) || 1);
 
-  const all = await getAllActive();
-  const registeredTeams = await getTeamNames();
+  // escopo por liga (card da home): restringe resultados E a lista de times
+  const league = getLeague(sp.league);
+  const pageTitle = (sp.title ?? "").trim() || (league?.title ?? "");
+
+  let all = await getAllActive();
+  if (league) {
+    const wanted = new Set(league.teams.map(norm));
+    all = all.filter((p) => p.team && wanted.has(norm(p.team)));
+  }
+  const registeredTeams = league ? league.teams : await getTeamNames();
   // busca por PALAVRAS: cada palavra digitada precisa aparecer (em qualquer ordem)
   // no nome/time/categoria. Ex.: "flamengo copa do mundo" acha
   // "Camisa Flamengo 26/27 - Copa do Mundo Zico".
@@ -97,6 +105,7 @@ export default async function BuscaPage({
   const pageHref = (p: number) => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
+    if (sp.league) params.set("league", sp.league);
     if (selected.length) params.set("cat", selected.join(","));
     if (selectedTeams.length) params.set("team", selectedTeams.join(","));
     if (selectedGenders.length) params.set("gender", selectedGenders.join(","));
@@ -132,6 +141,7 @@ export default async function BuscaPage({
               tipoFacets={tipoFacets}
               selectedTipos={selectedTipos}
               sort={sort}
+              league={sp.league}
             />
 
             <div className="search-results">
