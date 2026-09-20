@@ -57,7 +57,7 @@ export function supplierOrderMessage(
     if (i.customName?.trim() || i.customNumber?.trim()) {
       l += ` / Personalização: (Name: ${i.customName?.trim() || "-"}) (Number: ${i.customNumber?.trim() || "-"})`;
     }
-    if (i.qty > 1) l += ` / Qtd: ${i.qty}`;
+    l += ` / Quantidade: ${i.qty ?? 1}`;
     linhas.push(l);
     const img = imageOf?.(i.productId);
     if (img) linhas.push(`  Foto: ${img}`);
