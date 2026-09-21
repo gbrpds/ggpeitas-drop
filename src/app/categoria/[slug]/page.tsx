@@ -16,9 +16,46 @@ export const dynamic = "force-dynamic";
 
 const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
+// textos de SEO por coleção (descrição da metatag + parágrafo introdutório)
+const CAT_SEO: Record<string, { desc: string; intro: string }> = {
+  brasileirao: {
+    desc: "Camisas do Brasileirão importadas com qualidade 1:1: Flamengo, Palmeiras, Corinthians, São Paulo e todos os times. Versões atuais e retrô, frete para todo o Brasil.",
+    intro: "Camisas do <strong>Brasileirão importadas</strong> com qualidade tailandesa 1:1, dos gigantes aos clubes de série B. Versões atuais e retrôs que marcaram época, em modelagem masculina e feminina.",
+  },
+  europa: {
+    desc: "Camisas de clubes europeus importadas 1:1: Real Madrid, Barcelona, Manchester United, PSG, Milan e mais. La Liga, Premier, Serie A, Bundesliga e Ligue One.",
+    intro: "Camisas dos <strong>gigantes europeus importadas</strong> com qualidade 1:1: La Liga, Premier League, Serie A, Bundesliga e Ligue One. Real Madrid, Barcelona, Manchester United, PSG, Milan e muito mais.",
+  },
+  selecoes: {
+    desc: "Camisas de seleções importadas 1:1: Brasil, Argentina, França, Alemanha e mais. Versões atuais e retrôs históricos, frete para todo o Brasil.",
+    intro: "Camisas de <strong>seleções importadas</strong> com qualidade 1:1: Brasil, Argentina, França, Alemanha, Itália e outras. Modelos atuais e retrôs que fizeram história em Copas do Mundo.",
+  },
+  retro: {
+    desc: "Camisas retrô importadas 1:1: reviva os clássicos do futebol com os uniformes que marcaram época, de clubes e seleções, com acabamento premium.",
+    intro: "Camisas <strong>retrô importadas</strong> com qualidade 1:1: os uniformes clássicos que marcaram época, de clubes e seleções. Perfeitas para o colecionador e para quem tem memória afetiva com um elenco.",
+  },
+  mundo: {
+    desc: "Camisas da MLS e da Liga Argentina importadas 1:1: Inter Miami, LA Galaxy, Boca Juniors, River Plate e mais. Frete para todo o Brasil.",
+    intro: "Camisas de <strong>ligas do mundo importadas</strong> com qualidade 1:1: MLS e Liga Argentina, com Inter Miami, LA Galaxy, Boca Juniors, River Plate e outros clubes.",
+  },
+  feminina: {
+    desc: "Camisas de futebol femininas importadas 1:1, com modelagem pensada para o corpo feminino. Clubes e seleções, frete para todo o Brasil.",
+    intro: "Camisas de futebol <strong>femininas importadas</strong> com qualidade 1:1 e modelagem pensada para o corpo feminino. Dos clubes brasileiros aos gigantes europeus e seleções.",
+  },
+  infantil: {
+    desc: "Conjuntos esportivos infantis importados 1:1: leve o uniforme do time do coração para a criançada, com qualidade e conforto.",
+    intro: "<strong>Conjuntos esportivos infantis importados</strong> com qualidade 1:1 para vestir a criançada com o uniforme do time do coração.",
+  },
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return { title: metaFor(slug).title, alternates: { canonical: `/categoria/${slug}` } };
+  const seo = CAT_SEO[slug];
+  return {
+    title: metaFor(slug).title,
+    description: seo?.desc,
+    alternates: { canonical: `/categoria/${slug}` },
+  };
 }
 
 export default async function CategoriaPage({
@@ -104,6 +141,10 @@ export default async function CategoriaPage({
             {m.title}
             <span>{results.length} {results.length === 1 ? "item" : "itens"}</span>
           </h1>
+
+          {CAT_SEO[slug]?.intro ? (
+            <p className="cat-intro" dangerouslySetInnerHTML={{ __html: CAT_SEO[slug].intro }} />
+          ) : null}
 
           {all.length === 0 ? (
             <div className="cart-empty">

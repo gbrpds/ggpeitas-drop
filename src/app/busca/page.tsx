@@ -13,7 +13,20 @@ import { Pagination } from "@/components/Pagination";
 import { genderOf, modeloOf as tipoOf, GENDER_LABEL, seasonScore, dedupeTeamFacets } from "@/lib/facets";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Busca" };
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ q?: string; league?: string; team?: string }> }) {
+  const sp = await searchParams;
+  const league = getLeague(sp.league);
+  if (league) {
+    return {
+      title: `Camisas ${league.title} Importadas`,
+      description: `Camisas da ${league.title} importadas com qualidade 1:1: todos os times da liga em versões atuais e retrô. Frete para todo o Brasil e até 3x sem juros.`,
+      alternates: { canonical: `/busca?league=${league.key}` },
+    };
+  }
+  const q = (sp.q ?? "").trim();
+  return { title: q ? `Busca: ${q}` : "Busca" };
+}
 
 const norm = (s: string) =>
   s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
@@ -128,6 +141,14 @@ export default async function BuscaPage({
             {heading}
             <span>{results.length} {results.length === 1 ? "item" : "itens"}</span>
           </h1>
+
+          {league ? (
+            <p className="cat-intro">
+              Camisas da <strong>{league.title} importadas</strong> com qualidade tailandesa 1:1:
+              todos os times da liga em versões atuais e retrô, modelagem masculina e feminina.
+              Frete para todo o Brasil e até 3x sem juros. Filtre pelo seu time na barra ao lado.
+            </p>
+          ) : null}
 
           <div className="search-layout">
             <SearchFilters
