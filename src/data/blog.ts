@@ -90,6 +90,91 @@ export const blogPosts: BlogPost[] = [
 <p>Ainda com dúvida no tamanho? Fale com a gente antes de comprar ou use o provador na página de cada <a href="/categoria/brasileirao">produto</a>.</p>
 `,
   },
+  {
+    slug: "como-cuidar-lavar-camisa-de-futebol",
+    title: "Como lavar e cuidar da camisa de futebol para durar mais",
+    description:
+      "Passo a passo para lavar a camisa de futebol sem estragar escudo, números e tecido: temperatura, avesso, secagem e o que nunca fazer.",
+    date: "2026-09-16",
+    readMin: 4,
+    tag: "Dicas",
+    body: `
+<p>Uma <strong>camisa importada 1:1</strong> de qualidade dura anos se você lavar do jeito certo. O segredo é proteger o tecido dry-fit, o escudo bordado e as estampas. Veja o passo a passo.</p>
+<h2>Antes de lavar</h2>
+<ul>
+  <li>Vire a camisa <strong>do avesso</strong>. Isso protege escudo, patrocínios e números do atrito.</li>
+  <li>Feche o zíper (se tiver) e não deixe de molho por muito tempo.</li>
+</ul>
+<h2>Na hora de lavar</h2>
+<ul>
+  <li>Use <strong>água fria</strong> e sabão neutro. Água quente desbota e solta estampa.</li>
+  <li>Prefira lavar <strong>à mão</strong> ou na máquina em ciclo delicado, dentro de um saquinho de roupa.</li>
+  <li><strong>Nada de alvejante</strong> nem amaciante em excesso.</li>
+</ul>
+<h2>Secagem</h2>
+<p>Seque à <strong>sombra</strong>, nunca no sol forte nem na secadora. O calor deforma o tecido e racha as estampas. Não passe ferro direto sobre escudo e números.</p>
+<p>Seguindo isso, sua camisa continua com cara de nova por muito tempo. Quer renovar a coleção? Veja as <a href="/promocao">camisas em promoção</a> ou explore por <a href="/categoria/brasileirao">time e liga</a>.</p>
+`,
+  },
+  {
+    slug: "prazo-de-entrega-camisas-importadas",
+    title: "Prazo de entrega das camisas importadas: como funciona o envio",
+    description:
+      "Entenda o prazo e o envio das camisas importadas: de onde saem, quanto tempo levam, como acompanhar o pedido e por que vale a pena esperar.",
+    date: "2026-09-18",
+    readMin: 4,
+    tag: "Guia",
+    body: `
+<p>Uma dúvida comum de quem compra <strong>camisa importada</strong> pela primeira vez é o prazo. A gente explica tudo de forma transparente para você comprar tranquilo.</p>
+<h2>De onde sai a camisa</h2>
+<p>Trabalhamos direto com o fornecedor, sem intermediários encarecendo o produto. Por isso o preço fica justo e você tem acesso a modelos que muitas vezes nem chegam às lojas do Brasil.</p>
+<h2>Quanto tempo leva</h2>
+<p>Como o envio é direto do fornecedor, o prazo costuma ser de <strong>3 a 4 semanas</strong>. Não é o mesmo que um e-commerce nacional, mas é o que garante o preço baixo e a variedade enorme de times e temporadas.</p>
+<h2>Como acompanhar</h2>
+<p>Você recebe as atualizações do pedido e pode consultar o status pela página de <a href="/rastrear">rastreio</a>. Qualquer dúvida, é só falar com a gente pelo <a href="/contato">contato</a>.</p>
+<p>Ainda com receio? Veja nossas <a href="/faq">perguntas frequentes</a> e a <a href="/trocas">política de trocas</a>. E se não achar o modelo que procura, faça uma <a href="/solicitar">solicitação</a> que a gente busca pra você.</p>
+`,
+  },
+  {
+    slug: "camisa-de-futebol-para-presentear",
+    title: "Camisa de futebol de presente: o guia para acertar",
+    description:
+      "Vai presentear um torcedor? Veja como escolher o time, o tamanho e a versão da camisa de futebol para acertar em cheio, mesmo sem entender de futebol.",
+    date: "2026-09-19",
+    readMin: 5,
+    tag: "Guia",
+    body: `
+<p>Poucos presentes emocionam um apaixonado por futebol como a <strong>camisa do time do coração</strong>. Mas para acertar sem errar o time nem o tamanho, siga estas dicas.</p>
+<h2>1. Confirme o time (e o detalhe)</h2>
+<p>Parece óbvio, mas vale confirmar o clube ou seleção. Um plus é descobrir se a pessoa curte a camisa <strong>atual</strong> ou uma <a href="/categoria/retro">retrô</a> de alguma época marcante.</p>
+<h2>2. Acerte o tamanho</h2>
+<p>Na dúvida, veja uma camisa que a pessoa já usa e confira a nossa <a href="/blog/tamanho-camisa-importada-como-escolher">tabela de medidas</a>. As importadas vestem um pouco mais justo, então entre dois tamanhos, suba um.</p>
+<h2>3. Escolha o modelo</h2>
+<p>Home (principal), away (reserva) ou third (terceiro uniforme). Se não souber, a Home costuma ser a aposta mais segura porque é a mais clássica.</p>
+<h2>4. Programe-se pelo prazo</h2>
+<p>Como é importada, a entrega leva algumas semanas. Comprando com antecedência, chega a tempo da data especial. Veja como funciona o <a href="/blog/prazo-de-entrega-camisas-importadas">prazo de entrega</a>.</p>
+<p>Bora escolher? Comece pelas <a href="/categoria/brasileirao">camisas do Brasileirão</a>, pelos <a href="/categoria/europa">clubes europeus</a> ou pelas <a href="/categoria/selecoes">seleções</a>.</p>
+`,
+  },
+  {
+    slug: "camisas-do-brasileirao-guia-times",
+    title: "Camisas do Brasileirão: guia dos times mais procurados",
+    description:
+      "Um giro pelas camisas do Brasileirão mais buscadas: Flamengo, Palmeiras, Corinthians, São Paulo e mais, com versões atuais e retrôs importadas.",
+    date: "2026-09-21",
+    readMin: 6,
+    tag: "Guia",
+    body: `
+<p>As <strong>camisas do Brasileirão</strong> estão entre as mais procuradas do país. Reunimos os times que mais bombam e onde encontrar cada um em versão importada premium.</p>
+<h2>Os gigantes</h2>
+<p><strong>Flamengo, Palmeiras, Corinthians e São Paulo</strong> lideram a busca, tanto pelas camisas atuais quanto pelas <a href="/categoria/retro">retrôs</a> que marcaram época. Times como <strong>Grêmio, Internacional, Cruzeiro, Atlético-MG, Vasco, Botafogo, Fluminense e Santos</strong> também têm forte procura.</p>
+<h2>Atual ou retrô?</h2>
+<p>A camisa <strong>atual</strong> é a escolha de quem quer o modelo da temporada. Já a <strong>retrô</strong> é para quem tem uma memória afetiva com um elenco ou título específico. Na GG Peitas você acha as duas.</p>
+<h2>Como encontrar a do seu time</h2>
+<p>É simples: entre na coleção do <a href="/busca?league=brasileirao">Brasileirão</a> e filtre pelo seu clube na barra lateral. Todos com qualidade 1:1, frete para todo o Brasil e até 3x sem juros.</p>
+<p>Não achou o seu? A gente busca pra você: faça uma <a href="/solicitar">solicitação</a> com o modelo desejado.</p>
+`,
+  },
 ];
 
 export const getPost = (slug: string) => blogPosts.find((p) => p.slug === slug);
