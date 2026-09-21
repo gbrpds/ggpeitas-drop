@@ -175,6 +175,87 @@ export const blogPosts: BlogPost[] = [
 <p>Não achou o seu? A gente busca pra você: faça uma <a href="/solicitar">solicitação</a> com o modelo desejado.</p>
 `,
   },
+  {
+    slug: "camisas-de-selecoes-guia",
+    title: "Camisas de seleções: guia para torcer e colecionar",
+    description:
+      "Tudo sobre camisas de seleções importadas: Brasil, Argentina, França e mais, versões atuais e retrôs históricos de Copa do Mundo, com qualidade 1:1.",
+    date: "2026-09-20",
+    readMin: 5,
+    tag: "Guia",
+    body: `
+<p>Poucas peças carregam tanta emoção quanto a <strong>camisa de uma seleção</strong>. Seja pela paixão nacional ou pela memória de uma Copa, elas são item obrigatório do torcedor e do colecionador.</p>
+<h2>As mais procuradas</h2>
+<p>A camisa do <strong>Brasil</strong> lidera a busca, seguida por <strong>Argentina, França, Alemanha, Itália e Portugal</strong>. Cada uma com modelos atuais e clássicos que marcaram gerações.</p>
+<h2>Atual ou retrô?</h2>
+<p>A <strong>versão atual</strong> é a escolha para acompanhar a seleção na temporada. Já a <a href="/categoria/retro">retrô</a> resgata elencos e conquistas históricas, ótima para colecionar.</p>
+<h2>Qualidade 1:1</h2>
+<p>Nossas camisas de seleção seguem o padrão importado <strong>1:1</strong>, com escudo bordado, tecido dry-fit e acabamento premium. Veja a coleção completa de <a href="/categoria/selecoes">seleções</a>.</p>
+<p>Não achou a sua? Faça uma <a href="/solicitar">solicitação</a> que a gente busca pra você.</p>
+`,
+  },
+  {
+    slug: "camisa-home-away-third-diferenca",
+    title: "Home, away e third: o que significa cada camisa",
+    description:
+      "Entenda a diferença entre camisa home, away e third (e pré-jogo e goleiro): qual é a principal, quando cada uma é usada e como escolher a sua.",
+    date: "2026-09-20",
+    readMin: 4,
+    tag: "Dicas",
+    body: `
+<p>Ao comprar uma <strong>camisa de futebol</strong>, você encontra termos como home, away e third. Saber o que cada um significa ajuda a escolher a certa.</p>
+<h2>Home (principal)</h2>
+<p>É o <strong>uniforme principal</strong>, com as cores clássicas do clube ou seleção. Costuma ser a mais tradicional e a aposta mais segura como presente.</p>
+<h2>Away (reserva)</h2>
+<p>O <strong>segundo uniforme</strong>, usado quando as cores da home se confundem com as do adversário. Geralmente traz cores alternativas e visuais mais ousados.</p>
+<h2>Third (terceiro)</h2>
+<p>Um <strong>terceiro uniforme</strong>, muitas vezes o mais criativo da temporada, usado em jogos específicos. Vira item de colecionador pelo design diferente.</p>
+<h2>E os outros?</h2>
+<p>Você também vê versões de <strong>goleiro</strong>, <strong>pré-jogo</strong> (aquecimento) e edições especiais. Explore todos os modelos por <a href="/categoria/brasileirao">time e liga</a> na loja.</p>
+`,
+  },
+  {
+    slug: "camisa-manga-longa-vale-a-pena",
+    title: "Camisa manga longa: quando vale a pena",
+    description:
+      "A camisa de futebol manga longa combina estilo e conforto no frio. Veja quando ela vale a pena, diferenças para a manga curta e modelos retrô icônicos.",
+    date: "2026-09-21",
+    readMin: 3,
+    tag: "Dicas",
+    body: `
+<p>A <strong>camisa manga longa</strong> tem um charme especial e é a preferida de muita gente, principalmente no frio e nas versões retrô.</p>
+<h2>Quando escolher a manga longa</h2>
+<ul>
+  <li><strong>Clima frio:</strong> mais conforto sem perder o estilo do uniforme.</li>
+  <li><strong>Visual clássico:</strong> muitos uniformes retrô ficaram famosos justamente na manga longa.</li>
+  <li><strong>Diferenciação:</strong> foge do comum e valoriza a coleção.</li>
+</ul>
+<h2>Manga longa x manga curta</h2>
+<p>O design é o mesmo do modelo curto, mudando o comprimento da manga. Por ser uma peça mais elaborada, costuma ter valor um pouco acima da curta.</p>
+<p>Procurando uma? Busque por "manga longa" na loja ou explore os <a href="/categoria/retro">retrôs</a>, onde elas aparecem com frequência.</p>
+`,
+  },
+  {
+    slug: "personalizar-camisa-nome-numero",
+    title: "Personalização da camisa: nome e número do jeito certo",
+    description:
+      "Como personalizar sua camisa de futebol com nome e número: dicas de escolha, cuidado com o tamanho da fonte e como fica o acabamento na versão importada.",
+    date: "2026-09-21",
+    readMin: 3,
+    tag: "Dicas",
+    body: `
+<p>Colocar o <strong>nome e número</strong> deixa a camisa com a sua cara, seja com o seu nome, o do ídolo ou o de quem vai ganhar de presente.</p>
+<h2>Escolha o que faz sentido</h2>
+<p>Pode ser o seu nome e número da sorte, o do craque do time ou uma homenagem. Na dúvida em um presente, o nome da própria pessoa costuma emocionar mais.</p>
+<h2>Dicas para acertar</h2>
+<ul>
+  <li>Confira a grafia com atenção antes de finalizar. Personalização não tem troca por arrependimento.</li>
+  <li>Nomes muito longos podem ficar apertados. Prefira algo curto e legível.</li>
+  <li>O acabamento segue o padrão do uniforme, combinando com a tipografia do time.</li>
+</ul>
+<p>Na página de cada produto você adiciona a personalização antes de comprar. Escolha seu modelo em <a href="/categoria/brasileirao">Brasileirão</a>, <a href="/categoria/europa">Europa</a> ou <a href="/categoria/selecoes">seleções</a>.</p>
+`,
+  },
 ];
 
 export const getPost = (slug: string) => blogPosts.find((p) => p.slug === slug);
