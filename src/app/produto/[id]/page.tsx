@@ -68,6 +68,15 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       ? { aggregateRating: { "@type": "AggregateRating", ratingValue: product.rating.avg.toFixed(1), reviewCount: product.rating.count } }
       : {}),
   };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Início", item: baseUrl() },
+      { "@type": "ListItem", position: 2, name: cat.title, item: `${baseUrl()}${cat.href}` },
+      { "@type": "ListItem", position: 3, name: product.name, item: `${baseUrl()}/produto/${product.id}` },
+    ],
+  };
   const uid = await resolveUserId();
   const { list, summary } = await getProductReviews(id, uid);
   const gender = await getGenderInfo(product);
@@ -77,6 +86,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   return (
     <>
       <JsonLd data={productJsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
       <Announce />
       <Header />
       <MainNav />
