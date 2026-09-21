@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MessageCircle, Music2 } from "lucide-react";
 import { Logo } from "./Logo";
+import { WHATSAPP_URL } from "@/lib/contact";
 
 const pays = ["PIX", "VISA", "MASTER", "ELO", "BOLETO", "MERCADO PAGO"];
 
@@ -31,7 +32,7 @@ export function SiteFooter() {
             <a href="https://www.instagram.com/ggpeitas/" target="_blank" rel="noopener noreferrer" aria-label="Instagram da GG Peitas">
               <InstagramIcon />
             </a>
-            <a href="#" aria-label="WhatsApp">
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp da GG Peitas">
               <MessageCircle strokeWidth={1.8} />
             </a>
             <a href="#" aria-label="TikTok">

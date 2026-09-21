@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { AtSign, Mail, MessageCircle, ShoppingBag } from "lucide-react";
+import { AtSign, Mail, MessageCircle, Phone, ShoppingBag } from "lucide-react";
+import { WHATSAPP_URL } from "@/lib/contact";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
@@ -9,7 +10,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "Contato",
-  description: "Fale com a GG Peitas: Instagram, e-mail e solicitação de camisas. Estamos aqui para ajudar você a vestir o manto do seu time.",
+  description: "Fale com a GG Peitas: WhatsApp, Instagram, e-mail e solicitação de camisas. Estamos aqui para ajudar você a vestir o manto do seu time.",
   alternates: { canonical: "/contato" },
 };
 
@@ -26,6 +27,9 @@ export default function Contato() {
             <p>Ficou com alguma dúvida ou quer falar com a gente? Escolha o canal que preferir, respondemos o mais rápido possível.</p>
           </div>
           <div className="contato-list">
+            <a className="contato-card" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+              <Phone size={22} /> <div><b>WhatsApp</b><span>Fale com a gente direto</span></div>
+            </a>
             <a className="contato-card" href="https://www.instagram.com/ggpeitas/" target="_blank" rel="noopener noreferrer">
               <AtSign size={22} /> <div><b>Instagram</b><span>@ggpeitas</span></div>
             </a>
