@@ -1170,6 +1170,16 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .adm-main-head { display:flex; align-items:center; margin:0 0 14px; }
 .adm-main-head .adm-filter-count { margin:0; }
 .adm-more { display:flex; justify-content:center; margin:22px 0 4px; }
+.team-car-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:18px 0 10px; }
+.team-car-head h3 { font-family:var(--disp); font-size:1.2rem; margin:0; }
+/* Barrinha de cupom abaixo do menu */
+.coupon-bar { background:linear-gradient(90deg, var(--green), var(--green-deep,#0a5c28)); color:#fff; }
+.coupon-bar-in { display:flex; align-items:center; justify-content:center; gap:14px; padding:7px 16px; flex-wrap:wrap; }
+.coupon-bar-txt { display:inline-flex; align-items:center; gap:7px; font-size:.86rem; }
+.coupon-bar-txt code { background:rgba(255,255,255,.18); border:1px dashed rgba(255,255,255,.5); border-radius:6px; padding:1px 8px; font-weight:800; letter-spacing:.04em; }
+.coupon-bar-btn { display:inline-flex; align-items:center; gap:5px; background:#fff; color:var(--green-deep,#0a5c28); border:0; border-radius:999px; padding:4px 12px; font-size:.8rem; font-weight:700; cursor:pointer; }
+.coupon-bar-btn:hover { background:#f0f0ec; }
+@media (max-width:560px){ .coupon-bar-txt { font-size:.8rem; } .coupon-bar-txt code { padding:1px 6px; } }
 /* Painel de vendas (admin) */
 .pnl-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:0 0 8px; }
 .pnl-card { border:1px solid var(--line); border-radius:12px; padding:14px 16px; background:var(--surface); display:flex; flex-direction:column; gap:2px; }

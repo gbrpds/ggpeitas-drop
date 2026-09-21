@@ -181,6 +181,7 @@ export const coupons = pgTable("coupons", {
   maxUses: integer("max_uses"), // limite total de usos (null = ilimitado)
   expiresAt: timestamp("expires_at", { withTimezone: true }), // null = sem validade
   active: boolean("active").notNull().default(true),
+  firstOrderOnly: boolean("first_order_only").notNull().default(false), // só na 1ª compra
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

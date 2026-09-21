@@ -1,9 +1,9 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTeam } from "@/store/team";
 import { ProductCard } from "@/components/ProductCard";
 import { Jersey } from "@/components/Jersey";
@@ -16,6 +16,24 @@ export function HomeTeamSection() {
   const hydrate = useTeam((s) => s.hydrate);
   const [items, setItems] = useState<Product[] | null>(null);
   const [crest, setCrest] = useState<string | null>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [overflow, setOverflow] = useState(false);
+
+  const update = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    setOverflow(el.scrollWidth - el.clientWidth > 4);
+  }, []);
+  const scrollByDir = (dir: 1 | -1) => {
+    const el = trackRef.current;
+    if (el) el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.8), behavior: "smooth" });
+  };
+  useEffect(() => {
+    update();
+    const t = setTimeout(update, 300);
+    window.addEventListener("resize", update);
+    return () => { clearTimeout(t); window.removeEventListener("resize", update); };
+  }, [update, items]);
 
   useEffect(() => {
     hydrate();
@@ -82,11 +100,26 @@ export function HomeTeamSection() {
           Em breve, camisas do <b>{team.name}</b> por aqui! Enquanto isso, dá uma olhada nos destaques abaixo.
         </div>
       ) : (
-        <div className="car">
-          {items.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
+        <>
+          <div className="team-car-head">
+            <h3>Camisas do {team.name}</h3>
+            {overflow && (
+              <div className="car-arrows">
+                <button type="button" aria-label="Anterior" onClick={() => scrollByDir(-1)}>
+                  <ChevronLeft size={20} strokeWidth={2.4} />
+                </button>
+                <button type="button" aria-label="Próximo" onClick={() => scrollByDir(1)}>
+                  <ChevronRight size={20} strokeWidth={2.4} />
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="car" ref={trackRef} onScroll={update}>
+            {items.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </>
       )}
     </section>
   );

@@ -11,7 +11,11 @@ export type CouponResult =
  * após "Leve 3, Pague 2"). Tudo no servidor — nunca confia no cliente.
  * Usos são contados pelos pedidos APROVADOS com o mesmo código.
  */
-export async function validateCoupon(rawCode: string, baseCents: number): Promise<CouponResult> {
+export async function validateCoupon(
+  rawCode: string,
+  baseCents: number,
+  who?: { email?: string | null; userId?: string | null },
+): Promise<CouponResult> {
   const code = rawCode.trim().toUpperCase();
   if (!code) return { ok: false, error: "Informe um cupom." };
 
@@ -21,6 +25,25 @@ export async function validateCoupon(rawCode: string, baseCents: number): Promis
     if (!c || !c.active) return { ok: false, error: "Cupom inválido." };
     if (c.expiresAt && c.expiresAt.getTime() < Date.now()) {
       return { ok: false, error: "Cupom expirado." };
+    }
+
+    // só primeira compra: rejeita se o cliente (por conta ou e-mail) já tem
+    // algum pedido APROVADO. Sem identidade (prévia deslogada) não dá pra
+    // checar aqui, mas o checkout revalida com o e-mail informado.
+    if (c.firstOrderOnly) {
+      const email = who?.email?.trim().toLowerCase();
+      const userId = who?.userId ?? null;
+      if (email || userId) {
+        const ors = [];
+        if (userId) ors.push(sql`user_id = ${userId}`);
+        if (email) ors.push(sql`lower(customer->>'email') = ${email}`);
+        const orSql = ors.reduce((a, b) => sql`${a} OR ${b}`);
+        const [{ n }] = await db
+          .select({ n: sql<number>`count(*)::int` })
+          .from(orders)
+          .where(sql`status = 'approved' AND (${orSql})`);
+        if (n > 0) return { ok: false, error: "Cupom válido apenas na primeira compra." };
+      }
     }
     if (baseCents < c.minCents) {
       const min = (c.minCents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });

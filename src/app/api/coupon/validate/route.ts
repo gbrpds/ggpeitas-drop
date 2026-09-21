@@ -4,6 +4,7 @@ import { priceOrder, PricingError } from "@/lib/pricing";
 import { validateCoupon } from "@/lib/coupons";
 import { itemSchema } from "@/lib/checkout-schema";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
+import { auth } from "@/auth";
 
 export const runtime = "nodejs";
 
@@ -29,7 +30,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: msg }, { status: 400 });
   }
 
-  const result = await validateCoupon(parsed.data.code, netCents);
+  const session = await auth();
+  const result = await validateCoupon(parsed.data.code, netCents, { email: session?.user?.email });
   if (!result.ok) return NextResponse.json({ ok: false, error: result.error });
 
   return NextResponse.json({

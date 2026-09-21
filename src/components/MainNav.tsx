@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { navItems } from "@/data/nav";
+import { CouponBar } from "./CouponBar";
 
 function Chevron() {
   return (
@@ -11,6 +12,7 @@ function Chevron() {
 
 export function MainNav() {
   return (
+    <>
     <nav className="main" aria-label="Categorias">
       <div className="wrap">
         <ul>
@@ -46,5 +48,7 @@ export function MainNav() {
         </ul>
       </div>
     </nav>
+    <CouponBar />
+    </>
   );
 }

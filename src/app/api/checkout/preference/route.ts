@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   let couponCode: string | null = null;
   let couponCents = 0;
   if (parsed.data.couponCode) {
-    const c = await validateCoupon(parsed.data.couponCode, goodsNetCents);
+    const c = await validateCoupon(parsed.data.couponCode, goodsNetCents, { email: customer.email });
     if (c.ok && c.discountCents > 0) {
       couponCode = c.code;
       couponCents = c.discountCents;

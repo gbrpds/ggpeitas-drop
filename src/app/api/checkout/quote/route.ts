@@ -5,6 +5,7 @@ import { validateCoupon } from "@/lib/coupons";
 import { freightCentsFor, FREE_SHIPPING_MIN } from "@/lib/shipping";
 import { itemSchema } from "@/lib/checkout-schema";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
+import { auth } from "@/auth";
 
 export const runtime = "nodejs";
 
@@ -41,7 +42,8 @@ export async function POST(req: Request) {
   let coupon: { code: string; discountCents: number } | null = null;
   let couponError: string | undefined;
   if (parsed.data.couponCode) {
-    const c = await validateCoupon(parsed.data.couponCode, goodsNetCents);
+    const session = await auth();
+    const c = await validateCoupon(parsed.data.couponCode, goodsNetCents, { email: session?.user?.email });
     if (c.ok) coupon = { code: c.code, discountCents: c.discountCents };
     else couponError = c.error;
   }
