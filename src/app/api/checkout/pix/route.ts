@@ -12,6 +12,7 @@ import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 import { sendEmail } from "@/lib/email";
 import { orderPendingEmail } from "@/lib/email-templates";
 import { baseUrl } from "@/lib/site-url";
+import { notifyNewOrder } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -136,6 +137,17 @@ export async function POST(req: Request) {
     } catch (e) {
       console.error("pix pending email error", e);
     }
+  }
+
+  // aviso ao dono: novo pedido gerado (push no celular)
+  if (orderId) {
+    await notifyNewOrder({
+      number,
+      totalCents: finalCents,
+      customerName: customer.name,
+      method: "PIX",
+      url: `${baseUrl()}/admin/pedidos`,
+    });
   }
 
   const td = mp.data.point_of_interaction?.transaction_data ?? {};

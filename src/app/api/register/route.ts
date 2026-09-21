@@ -7,6 +7,7 @@ import { getDb } from "@/db";
 import { users, emailVerifications } from "@/db/schema";
 import { sendEmail } from "@/lib/email";
 import { welcomeEmail, verificationCodeEmail } from "@/lib/email-templates";
+import { notifyNewAccount } from "@/lib/notify";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -53,6 +54,7 @@ export async function POST(req: Request) {
     // --- Fluxo SEM verificação (padrão até o domínio de e-mail estar pronto) ---
     if (!verificationRequired()) {
       await db.insert(users).values({ name, email: em, passwordHash, provider: "credentials" });
+      await notifyNewAccount({ name, email: em, provider: "E-mail" });
       try {
         const tpl = welcomeEmail(name, new URL(req.url).origin);
         await sendEmail({ to: em, subject: tpl.subject, html: tpl.html });

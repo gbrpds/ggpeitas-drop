@@ -8,6 +8,7 @@ import { users } from "@/db/schema";
 import { isAdminEmail } from "@/lib/admin-emails";
 import { sendEmail } from "@/lib/email";
 import { welcomeEmail } from "@/lib/email-templates";
+import { notifyNewAccount } from "@/lib/notify";
 import { baseUrl } from "@/lib/site-url";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -75,6 +76,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           } catch (e) {
             console.error("google welcome email error", e);
           }
+          // avisa o dono da nova conta (push)
+          await notifyNewAccount({ name: user.name, email, provider: "Google" });
         }
       }
       return true;

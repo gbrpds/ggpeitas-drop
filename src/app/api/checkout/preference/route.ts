@@ -11,6 +11,7 @@ import { setDefaultFromOrder } from "@/lib/account";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 import { sendEmail } from "@/lib/email";
 import { orderPendingEmail } from "@/lib/email-templates";
+import { notifyNewOrder } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -133,6 +134,15 @@ export async function POST(req: Request) {
       console.error("preference pending email error", e);
     }
   }
+
+  // aviso ao dono: novo pedido gerado (push no celular)
+  await notifyNewOrder({
+    number,
+    totalCents: finalCents,
+    customerName: customer.name,
+    method: method === "card" ? "Cartão" : "Boleto",
+    url: `${origin}/admin/pedidos`,
+  });
 
   // Mercadorias: itens detalhados, ou 1 item consolidado quando há desconto
   // (o Checkout Pro soma os itens e não aceita linha de desconto negativa).

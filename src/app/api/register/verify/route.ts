@@ -6,6 +6,7 @@ import { getDb } from "@/db";
 import { users, emailVerifications } from "@/db/schema";
 import { sendEmail } from "@/lib/email";
 import { welcomeEmail } from "@/lib/email-templates";
+import { notifyNewAccount } from "@/lib/notify";
 import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -60,6 +61,7 @@ export async function POST(req: Request) {
         passwordHash: v.passwordHash,
         provider: "credentials",
       });
+      await notifyNewAccount({ name: v.name, email: em, provider: "E-mail" });
     }
     await db.delete(emailVerifications).where(eq(emailVerifications.email, em));
 
