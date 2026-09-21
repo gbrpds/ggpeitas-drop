@@ -10,6 +10,7 @@ import { MobileDrawer } from "@/components/MobileDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { OrderView } from "@/components/order/OrderView";
 import { ClearCart } from "@/components/cart/ClearCart";
+import { AdsConversion } from "@/components/AdsConversion";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Pedido — GG Peitas" };
@@ -60,6 +61,9 @@ export default async function PedidoPage({
       <Header />
       <MainNav />
       <main>
+        {justPaid && order && (
+          <AdsConversion value={order.totalCents / 100} transactionId={String(order.number ?? order.id)} />
+        )}
         {justPaid && <ClearCart />}
         <div className="wrap checkout-wrap">
           {!order ? (

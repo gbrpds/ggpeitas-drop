@@ -9,6 +9,7 @@ import { TeamFloat } from "@/components/TeamFloat";
 import { RevealOnScroll } from "@/components/RevealOnScroll";
 import { PromoToast } from "@/components/PromoToast";
 import { JsonLd } from "@/components/JsonLd";
+import { GoogleAds } from "@/components/GoogleAds";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const archivo = Archivo({
@@ -106,6 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className={`${inter.variable} ${archivo.variable} ${anton.variable}`}>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <GoogleAds />
         <JsonLd data={orgJsonLd} />
         <JerseySymbol />
         <Providers>
