@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { baseUrl } from "@/lib/site-url";
 import { JsonLd } from "@/components/JsonLd";
+import { teamSlug } from "@/lib/team-slug";
 import { Announce } from "@/components/Announce";
 import { Header } from "@/components/Header";
 import { MainNav } from "@/components/MainNav";
@@ -81,7 +82,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const { list, summary } = await getProductReviews(id, uid);
   const gender = await getGenderInfo(product);
   const related = await getRelatedProducts(product.id, product.team, product.category);
-  const relatedHref = product.team ? `/busca?team=${encodeURIComponent(product.team)}` : cat.href;
+  const relatedHref = product.team ? `/time/${teamSlug(product.team)}` : cat.href;
 
   return (
     <>

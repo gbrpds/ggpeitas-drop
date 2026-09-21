@@ -43,6 +43,7 @@ export function SiteFooter() {
         <div>
           <h4>Institucional</h4>
           <ul>
+            <li><Link href="/camisas-importadas">Camisas importadas</Link></li>
             <li><Link href="/blog">Blog</Link></li>
             <li><Link href="/quem-somos">Quem somos</Link></li>
             <li><Link href="/contato">Contato</Link></li>
