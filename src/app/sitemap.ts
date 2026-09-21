@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { baseUrl } from "@/lib/site-url";
 import { getAllActive } from "@/lib/catalog";
 import { blogPosts } from "@/data/blog";
+import { teamSlug } from "@/lib/team-slug";
 
 export const revalidate = 3600; // atualiza o sitemap de hora em hora
 
@@ -12,8 +13,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPaths = ["", "/busca", "/promocao", "/solicitar", "/rastrear", "/blog", "/quem-somos", "/contato", "/faq", "/trocas"];
 
   let products: { id: string }[] = [];
+  const teamSlugs = new Set<string>();
   try {
-    products = (await getAllActive()).map((p) => ({ id: p.id }));
+    const all = await getAllActive();
+    products = all.map((p) => ({ id: p.id }));
+    for (const p of all) if (p.team) teamSlugs.add(teamSlug(p.team));
   } catch {
     /* sem banco → só as páginas fixas */
   }
@@ -36,6 +40,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(p.date),
       changeFrequency: "monthly" as const,
       priority: 0.6,
+    })),
+    ...[...teamSlugs].map((s) => ({
+      url: `${url}/time/${s}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
     })),
     ...products.map((p) => ({
       url: `${url}/produto/${p.id}`,
