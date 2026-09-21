@@ -1170,6 +1170,27 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .adm-main-head { display:flex; align-items:center; margin:0 0 14px; }
 .adm-main-head .adm-filter-count { margin:0; }
 .adm-more { display:flex; justify-content:center; margin:22px 0 4px; }
+/* Painel de vendas (admin) */
+.pnl-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:0 0 8px; }
+.pnl-card { border:1px solid var(--line); border-radius:12px; padding:14px 16px; background:var(--surface); display:flex; flex-direction:column; gap:2px; }
+.pnl-card-top { display:inline-flex; align-items:center; gap:6px; font-size:.8rem; color:var(--muted); font-weight:600; }
+.pnl-card-num { font-family:var(--disp); font-size:1.5rem; line-height:1.1; }
+.pnl-card-val { color:var(--green-deep,#0a5c28); font-weight:800; font-size:1.05rem; }
+.pnl-card-hint { font-size:.72rem; color:var(--muted); }
+.pnl-h2 { font-family:var(--disp); font-size:1.25rem; margin:22px 0 10px; }
+.pnl-tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; }
+.pnl-table { width:100%; border-collapse:collapse; font-size:.9rem; min-width:640px; }
+.pnl-table th, .pnl-table td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); white-space:nowrap; }
+.pnl-table th { font-size:.75rem; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); }
+.pnl-table tr:last-child td { border-bottom:0; }
+.pnl-val { font-variant-numeric:tabular-nums; font-weight:700; }
+.pnl-link { color:var(--green-deep,#0a5c28); font-weight:700; }
+.pnl-badge { display:inline-block; padding:2px 9px; border-radius:999px; font-size:.75rem; font-weight:700; }
+.pnl-badge.ok { background:rgba(10,125,52,.12); color:#0a5c28; }
+.pnl-badge.pend { background:#fff3cd; color:#7a5a00; }
+.pnl-badge.bad { background:#fdecec; color:#a12020; }
+.pnl-badge.ads { background:#e8f0fe; color:#1a56c4; }
+.pnl-origem { color:var(--muted); font-size:.82rem; }
 .cat-intro { max-width:70ch; color:var(--muted); line-height:1.6; margin:2px 0 22px; font-size:.95rem; }
 .cat-intro a { color:var(--green); font-weight:600; }
 .ci-times { display:flex; flex-wrap:wrap; gap:8px; }

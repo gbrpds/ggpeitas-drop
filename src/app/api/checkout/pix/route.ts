@@ -87,6 +87,9 @@ export async function POST(req: Request) {
   }
 
   const userId = await resolveUserId();
+  const gclidRaw = (req.headers.get("cookie") ?? "").match(/(?:^|;\s*)gg_gclid=([^;]+)/)?.[1];
+  const gclid = gclidRaw ? decodeURIComponent(gclidRaw) : null;
+
   let number: string | null = null;
   let orderId: string | null = null;
   let accessToken: string | null = null;
@@ -103,6 +106,7 @@ export async function POST(req: Request) {
       items,
       customer,
       shipping,
+      gclid,
       mpPaymentId: String(mp.data.id),
     });
     number = created.number;

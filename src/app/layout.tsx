@@ -10,6 +10,7 @@ import { RevealOnScroll } from "@/components/RevealOnScroll";
 import { PromoToast } from "@/components/PromoToast";
 import { JsonLd } from "@/components/JsonLd";
 import { GoogleAds } from "@/components/GoogleAds";
+import { AdTracking } from "@/components/AdTracking";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const archivo = Archivo({
@@ -108,6 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <GoogleAds />
+        <AdTracking />
         <JsonLd data={orgJsonLd} />
         <JerseySymbol />
         <Providers>

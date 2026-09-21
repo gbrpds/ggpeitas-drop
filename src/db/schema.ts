@@ -38,6 +38,7 @@ export const orders = pgTable("orders", {
   accessToken: text("access_token"), // acesso ao pedido sem conta (link no e-mail/pós-compra)
   trackingCode: text("tracking_code"), // código de rastreio dos Correios
   shippingStatus: text("shipping_status"), // preparando | enviado | entregue
+  gclid: text("gclid"), // Google Click ID: marca pedidos que vieram do Google Ads
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

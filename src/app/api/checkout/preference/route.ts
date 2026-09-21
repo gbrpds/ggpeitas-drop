@@ -75,6 +75,10 @@ export async function POST(req: Request) {
   // 1) cria o pedido (pendente) para ter um id que vira external_reference
   const userId = await resolveUserId();
   let number: string | null = null;
+  // origem do anúncio (Google Ads): cookie gg_gclid gravado no primeiro acesso
+  const gclidRaw = (req.headers.get("cookie") ?? "").match(/(?:^|;\s*)gg_gclid=([^;]+)/)?.[1];
+  const gclid = gclidRaw ? decodeURIComponent(gclidRaw) : null;
+
   let orderId: string | null = null;
   let accessToken: string | null = null;
   try {
@@ -90,6 +94,7 @@ export async function POST(req: Request) {
       items,
       customer,
       shipping,
+      gclid,
     });
     number = created.number;
     orderId = created.id;
