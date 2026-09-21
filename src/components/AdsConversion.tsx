@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { GADS_ID, GADS_PURCHASE_LABEL } from "@/lib/ads";
 
 declare global {
   interface Window {
@@ -9,18 +10,15 @@ declare global {
 }
 
 /** Dispara a conversão de COMPRA do Google Ads (uma vez), com valor e id do
- *  pedido. Só age se NEXT_PUBLIC_GADS_ID e NEXT_PUBLIC_GADS_PURCHASE_LABEL
- *  estiverem definidos. transaction_id evita contagem dupla em refresh. */
+ *  pedido. transaction_id evita contagem dupla em refresh. */
 export function AdsConversion({ value, transactionId }: { value: number; transactionId: string }) {
   const fired = useRef(false);
   useEffect(() => {
     if (fired.current) return;
-    const id = process.env.NEXT_PUBLIC_GADS_ID;
-    const label = process.env.NEXT_PUBLIC_GADS_PURCHASE_LABEL;
-    if (!id || !label || typeof window.gtag !== "function") return;
+    if (!GADS_ID || !GADS_PURCHASE_LABEL || typeof window.gtag !== "function") return;
     fired.current = true;
     window.gtag("event", "conversion", {
-      send_to: `${id}/${label}`,
+      send_to: `${GADS_ID}/${GADS_PURCHASE_LABEL}`,
       value,
       currency: "BRL",
       transaction_id: transactionId,

@@ -1,9 +1,9 @@
 import Script from "next/script";
+import { GADS_ID } from "@/lib/ads";
 
-/** Carrega a tag do Google Ads (gtag) se NEXT_PUBLIC_GADS_ID estiver definido.
- *  Sem a variável, não renderiza nada (no-op). */
+/** Carrega a tag do Google Ads (gtag). */
 export function GoogleAds() {
-  const id = process.env.NEXT_PUBLIC_GADS_ID;
+  const id = GADS_ID;
   if (!id) return null;
   return (
     <>
