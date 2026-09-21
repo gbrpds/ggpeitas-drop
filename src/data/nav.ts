@@ -70,6 +70,5 @@ export const navItems: NavItem[] = [
     ],
   },
   { label: "Feminina", href: "/categoria/feminina" },
-  { label: "Conjuntos Esportivos", href: "/categoria/infantil" },
   { label: "Retrô", href: "/categoria/retro" },
 ];
