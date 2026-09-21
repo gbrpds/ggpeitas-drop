@@ -1172,6 +1172,9 @@ footer .about { color:#9aa38c; font-size:.86rem; max-width:34ch; }
 .adm-more { display:flex; justify-content:center; margin:22px 0 4px; }
 .cat-intro { max-width:70ch; color:var(--muted); line-height:1.6; margin:2px 0 22px; font-size:.95rem; }
 .cat-intro a { color:var(--green); font-weight:600; }
+.ci-times { display:flex; flex-wrap:wrap; gap:8px; }
+.ci-time { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:6px 13px; font-size:.9rem; font-weight:600; color:var(--ink); text-decoration:none; }
+.ci-time:hover { border-color:var(--green); color:var(--green-deep); }
 .adm-mp-badge { border-radius:10px; padding:9px 13px; font-size:.85rem; font-weight:700; margin:0 0 14px; border:1px solid transparent; }
 .adm-mp-badge.producao { background:rgba(10,125,52,.10); color:var(--green-deep,#0a5c28); border-color:rgba(10,125,52,.28); }
 .adm-mp-badge.teste { background:#fff3cd; color:#7a5a00; border-color:#ffe08a; }
